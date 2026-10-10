@@ -6,12 +6,15 @@ Phase 1 — Manual entry + basic price display (not started)
 ## Done
 - Step 1 done
 - Step 2 done
+- Step 3 done
+- Step 4 done
+- Step 5 done
 
 ## In Progress
 - (none)
 
 ## Next Up
-- Step 3 (owner-only auth)
+- Step 6 (seed data)
 
 ## Known Issues
 - (none yet)
