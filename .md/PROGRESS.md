@@ -4,15 +4,14 @@
 Phase 1 — Manual entry + basic price display (not started)
 
 ## Done
-- Step 1 done, Step 2 next.
+- Step 1 done
+- Step 2 done
 
 ## In Progress
 - (none)
 
 ## Next Up
-- Decide frontend framework
-- Design initial `products` / `price_entries` tables in Supabase
-- Build manual entry form
+- Step 3 (owner-only auth)
 
 ## Known Issues
 - (none yet)
