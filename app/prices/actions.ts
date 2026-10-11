@@ -58,6 +58,13 @@ export async function addPriceObservation(
     return { error: "観測日時が無効です。" };
   }
 
+  // ----- notes のトリムと null 化 -----
+  let notes: string | null = null;
+  if (typeof raw.notes === "string") {
+    const trimmed = raw.notes.trim();
+    notes = trimmed === "" ? null : trimmed;
+  }
+
   // ----- Supabase へ挿入 -----
   const supabase = await createSupabaseServerClient();
 
@@ -67,7 +74,7 @@ export async function addPriceObservation(
     price,
     observed_at: observedAt,
     is_sale: schemaResult.data.is_sale,
-    notes: schemaResult.data.notes,
+    notes, // トリム後、空なら null が入ります
   });
 
   if (error) {

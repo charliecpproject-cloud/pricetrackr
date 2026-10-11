@@ -45,34 +45,30 @@ export function parsePriceYen(input: string): number | null {
  * more than 1 day in the future; otherwise returns null.
  */
 export function toObservedAt(value: string): string | null {
-  if (typeof value !== "string") return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  if (!match) return null;
 
-  // Expected format: 2024-09-30T14:05
-  const datetimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-  if (!datetimeRegex.test(value)) return null;
+  const [, year, month, day, hour, minute] = match.map(Number);
 
-  // Parse as JST (Asia/Tokyo) – the input does not contain a timezone,
-  // so we treat it as JST.
-  const [datePart, timePart] = value.split("T");
-  const [year, month, day] = datePart.split("-").map(Number);
-  const [hour, minute] = timePart.split(":").map(Number);
+  // Build the date as UTC and read it back: impossible dates (Feb 31,
+  // hour 24, month 13) roll over, so the read-back values won't match.
+  const check = new Date(Date.UTC(year, month - 1, day, hour, minute));
+  if (
+    check.getUTCFullYear() !== year ||
+    check.getUTCMonth() !== month - 1 ||
+    check.getUTCDate() !== day ||
+    check.getUTCHours() !== hour ||
+    check.getUTCMinutes() !== minute
+  ) {
+    return null;
+  }
 
-  // Construct a Date object in UTC that represents the same moment in JST.
-  // Using the ISO string with explicit +09:00 offset ensures correct parsing.
-  const isoString = `${datePart}T${timePart}:00+09:00`;
-  const parsed = new Date(isoString);
-  if (isNaN(parsed.getTime())) return null;
+  // The user enters Japan time (UTC+9). Reject moments more than 1 day ahead.
+  const instant = check.getTime() - 9 * 60 * 60 * 1000;
+  if (instant > Date.now() + 24 * 60 * 60 * 1000) return null;
 
-  const now = new Date();
-
-  // Allow dates up to 1 day (24 h) in the future
-  const diffMs = parsed.getTime() - now.getTime();
-  if (diffMs > 24 * 60 * 60 * 1000) return null;
-
-  // Return the required format (seconds forced to 00)
   return `${value}:00+09:00`;
 }
-
 /**
  * Zod schema for a price entry form.
  * - product_package_id: UUID string
