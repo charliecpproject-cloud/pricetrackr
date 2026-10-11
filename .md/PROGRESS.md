@@ -1,7 +1,7 @@
 # Progress Log
 
 ## Current Phase
-Phase 1 — Manual entry + basic price display (not started)
+Phase 1 complete (manual entry and price lookup, live on Vercel)
 
 ## Done
 - Step 1 done
@@ -15,17 +15,23 @@ Phase 1 — Manual entry + basic price display (not started)
 - Step 13 (home page) done
 - Step 14 (mobile‑first layout & styling pass) done
 - Step 15 (delete own price entries) done
+- Step 16 (housekeeping) done
+- Step 17 (deploy and phone smoke test) done
+- Step 18 (Phase 1 close-out) done
 
 ## In Progress
 - (none)
 
 ## Next Up
-- Step 16 (housekeeping) next
-- Step 17 (deploy and phone smoke test)
-- Step 18 (Phase 1 close-out)
+- Plan Phase 2 (freshness score, trust score, unit price)
 
 ## Known Issues
 - (none yet)
 
 ## Decisions Log
 - Using Supabase for DB/auth/storage, Vercel for hosting (2026-09-05)
+- 2026-10-11: observed_at is stored as timestamptz, entered as Japan time with minutes
+- 2026-10-11: price_observations is insert-only, with no update policy and owner-only delete
+- 2026-10-11: npm is used, not pnpm
+- 2026-10-11: zod v4, so errors are read with error.issues
+- 2026-10-11: Aider jobs are kept small because of the Groq free-tier limit of about 8k tokens per minute
