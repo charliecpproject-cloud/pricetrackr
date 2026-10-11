@@ -12,12 +12,13 @@ Phase 1 — Manual entry + basic price display (not started)
 - Step 8 done
 - Step 9 (manual price-entry form) done
 - Step 10 (unit tests and notes cleanup) done
+- Step 13 (home page) done
 
 ## In Progress
 - (none)
 
 ## Next Up
-- Step 11 ("Check price" lookup page)
+- Step 14 (mobile‑first layout & styling pass)
 
 ## Known Issues
 - (none yet)
