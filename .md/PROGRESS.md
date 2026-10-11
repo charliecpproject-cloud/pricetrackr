@@ -9,12 +9,13 @@ Phase 1 — Manual entry + basic price display (not started)
 - Step 3 done
 - Step 4 done
 - Step 5 done
+- Step 8 done
 
 ## In Progress
 - (none)
 
 ## Next Up
-- Step 6 (seed data)
+- Step 9 (manual price-entry form)
 
 ## Known Issues
 - (none yet)

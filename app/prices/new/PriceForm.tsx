@@ -1,0 +1,148 @@
+"use client";
+
+import { useActionState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { addPriceObservation } from "../actions";
+
+type Package = { id: string; label: string };
+type Shop = { id: string; label: string };
+
+type Props = {
+  packages: Package[];
+  shops: Shop[];
+};
+
+export default function PriceForm({ packages, shops }: Props) {
+  // 初期状態: エラーメッセージと成功メッセージなし
+  const initialState = {
+    error: null as string | null,
+    message: null as string | null,
+  };
+  const [state, formAction] = useActionState(addPriceObservation, initialState);
+
+  // price フィールドだけをリセットするための ref
+  const priceRef = useRef<HTMLInputElement>(null);
+
+  // 成功時に price フィールドをクリア（他は保持）
+  useEffect(() => {
+    if (state.message) {
+      if (priceRef.current) {
+        priceRef.current.value = "";
+      }
+    }
+  }, [state.message]);
+
+  // datetime-local のデフォルト値（マウント後に設定）
+  const [defaultObservedAt, setDefaultObservedAt] = useState<string>("");
+
+  useEffect(() => {
+    // Asia/Tokyo の現在時刻を取得し、分単位で切り捨てる
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Tokyo",
+    });
+
+    const parts = formatter.formatToParts(new Date());
+    // formatToParts の順序はロケールに依存しないようにキーで取得
+    const get = (type: string) =>
+      parts.find((p) => p.type === type)?.value ?? "";
+
+    const year = get("year");
+    const month = get("month");
+    const day = get("day");
+    const hour = get("hour");
+    const minute = get("minute");
+
+    const defaultValue = `${year}-${month}-${day}T${hour}:${minute}`;
+    setDefaultObservedAt(defaultValue);
+  }, []);
+
+  return (
+    <div>
+      {state.error && (
+        <p className="text-red-500 mb-2">{state.error}</p>
+      )}
+      {state.message && (
+        <p className="text-green-500 mb-2">{state.message}</p>
+      )}
+      <form action={formAction} className="flex flex-col max-w-sm space-y-2">
+        {/* 商品パッケージ選択 */}
+        <select
+          name="product_package_id"
+          required
+          className="border rounded p-2"
+        >
+          <option value="">Select package</option>
+          {packages.map((pkg) => (
+            <option key={pkg.id} value={pkg.id}>
+              {pkg.label}
+            </option>
+          ))}
+        </select>
+
+        {/* 店舗選択 */}
+        <select
+          name="shop_id"
+          required
+          className="border rounded p-2"
+        >
+          <option value="">Select shop</option>
+          {shops.map((shop) => (
+            <option key={shop.id} value={shop.id}>
+              {shop.label}
+            </option>
+          ))}
+        </select>
+
+        {/* 価格入力 */}
+        <input
+          type="text"
+          name="price"
+          placeholder="Price"
+          inputMode="decimal"
+          required
+          className="border rounded p-2"
+          ref={priceRef}
+        />
+
+        {/* 観測日時（datetime-local） */}
+        <input
+          type="datetime-local"
+          name="observed_at"
+          defaultValue={defaultObservedAt}
+          required
+          className="border rounded p-2"
+          suppressHydrationWarning={true}
+        />
+
+        {/* セールチェックボックス */}
+        <label className="flex items-center space-x-2">
+          <input type="checkbox" name="is_sale" className="h-4 w-4" />
+          <span>Sale?</span>
+        </label>
+
+        {/* 任意メモ */}
+        <input
+          type="text"
+          name="notes"
+          placeholder="Notes (optional)"
+          maxLength={200}
+          className="border rounded p-2"
+        />
+
+        {/* 送信ボタン */}
+        <button
+          type="submit"
+          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700"
+        >
+          Add
+        </button>
+      </form>
+    </div>
+  );
+}
