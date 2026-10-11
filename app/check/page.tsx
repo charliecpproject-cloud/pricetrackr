@@ -6,6 +6,11 @@ import {
   formatJst,
   packageLabel,
 } from "../../lib/prices/format";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 type SearchParams = Promise<{
   q?: string;
@@ -82,25 +87,22 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
 
   // ----- 6. UI 描画 -----
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 max-w-xl mx-auto">
       {/* 検索フォーム */}
       <form method="GET" className="mb-6 flex items-center gap-2">
-        <label htmlFor="q" className="font-medium">
+        <Label htmlFor="q" className="font-medium">
           Search product
-        </label>
-        <input
+        </Label>
+        <Input
           type="text"
           name="q"
           id="q"
           defaultValue={sanitizedQ}
-          className="border rounded px-2 py-1 flex-1"
+          className="flex-1 h-12"
         />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white rounded px-4 py-1 hover:bg-blue-700"
-        >
+        <Button type="submit" className="h-12">
           Search
-        </button>
+        </Button>
       </form>
 
       {/* 結果表示 */}
@@ -118,38 +120,35 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
               : "";
 
             return (
-              <Link
-                key={pkg.id}
-                href={`/check/${pkg.id}`}
-                className="block border rounded p-4 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-lg font-semibold">{productName}</h2>
-                    <p className="text-sm text-gray-500">{product.brand}</p>
-                    <p className="mt-2 text-sm text-gray-700">
-                      {packageLabel(pkg.package_size, pkg.package_unit)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    {latest ? (
-                      <>
-                        <p className="text-xl font-bold">{formatYen(latest.price)}</p>
-                        <p className="text-sm text-gray-600">{shopInfo}</p>
-                        <p className="text-xs text-gray-500">
-                          {formatJst(latest.observed_at)}
-                        </p>
-                        {latest.is_sale && (
-                          <span className="inline-block mt-1 bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">
-                            Sale
-                          </span>
-                        )}
-                      </>
-                    ) : (
-                      <p className="text-gray-500">No prices yet</p>
-                    )}
-                  </div>
-                </div>
+              <Link key={pkg.id} href={`/check/${pkg.id}`} className="block">
+                <Card className="bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow">
+                  <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4">
+                    <div>
+                      <h2 className="text-lg font-semibold">{productName}</h2>
+                      <p className="text-sm text-gray-500">{product.brand}</p>
+                      <p className="mt-2 text-sm text-gray-700">
+                        {packageLabel(pkg.package_size, pkg.package_unit)}
+                      </p>
+                    </div>
+                    <div className="text-right mt-4 sm:mt-0">
+                      {latest ? (
+                        <>
+                          <p className="text-3xl font-bold tabular-nums">{formatYen(latest.price)}</p>
+                          <p className="text-sm text-gray-600">{shopInfo}</p>
+                          <p className="text-xs text-gray-500">{formatJst(latest.observed_at)}</p>
+                          {latest.is_sale && (
+                            <Badge className="mt-1 bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">
+                              Sale
+                            </Badge>
+                          )}
+                        </>
+                      ) : (
+                        <p className="text-gray-500">No prices yet</p>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent />
+                </Card>
               </Link>
             );
           });

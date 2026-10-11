@@ -1,6 +1,8 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductForm from "./ProductForm";
 import PackageForm from "./PackageForm";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 type Package = {
   package_size: number;
@@ -33,8 +35,8 @@ export default async function ProductsPage() {
   const productList: Product[] = (products as any) ?? [];
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Products</h1>
+    <div className="max-w-xl mx-auto px-4 py-6">
+      <h1 className="text-2xl font-bold mb-6">Products</h1>
 
       {/* 商品追加フォーム */}
       <ProductForm />
@@ -43,26 +45,29 @@ export default async function ProductsPage() {
       <PackageForm products={productList} />
 
       {/* 商品一覧 */}
-      <div className="mt-6 space-y-6">
+      <div className="mt-8 space-y-4">
         {productList.map((product) => (
-          <div key={product.id} className="border-b pb-4">
-            <h2 className="text-lg font-semibold">
-              {product.name_ja || product.name_en || "Unnamed Product"}
-            </h2>
-            <p className="text-sm text-gray-600">
-              {product.brand ?? "No brand"} - {product.category ?? "No category"}
-            </p>
-
+          <Card key={product.id} className="border rounded-xl shadow-sm bg-white">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-semibold">
+                {product.name_ja || product.name_en || "Unnamed Product"}
+              </CardTitle>
+              <p className="text-sm text-gray-600">
+                {product.brand ?? "No brand"} - {product.category ?? "No category"}
+              </p>
+            </CardHeader>
             {product.product_packages && product.product_packages.length > 0 && (
-              <ul className="ml-4 list-disc text-sm mt-2">
-                {product.product_packages.map((pkg, idx) => (
-                  <li key={idx}>
-                    {pkg.package_size} {pkg.package_unit}
-                  </li>
-                ))}
-              </ul>
+              <CardContent className="pt-2">
+                <div className="flex flex-wrap">
+                  {product.product_packages.map((pkg, idx) => (
+                    <Badge key={idx} className="mr-2 mb-2">
+                      {pkg.package_size} {pkg.package_unit}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
             )}
-          </div>
+          </Card>
         ))}
       </div>
     </div>

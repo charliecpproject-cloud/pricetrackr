@@ -17,28 +17,34 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 flex flex-col items-center">
+    <div className="min-h-screen bg-slate-50 p-4 flex flex-col items-center">
       {/* ヘッダー */}
-      <h1 className="mb-6 text-3xl font-bold">Price Tracker</h1>
+      <h1 className="mb-6 text-3xl font-bold text-slate-800">
+        Price Tracker
+      </h1>
 
       {/* 大きなカード */}
-      <div className="w-full max-w-md space-y-4">
+      <div className="w-full max-w-xl space-y-4">
         <button
           onClick={() => goTo("/prices/new")}
-          className="w-full rounded-lg border border-gray-300 bg-white p-6 text-left shadow-sm hover:bg-gray-100"
+          className="w-full rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm hover:bg-slate-100 min-h-[48px] flex flex-col justify-center"
         >
-          <h2 className="text-xl font-semibold">Input price</h2>
-          <p className="mt-1 text-sm text-gray-600">
+          <h2 className="text-xl font-semibold text-slate-900">
+            Input price
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
             Add a price you saw in a store
           </p>
         </button>
 
         <button
           onClick={() => goTo("/check")}
-          className="w-full rounded-lg border border-gray-300 bg-white p-6 text-left shadow-sm hover:bg-gray-100"
+          className="w-full rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm hover:bg-slate-100 min-h-[48px] flex flex-col justify-center"
         >
-          <h2 className="text-xl font-semibold">Check price</h2>
-          <p className="mt-1 text-sm text-gray-600">
+          <h2 className="text-xl font-semibold text-slate-900">
+            Check price
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
             Look up the latest price of a product
           </p>
         </button>
@@ -48,13 +54,13 @@ export default function HomePage() {
       <div className="mt-6 flex space-x-4 text-sm">
         <button
           onClick={() => goTo("/stores")}
-          className="text-blue-600 hover:underline"
+          className="text-indigo-600 hover:underline"
         >
           Stores
         </button>
         <button
           onClick={() => goTo("/products")}
-          className="text-blue-600 hover:underline"
+          className="text-indigo-600 hover:underline"
         >
           Products
         </button>
@@ -63,7 +69,7 @@ export default function HomePage() {
       {/* ログアウトボタンはそのまま */}
       <button
         onClick={handleLogout}
-        className="mt-8 rounded bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
+        className="mt-8 rounded-md bg-indigo-600 px-6 py-3 text-white hover:bg-indigo-700 min-h-[48px]"
       >
         Logout
       </button>

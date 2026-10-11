@@ -4,6 +4,10 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatYen, formatJst, packageLabel } from "@/lib/prices/format";
 import { z } from "zod";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 /**
  * Server Component: 詳細ページ for a specific product package.
@@ -67,24 +71,43 @@ export default async function Page({
   const latestObs = observations?.[0];
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      {/* 戻るリンク */}
+    <div className="max-w-xl mx-auto px-4 py-6">
+      {/* 戻るリンク → Button コンポーネントでラップ */}
       <div className="mb-4">
-        <Link href="/check" className="text-blue-600 hover:underline">
-          ← Back to search
-        </Link>
+        <Button asChild variant="link" className="text-indigo-600 hover:underline">
+          <Link href="/check">← Back to search</Link>
+        </Button>
       </div>
 
-      {/* 商品・パッケージ情報 */}
-      <div className="border rounded p-4 mb-6">
-        <h1 className="text-2xl font-bold">{productName}</h1>
-        {brand && <p className="text-gray-600">{brand}</p>}
-        <p className="mt-2 text-sm text-gray-700">
-          {packageLabel(pkgData.package_size, pkgData.package_unit)}
-        </p>
-        {latestObs && (
-          <p className="mt-4 text-3xl font-semibold">{formatYen(latestObs.price)}</p>
-        )}
+      {/* 商品・パッケージ情報カード */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-gray-900">{productName}</CardTitle>
+          {brand && <p className="text-gray-500">{brand}</p>}
+        </CardHeader>
+        <CardContent>
+          <p className="mt-2 text-sm text-gray-600">
+            {packageLabel(pkgData.package_size, pkgData.package_unit)}
+          </p>
+          {latestObs && (
+            <p className="mt-4 text-5xl font-semibold text-green-600">
+              {formatYen(latestObs.price)}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 検索フィールド（現状は非機能） */}
+      <div className="mb-6">
+        <Label htmlFor="search" className="block text-sm font-medium text-gray-700">
+          Search observations
+        </Label>
+        <Input
+          id="search"
+          type="text"
+          placeholder="キーワードで検索（未実装）"
+          className="mt-1 w-full"
+        />
       </div>
 
       {/* 価格観測リスト */}
@@ -102,29 +125,32 @@ export default async function Page({
                 : shopBranch;
 
               return (
-                <li
-                  key={idx}
-                  className="border rounded p-3 hover:shadow-sm transition-shadow"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm text-gray-500">
-                        {formatJst(obs.observed_at)}
-                      </p>
-                      <p className="text-lg font-medium">{formatYen(obs.price)}</p>
-                      {obs.notes && (
-                        <p className="mt-1 text-sm text-gray-700">{obs.notes}</p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">{shopLabel}</p>
-                      {obs.is_sale && (
-                        <span className="inline-block mt-1 bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">
-                          Sale
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                <li key={idx}>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            {formatJst(obs.observed_at)}
+                          </p>
+                          <p className="text-lg font-medium text-gray-900">
+                            {formatYen(obs.price)}
+                          </p>
+                          {obs.notes && (
+                            <p className="mt-1 text-sm text-gray-700">{obs.notes}</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-600">{shopLabel}</p>
+                          {obs.is_sale && (
+                            <span className="inline-block mt-1 bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">
+                              Sale
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </li>
               );
             })}

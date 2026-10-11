@@ -1,6 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import StoreForm from "./StoreForm";
 import ShopForm from "./ShopForm";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default async function StoresPage() {
   // Supabase client (server side) – reads session from cookies
@@ -31,28 +32,29 @@ export default async function StoresPage() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Store Chains</h1>
+    <div className="max-w-xl mx-auto px-4 py-4">
+      <h1 className="text-2xl font-bold mb-6">Store Chains</h1>
 
       {chainsError && (
-        <p className="text-red-500 mb-2">
+        <p className="text-red-500 mb-4">
           データ取得エラー (チェーン): {chainsError.message}
         </p>
       )}
 
       {shopsError && (
-        <p className="text-red-500 mb-2">
+        <p className="text-red-500 mb-4">
           データ取得エラー (ショップ): {shopsError.message}
         </p>
       )}
 
-      <ul className="mb-6">
-        {chains?.map((chain) => (
-          <li key={chain.id} className="border-b py-2">
-            <div className="font-semibold">{chain.name}</div>
-
-            {/* チェーンに紐づくショップ一覧 */}
-            <ul className="ml-4 mt-2">
+      {/* チェーンごとのカード表示 */}
+      {chains?.map((chain) => (
+        <Card key={chain.id} className="mb-4">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-semibold">{chain.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside space-y-1">
               {shopsByChain[chain.id]?.map((shop) => (
                 <li key={shop.id} className="text-sm">
                   {shop.name}
@@ -60,14 +62,14 @@ export default async function StoresPage() {
                 </li>
               ))}
             </ul>
-          </li>
-        ))}
-      </ul>
+          </CardContent>
+        </Card>
+      ))}
 
-      <h2 className="text-xl font-semibold mb-2">Add New Store Chain</h2>
+      <h2 className="text-xl font-semibold mt-8 mb-4">Add New Store Chain</h2>
       <StoreForm />
 
-      <h2 className="text-xl font-semibold mt-8 mb-2">Add New Shop</h2>
+      <h2 className="text-xl font-semibold mt-8 mb-4">Add New Shop</h2>
       <ShopForm chains={chains ?? []} />
     </div>
   );

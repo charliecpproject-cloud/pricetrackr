@@ -3,6 +3,9 @@
 import { useActionState } from "react";
 import { useEffect, useRef, useState } from "react";
 import { addPriceObservation } from "../actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 type Package = { id: string; label: string; search: string };
 type Shop = { id: string; label: string };
@@ -83,20 +86,24 @@ export default function PriceForm({ packages, shops }: Props) {
 
   // ---------- ここまで検索ロジック ----------
   return (
-    <div>
-      {state.error && <p className="text-red-500 mb-2">{state.error}</p>}
-      {state.message && <p className="text-green-500 mb-2">{state.message}</p>}
+    <div className="max-w-xl mx-auto px-4">
+      {state.error && (
+        <p className="text-red-500 mb-2">{state.error}</p>
+      )}
+      {state.message && (
+        <p className="text-green-500 mb-2">{state.message}</p>
+      )}
 
       {/* 検索入力 */}
-      <input
+      <Input
         type="text"
         placeholder="Search product"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="border rounded p-2 mb-2"
+        className="mb-2"
       />
 
-      <form action={formAction} className="flex flex-col max-w-sm space-y-2">
+      <form action={formAction} className="flex flex-col space-y-4">
         {/* 商品パッケージ選択 */}
         <select
           name="product_package_id"
@@ -128,49 +135,45 @@ export default function PriceForm({ packages, shops }: Props) {
         </select>
 
         {/* 価格入力 */}
-        <input
+        <Input
           type="text"
           name="price"
           placeholder="Price"
           inputMode="decimal"
           required
-          className="border rounded p-2"
           ref={priceRef}
         />
 
         {/* 観測日時（datetime-local） */}
-        <input
+        <Input
           type="datetime-local"
           name="observed_at"
           defaultValue={defaultObservedAt}
           required
-          className="border rounded p-2"
           suppressHydrationWarning={true}
         />
 
         {/* セールチェックボックス */}
-        <label className="flex items-center space-x-2">
+        <Label className="flex items-center space-x-2">
           <input type="checkbox" name="is_sale" className="h-4 w-4" />
           <span>Sale?</span>
-        </label>
+        </Label>
 
         {/* 任意メモ */}
-        <input
+        <Input
           type="text"
           name="notes"
           placeholder="Notes (optional)"
           maxLength={200}
-          className="border rounded p-2"
         />
 
         {/* 送信ボタン */}
-        <button
+        <Button
           type="submit"
-          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700 disabled:opacity-50"
           disabled={filteredPackages.length === 0}
         >
           Add
-        </button>
+        </Button>
       </form>
     </div>
   );
