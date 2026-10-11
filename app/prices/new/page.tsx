@@ -56,7 +56,7 @@ export default async function PricesNewPage() {
   // ----- 店舗選択肢の作成 -----
   const shopOptions = (shops ?? []).map((shop) => ({
     id: shop.id,
-    label: `${shop.store_chain?.name ?? ""} — ${shop.name}`,
+    label: `${[shop.store_chain].flat()[0]?.name ?? ""} — ${shop.name}`,
   }));
 
   return <PriceForm packages={packages} shops={shopOptions} />;
