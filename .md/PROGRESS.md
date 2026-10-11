@@ -14,13 +14,13 @@ Phase 1 — Manual entry + basic price display (not started)
 - Step 10 (unit tests and notes cleanup) done
 - Step 13 (home page) done
 - Step 14 (mobile‑first layout & styling pass) done
+- Step 15 (delete own price entries) done
 
 ## In Progress
 - (none)
 
 ## Next Up
-- Step 15 (delete a mistaken price entry)
-- Step 16 (housekeeping)
+- Step 16 (housekeeping) next
 - Step 17 (deploy and phone smoke test)
 - Step 18 (Phase 1 close-out)
 

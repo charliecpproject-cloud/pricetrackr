@@ -24,7 +24,7 @@ export default async function ProductsPage() {
   const { data: products, error } = await supabase
     .from("products")
     .select(
-      "id, name_ja, name_en, brand, category, product_packages (package_size, package_unit)"
+      "id, name_ja, name_en, brand, category, product_packages (package_size, package_unit)",
     )
     .order("name_ja", { ascending: true });
 
@@ -47,26 +47,31 @@ export default async function ProductsPage() {
       {/* 商品一覧 */}
       <div className="mt-8 space-y-4">
         {productList.map((product) => (
-          <Card key={product.id} className="border rounded-xl shadow-sm bg-white">
+          <Card
+            key={product.id}
+            className="border rounded-xl shadow-sm bg-white"
+          >
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold">
                 {product.name_ja || product.name_en || "Unnamed Product"}
               </CardTitle>
               <p className="text-sm text-gray-600">
-                {product.brand ?? "No brand"} - {product.category ?? "No category"}
+                {product.brand ?? "No brand"} -{" "}
+                {product.category ?? "No category"}
               </p>
             </CardHeader>
-            {product.product_packages && product.product_packages.length > 0 && (
-              <CardContent className="pt-2">
-                <div className="flex flex-wrap">
-                  {product.product_packages.map((pkg, idx) => (
-                    <Badge key={idx} className="mr-2 mb-2">
-                      {pkg.package_size} {pkg.package_unit}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            )}
+            {product.product_packages &&
+              product.product_packages.length > 0 && (
+                <CardContent className="pt-2">
+                  <div className="flex flex-wrap">
+                    {product.product_packages.map((pkg, idx) => (
+                      <Badge key={idx} className="mr-2 mb-2">
+                        {pkg.package_size} {pkg.package_unit}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              )}
           </Card>
         ))}
       </div>

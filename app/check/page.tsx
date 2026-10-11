@@ -1,11 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { createSupabaseServerClient } from "../../lib/supabase/server";
-import {
-  formatYen,
-  formatJst,
-  packageLabel,
-} from "../../lib/prices/format";
+import { formatYen, formatJst, packageLabel } from "../../lib/prices/format";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +12,11 @@ type SearchParams = Promise<{
   q?: string;
 }>;
 
-export default async function Page({ searchParams }: { searchParams: SearchParams }) {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   // ----- 1. 取得・サニタイズ検索クエリ -----
   const { q: rawQ = "" } = await searchParams;
   const sanitizedQ = rawQ
@@ -31,7 +31,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   let productQuery = supabase
     .from("products")
     .select(
-      "id, name_en, name_ja, brand, product_packages(id, package_size, package_unit)"
+      "id, name_en, name_ja, brand, product_packages(id, package_size, package_unit)",
     );
 
   if (sanitizedQ) {
@@ -49,8 +49,9 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   }
 
   // ----- 4. パッケージ ID を抽出 -----
-  const packageIds: number[] = (products ?? [])
-    .flatMap((p) => (p.product_packages ?? []).map((pp: any) => pp.id));
+  const packageIds: number[] = (products ?? []).flatMap((p) =>
+    (p.product_packages ?? []).map((pp: any) => pp.id),
+  );
 
   // ----- 5. 価格観測データ取得 -----
   let observationsMap = new Map<number, any>();
@@ -59,7 +60,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     const { data: observations, error: obsError } = await supabase
       .from("price_observations")
       .select(
-        "product_package_id, price, observed_at, created_at, is_sale, shops ( name, store_chains ( name ) )"
+        "product_package_id, price, observed_at, created_at, is_sale, shops ( name, store_chains ( name ) )",
       )
       .in("product_package_id", packageIds)
       .order("observed_at", { ascending: false })
@@ -72,7 +73,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
         obsError.message,
         obsError.code,
         obsError.details,
-        obsError.hint
+        obsError.hint,
       );
     } else if (observations) {
       // 最新の1件だけをパッケージごとに保持
@@ -133,9 +134,13 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
                     <div className="text-right mt-4 sm:mt-0">
                       {latest ? (
                         <>
-                          <p className="text-3xl font-bold tabular-nums">{formatYen(latest.price)}</p>
+                          <p className="text-3xl font-bold tabular-nums">
+                            {formatYen(latest.price)}
+                          </p>
                           <p className="text-sm text-gray-600">{shopInfo}</p>
-                          <p className="text-xs text-gray-500">{formatJst(latest.observed_at)}</p>
+                          <p className="text-xs text-gray-500">
+                            {formatJst(latest.observed_at)}
+                          </p>
                           {latest.is_sale && (
                             <Badge className="mt-1 bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">
                               Sale

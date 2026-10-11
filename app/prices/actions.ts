@@ -18,7 +18,7 @@ import {
  */
 export async function addPriceObservation(
   _prevState: { error: string | null; message?: string | null },
-  formData: FormData
+  formData: FormData,
 ): Promise<{ error: string | null; message?: string | null }> {
   // ----- フィールド取得 -----
   const raw = {

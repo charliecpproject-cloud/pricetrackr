@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 /* ---------- 商品追加アクション ---------- */
 export async function addProduct(
   _prevState: { error: string | null },
-  formData: FormData
+  formData: FormData,
 ) {
   // ---- バリデーション ----
   const schema = z
@@ -24,7 +24,7 @@ export async function addProduct(
       {
         message: "名前（日本語または英語）のいずれかを入力してください。",
         path: ["name_ja"],
-      }
+      },
     );
 
   const parseResult = schema.safeParse({
@@ -61,14 +61,16 @@ export async function addProduct(
 /* ---------- パッケージ追加アクション ---------- */
 export async function addPackage(
   _prevState: { error: string | null },
-  formData: FormData
+  formData: FormData,
 ) {
   // ---- バリデーション ----
   const schema = z.object({
     product_id: z.string().uuid(),
     package_size: z.preprocess(
       (val) => (typeof val === "string" ? parseFloat(val) : val),
-      z.number().gt(0, { message: "サイズは 0 より大きい数値で入力してください。" })
+      z
+        .number()
+        .gt(0, { message: "サイズは 0 より大きい数値で入力してください。" }),
     ),
     package_unit: z
       .string()

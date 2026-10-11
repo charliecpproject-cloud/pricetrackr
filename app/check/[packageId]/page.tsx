@@ -37,12 +37,13 @@ export default async function Page({
   const { data: pkgData, error: pkgError } = await supabase
     .from("product_packages")
     .select(
-      "id, package_size, package_unit, products (name_en, name_ja, brand)"
+      "id, package_size, package_unit, products (name_en, name_ja, brand)",
     )
     .eq("id", packageId)
     .single();
 
-  if (pkgError) console.error("Package fetch error:", pkgError.message, pkgError.code);
+  if (pkgError)
+    console.error("Package fetch error:", pkgError.message, pkgError.code);
   if (pkgError || !pkgData) {
     notFound();
   }
@@ -54,7 +55,7 @@ export default async function Page({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, price, observed_at, created_at, is_sale, notes, shops (name, store_chains (name))"
+      "id, price, observed_at, created_at, is_sale, notes, shops (name, store_chains (name))",
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -76,7 +77,11 @@ export default async function Page({
     <div className="max-w-xl mx-auto px-4 py-6">
       {/* 戻るリンク → Button コンポーネントでラップ */}
       <div className="mb-4">
-        <Button asChild variant="link" className="text-indigo-600 hover:underline">
+        <Button
+          asChild
+          variant="link"
+          className="text-indigo-600 hover:underline"
+        >
           <Link href="/check">← Back to search</Link>
         </Button>
       </div>
@@ -84,7 +89,9 @@ export default async function Page({
       {/* 商品・パッケージ情報カード */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-gray-900">{productName}</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900">
+            {productName}
+          </CardTitle>
           {brand && <p className="text-gray-500">{brand}</p>}
         </CardHeader>
         <CardContent>
@@ -101,7 +108,10 @@ export default async function Page({
 
       {/* 検索フィールド（現状は非機能） */}
       <div className="mb-6">
-        <Label htmlFor="search" className="block text-sm font-medium text-gray-700">
+        <Label
+          htmlFor="search"
+          className="block text-sm font-medium text-gray-700"
+        >
           Search observations
         </Label>
         <Input
@@ -114,7 +124,7 @@ export default async function Page({
 
       {/* 価格観測リスト */}
       <div>
-        {(!observations || observations.length === 0) ? (
+        {!observations || observations.length === 0 ? (
           <p className="text-gray-500">No prices yet</p>
         ) : (
           <ul className="space-y-4">
@@ -139,7 +149,9 @@ export default async function Page({
                             {formatYen(obs.price)}
                           </p>
                           {obs.notes && (
-                            <p className="mt-1 text-sm text-gray-700">{obs.notes}</p>
+                            <p className="mt-1 text-sm text-gray-700">
+                              {obs.notes}
+                            </p>
                           )}
                         </div>
                         <div className="text-right">

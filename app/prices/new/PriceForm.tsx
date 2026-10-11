@@ -71,7 +71,7 @@ export default function PriceForm({ packages, shops }: Props) {
 
   // フィルタリング（大文字小文字を区別しない）
   const filteredPackages = packages.filter((pkg) =>
-    pkg.search.includes(searchTerm.trim().toLowerCase())
+    pkg.search.includes(searchTerm.trim().toLowerCase()),
   );
 
   // 選択中のパッケージがフィルタ結果に無い場合はクリア
@@ -87,12 +87,8 @@ export default function PriceForm({ packages, shops }: Props) {
   // ---------- ここまで検索ロジック ----------
   return (
     <div className="max-w-xl mx-auto px-4">
-      {state.error && (
-        <p className="text-red-500 mb-2">{state.error}</p>
-      )}
-      {state.message && (
-        <p className="text-green-500 mb-2">{state.message}</p>
-      )}
+      {state.error && <p className="text-red-500 mb-2">{state.error}</p>}
+      {state.message && <p className="text-green-500 mb-2">{state.message}</p>}
 
       {/* 検索入力 */}
       <Input
@@ -168,10 +164,7 @@ export default function PriceForm({ packages, shops }: Props) {
         />
 
         {/* 送信ボタン */}
-        <Button
-          type="submit"
-          disabled={filteredPackages.length === 0}
-        >
+        <Button type="submit" disabled={filteredPackages.length === 0}>
           Add
         </Button>
       </form>

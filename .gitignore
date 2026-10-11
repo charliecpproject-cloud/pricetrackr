@@ -21,3 +21,5 @@ yarn-error.log*
 .aider*
 
 _archived/
+
+!.env.example

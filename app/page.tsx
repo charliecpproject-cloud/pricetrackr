@@ -19,9 +19,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 flex flex-col items-center">
       {/* ヘッダー */}
-      <h1 className="mb-6 text-3xl font-bold text-slate-800">
-        Price Tracker
-      </h1>
+      <h1 className="mb-6 text-3xl font-bold text-slate-800">Price Tracker</h1>
 
       {/* 大きなカード */}
       <div className="w-full max-w-xl space-y-4">
@@ -29,9 +27,7 @@ export default function HomePage() {
           onClick={() => goTo("/prices/new")}
           className="w-full rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm hover:bg-slate-100 min-h-[48px] flex flex-col justify-center"
         >
-          <h2 className="text-xl font-semibold text-slate-900">
-            Input price
-          </h2>
+          <h2 className="text-xl font-semibold text-slate-900">Input price</h2>
           <p className="mt-1 text-sm text-slate-600">
             Add a price you saw in a store
           </p>
@@ -41,9 +37,7 @@ export default function HomePage() {
           onClick={() => goTo("/check")}
           className="w-full rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm hover:bg-slate-100 min-h-[48px] flex flex-col justify-center"
         >
-          <h2 className="text-xl font-semibold text-slate-900">
-            Check price
-          </h2>
+          <h2 className="text-xl font-semibold text-slate-900">Check price</h2>
           <p className="mt-1 text-sm text-slate-600">
             Look up the latest price of a product
           </p>

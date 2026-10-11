@@ -11,9 +11,7 @@ export default function ProductForm() {
     <div className="border rounded p-4 mb-6">
       <h2 className="text-xl font-semibold mb-3">Add New Product</h2>
 
-      {state.error && (
-        <p className="text-red-600 mb-2">{state.error}</p>
-      )}
+      {state.error && <p className="text-red-600 mb-2">{state.error}</p>}
 
       <form action={formAction} className="grid grid-cols-1 gap-3">
         <input

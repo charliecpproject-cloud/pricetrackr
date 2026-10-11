@@ -21,16 +21,10 @@ export default function PackageForm({ products }: Props) {
     <div className="border rounded p-4 mb-6">
       <h2 className="text-xl font-semibold mb-3">Add Package to Product</h2>
 
-      {state.error && (
-        <p className="text-red-600 mb-2">{state.error}</p>
-      )}
+      {state.error && <p className="text-red-600 mb-2">{state.error}</p>}
 
       <form action={formAction} className="grid grid-cols-1 gap-3">
-        <select
-          name="product_id"
-          required
-          className="border rounded p-2"
-        >
+        <select name="product_id" required className="border rounded p-2">
           <option value="">Select product</option>
           {products.map((p) => (
             <option key={p.id} value={p.id}>

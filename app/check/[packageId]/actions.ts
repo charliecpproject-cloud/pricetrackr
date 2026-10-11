@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
-export async function deletePriceObservation(formData: FormData): Promise<void> {
+export async function deletePriceObservation(
+  formData: FormData,
+): Promise<void> {
   const idRaw = formData.get("id");
   const packageIdRaw = formData.get("packageId");
 

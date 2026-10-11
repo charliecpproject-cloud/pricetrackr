@@ -10,9 +10,7 @@ export default function StoreForm() {
 
   return (
     <div>
-      {state.error && (
-        <p className="text-red-500 mb-2">{state.error}</p>
-      )}
+      {state.error && <p className="text-red-500 mb-2">{state.error}</p>}
       <form action={formAction} className="flex flex-col max-w-sm">
         <input
           type="text"

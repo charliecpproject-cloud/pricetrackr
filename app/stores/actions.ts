@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 /* ---------- 既存の StoreChain 追加アクション ---------- */
 export async function addStoreChain(
   _prevState: { error: string | null },
-  formData: FormData
+  formData: FormData,
 ) {
   // ---- バリデーション ----
   const nameRaw = formData.get("name");
@@ -40,7 +40,7 @@ export async function addStoreChain(
 /* ---------- 新規ショップ追加アクション ---------- */
 export async function addShop(
   _prevState: { error: string | null },
-  formData: FormData
+  formData: FormData,
 ) {
   // ---- バリデーション ----
   const schema = z.object({

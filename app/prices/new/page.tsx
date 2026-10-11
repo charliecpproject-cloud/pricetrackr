@@ -5,8 +5,7 @@ export default async function PricesNewPage() {
   const supabase = await createSupabaseServerClient();
 
   // ----- 商品とパッケージ情報を取得 -----
-  const { data: products, error: prodError } = await supabase
-    .from("products")
+  const { data: products, error: prodError } = await supabase.from("products")
     .select(`
       id,
       name_en,
@@ -20,8 +19,7 @@ export default async function PricesNewPage() {
     `);
 
   // ----- 店舗情報を取得（チェーン名も含む） -----
-  const { data: shops, error: shopError } = await supabase
-    .from("shops")
+  const { data: shops, error: shopError } = await supabase.from("shops")
     .select(`
       id,
       name,
@@ -44,7 +42,10 @@ export default async function PricesNewPage() {
     const baseName = product.name_en || product.name_ja || "";
     const brandPart = product.brand ? ` (${product.brand})` : "";
     // 検索用文字列を作成（name_ja, name_en, brand をスペースで結合し小文字化）
-    const search = `${product.name_ja ?? ""} ${product.name_en ?? ""} ${product.brand ?? ""}`.trim().toLowerCase();
+    const search =
+      `${product.name_ja ?? ""} ${product.name_en ?? ""} ${product.brand ?? ""}`
+        .trim()
+        .toLowerCase();
 
     return (product.product_packages ?? []).map((pkg) => ({
       id: pkg.id,

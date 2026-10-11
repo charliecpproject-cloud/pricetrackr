@@ -12,7 +12,7 @@ export function parsePriceYen(input: string): number | null {
   // 1. Convert full‑width digits to ASCII
   const toAscii = (s: string) =>
     s.replace(/[０-９]/g, (ch) =>
-      String.fromCharCode(ch.charCodeAt(0) - 0xFF10 + 0x30)
+      String.fromCharCode(ch.charCodeAt(0) - 0xff10 + 0x30),
     );
 
   // 2. Strip currency symbols, commas and whitespace

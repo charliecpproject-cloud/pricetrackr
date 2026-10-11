@@ -19,9 +19,7 @@ describe("parsePriceYen", () => {
 
 describe("toObservedAt", () => {
   it("should convert a valid datetime-local string", () => {
-    expect(toObservedAt("2026-10-11T14:35")).toBe(
-      "2026-10-11T14:35:00+09:00"
-    );
+    expect(toObservedAt("2026-10-11T14:35")).toBe("2026-10-11T14:35:00+09:00");
   });
 
   it("should return null for invalid datetime strings", () => {

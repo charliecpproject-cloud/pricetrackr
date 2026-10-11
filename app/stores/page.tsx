@@ -51,7 +51,9 @@ export default async function StoresPage() {
       {chains?.map((chain) => (
         <Card key={chain.id} className="mb-4">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold">{chain.name}</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              {chain.name}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1">
