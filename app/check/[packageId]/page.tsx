@@ -8,6 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { deletePriceObservation } from "./actions";
+import DeleteObservationButton from "@/components/DeleteObservationButton";
 
 /**
  * Server Component: 詳細ページ for a specific product package.
@@ -52,7 +54,7 @@ export default async function Page({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "price, observed_at, created_at, is_sale, notes, shops (name, store_chains (name))"
+      "id, price, observed_at, created_at, is_sale, notes, shops (name, store_chains (name))"
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -151,6 +153,11 @@ export default async function Page({
                       </div>
                     </CardContent>
                   </Card>
+                  <DeleteObservationButton
+                    id={obs.id}
+                    packageId={packageId}
+                    action={deletePriceObservation}
+                  />
                 </li>
               );
             })}
