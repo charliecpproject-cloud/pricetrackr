@@ -43,9 +43,13 @@ export default async function PricesNewPage() {
   const packages = (products ?? []).flatMap((product) => {
     const baseName = product.name_en || product.name_ja || "";
     const brandPart = product.brand ? ` (${product.brand})` : "";
+    // 検索用文字列を作成（name_ja, name_en, brand をスペースで結合し小文字化）
+    const search = `${product.name_ja ?? ""} ${product.name_en ?? ""} ${product.brand ?? ""}`.trim().toLowerCase();
+
     return (product.product_packages ?? []).map((pkg) => ({
       id: pkg.id,
       label: `${baseName}${brandPart} — ${pkg.package_size} ${pkg.package_unit}`,
+      search,
     }));
   });
 

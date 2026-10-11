@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { useEffect, useRef, useState } from "react";
 import { addPriceObservation } from "../actions";
 
-type Package = { id: string; label: string };
+type Package = { id: string; label: string; search: string };
 type Shop = { id: string; label: string };
 
 type Props = {
@@ -62,35 +62,63 @@ export default function PriceForm({ packages, shops }: Props) {
     setDefaultObservedAt(defaultValue);
   }, []);
 
+  // ---------- ここから検索ロジック ----------
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedPackageId, setSelectedPackageId] = useState<string>("");
+
+  // フィルタリング（大文字小文字を区別しない）
+  const filteredPackages = packages.filter((pkg) =>
+    pkg.search.includes(searchTerm.trim().toLowerCase())
+  );
+
+  // 選択中のパッケージがフィルタ結果に無い場合はクリア
+  useEffect(() => {
+    if (
+      selectedPackageId &&
+      !filteredPackages.some((p) => p.id === selectedPackageId)
+    ) {
+      setSelectedPackageId("");
+    }
+  }, [searchTerm, filteredPackages, selectedPackageId]);
+
+  // ---------- ここまで検索ロジック ----------
   return (
     <div>
-      {state.error && (
-        <p className="text-red-500 mb-2">{state.error}</p>
-      )}
-      {state.message && (
-        <p className="text-green-500 mb-2">{state.message}</p>
-      )}
+      {state.error && <p className="text-red-500 mb-2">{state.error}</p>}
+      {state.message && <p className="text-green-500 mb-2">{state.message}</p>}
+
+      {/* 検索入力 */}
+      <input
+        type="text"
+        placeholder="Search product"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border rounded p-2 mb-2"
+      />
+
       <form action={formAction} className="flex flex-col max-w-sm space-y-2">
         {/* 商品パッケージ選択 */}
         <select
           name="product_package_id"
           required
           className="border rounded p-2"
+          value={selectedPackageId}
+          onChange={(e) => setSelectedPackageId(e.target.value)}
         >
           <option value="">Select package</option>
-          {packages.map((pkg) => (
-            <option key={pkg.id} value={pkg.id}>
-              {pkg.label}
-            </option>
-          ))}
+          {filteredPackages.length > 0 ? (
+            filteredPackages.map((pkg) => (
+              <option key={pkg.id} value={pkg.id}>
+                {pkg.label}
+              </option>
+            ))
+          ) : (
+            <option disabled>No matches</option>
+          )}
         </select>
 
         {/* 店舗選択 */}
-        <select
-          name="shop_id"
-          required
-          className="border rounded p-2"
-        >
+        <select name="shop_id" required className="border rounded p-2">
           <option value="">Select shop</option>
           {shops.map((shop) => (
             <option key={shop.id} value={shop.id}>
@@ -138,7 +166,8 @@ export default function PriceForm({ packages, shops }: Props) {
         {/* 送信ボタン */}
         <button
           type="submit"
-          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700"
+          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700 disabled:opacity-50"
+          disabled={filteredPackages.length === 0}
         >
           Add
         </button>

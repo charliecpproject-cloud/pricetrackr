@@ -10,12 +10,13 @@ Phase 1 — Manual entry + basic price display (not started)
 - Step 4 done
 - Step 5 done
 - Step 8 done
+- Step 9a (price-entry form, Japan time with minutes) done
 
 ## In Progress
 - (none)
 
 ## Next Up
-- Step 9 (manual price-entry form)
+- Step 9b (searchable product picker)
 
 ## Known Issues
 - (none yet)
