@@ -15,10 +15,11 @@ AI/photo extraction, freshness/trust scoring, unit-price math, translation-appro
 
 ## Schema principles (don't flatten these)
 - Product ≠ package: `products(id, name_ja, name_en, brand, category)` vs `product_packages(id, product_id, package_size, package_unit)`.
-- Store chain ≠ shop: `store_chains(id, name)` vs `shops(id, store_chain_id, name, address, region)`.
+- Store chain ≠ shop: `store_chains(id, name, coupon_percents int[] default '{}', allowed values 5/10/15)` vs `shops(id, store_chain_id, name, address, region)`.
 - Price = observation, not attribute: `price_observations(id, product_package_id, shop_id, price, currency, observed_at, is_sale, source, status, created_at)`. Insert-only, never overwrite. Include `source` (='manual') and `status` (='active') now even with one value each — this is what lets AI/community sources slot in later without a migration touching every row.
 - Current price = latest observation by date, always derived, never stored on the product.
 - Times: `observed_at` stays `timestamptz`. The user enters Japan time with minutes (`YYYY-MM-DDTHH:mm`, saved as `...:00+09:00`). Always display with `timeZone: 'Asia/Tokyo'`. Order history by `observed_at` then `created_at`.
+- Coupons: set per chain (`coupon_percents`), never stored on observations. Show the best enabled percent: coupon price = `floor(price × (100 − pct) / 100)`, large and rose-coloured with a `N%クーポン` badge, and the normal price in grey brackets `（通常価格 ¥…）`. It is an estimate (one item, tax not modelled). Always render prices with `components/PriceDisplay.tsx`.
 
 ## Security
 Per CONVENTIONS.md: RLS everywhere, secrets in env vars only, parameterized queries only, validate the entry form's input. No exceptions for single-user.
@@ -34,4 +35,4 @@ Next.js 16 (App Router), React 19, Tailwind 4, TypeScript strict, npm (not pnpm)
 ## UI style
 Mobile-first, one centered column (`max-w-xl mx-auto px-4`). Warm off-white background, one teal accent (`teal-600`, set as shadcn `--primary`), white cards (`rounded-2xl border border-stone-200 shadow-sm`), generous spacing, bold large prices, lucide-react icons, bottom tab bar navigation, a teal gradient hero on the home page. Inputs and buttons at least 48px tall (`h-12`), input text 16px or larger. Prices large with `tabular-nums`. Use shadcn `Button`, `Card`, `Input`, `Label`, `Badge` from `@/components/ui/*`; keep native `<select>` for dropdowns. Every page has a heading, an empty state, and a visible error message. Import project files with the `@/` alias, never long `../` paths. No new dependencies.
 
-UI language: Japanese only, hardcoded strings, no i18n library, polite です/ます tone. Show `name_ja` first, falling back to `name_en`. Never translate code identifiers, form field names, database columns, or stored values (source, status, currency). Terms: ホーム, 価格入力, 価格確認, 店舗, チェーン, 支店, 商品, 容量, 価格, 特売, 日時, メモ, 保存, 削除, 検索, ログイン, ログアウト, メールアドレス, パスワード. Unit `count` displays as 個.
+UI language: Japanese only, hardcoded strings, no i18n library, polite です/ます tone. Show `name_ja` first, falling back to `name_en`. Never translate code identifiers, form field names, database columns, or stored values (source, status, currency). Terms: ホーム, 価格入力, 価格確認, 店舗, チェーン, 支店, 商品, 容量, 価格, 特売, 日時, メモ, 保存, 削除, 検索, ログイン, ログアウト, メールアドレス, パスワード, クーポン, 通常価格. Unit `count` displays as 個.

@@ -14,6 +14,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 10 (unit tests and notes cleanup) done
 - Step 13 (home page) done
 - Step 14 (mobile‑first layout & styling pass) done
+- Step 14b (Japanese interface and visual refresh) done
 - Step 15 (delete own price entries) done
 - Step 16 (housekeeping) done
 - Step 17 (deploy and phone smoke test) done
@@ -35,3 +36,4 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-11: npm is used, not pnpm
 - 2026-10-11: zod v4, so errors are read with error.issues
 - 2026-10-11: Aider jobs are kept small because of the Groq free-tier limit of about 8k tokens per minute
+- 2026-10-12: UI is Japanese only with hardcoded strings, no i18n library; product names show name_ja first with name_en as fallback; teal theme with a bottom tab bar; package units are chosen from a native dropdown, with count stored and shown as 個.

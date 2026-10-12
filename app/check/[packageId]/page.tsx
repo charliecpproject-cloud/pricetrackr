@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { formatYen, formatJst, packageLabel } from "@/lib/prices/format";
+import { formatJst, packageLabel } from "@/lib/prices/format";
 import { z } from "zod";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { deletePriceObservation } from "./actions";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
+import PriceDisplay from "@/components/PriceDisplay";
+import { couponPercentsFromShop } from "@/lib/prices/coupon";
 
 /**
  * Server Component: 詳細ページ for a specific product package.
@@ -55,7 +57,7 @@ export default async function Page({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, price, observed_at, created_at, is_sale, notes, shops (name, store_chains (name))",
+      "id, price, observed_at, created_at, is_sale, notes, shops (name, store_chains (name, coupon_percents))",
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -99,9 +101,11 @@ export default async function Page({
             {packageLabel(pkgData.package_size, pkgData.package_unit)}
           </p>
           {latestObs && (
-            <p className="mt-4 text-5xl font-semibold text-green-600">
-              {formatYen(latestObs.price)}
-            </p>
+            <PriceDisplay
+              price={latestObs.price}
+              couponPercents={couponPercentsFromShop(latestObs.shops)}
+              size="lg"
+            />
           )}
         </CardContent>
       </Card>
@@ -145,9 +149,11 @@ export default async function Page({
                           <p className="text-sm text-gray-500">
                             {formatJst(obs.observed_at)}
                           </p>
-                          <p className="text-lg font-medium text-gray-900">
-                            {formatYen(obs.price)}
-                          </p>
+                          <PriceDisplay
+                            price={obs.price}
+                            couponPercents={couponPercentsFromShop(obs.shops)}
+                            size="md"
+                          />
                           {obs.notes && (
                             <p className="mt-1 text-sm text-gray-700">
                               {obs.notes}

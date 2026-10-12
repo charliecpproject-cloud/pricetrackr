@@ -1,16 +1,17 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import StoreForm from "./StoreForm";
 import ShopForm from "./ShopForm";
+import CouponForm from "./CouponForm";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default async function StoresPage() {
   // Supabase client (server side) – reads session from cookies
   const supabase = await createSupabaseServerClient();
 
-  // Fetch all store chains ordered by name
+  // Fetch all store chains ordered by name (including coupon_percents)
   const { data: chains, error: chainsError } = await supabase
     .from("store_chains")
-    .select("id, name")
+    .select("id, name, coupon_percents")
     .order("name", { ascending: true });
 
   // Fetch all shops ordered by name
@@ -61,7 +62,15 @@ export default async function StoresPage() {
           className="mb-4 bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold">{chain.name}</CardTitle>
+            <CardTitle className="text-lg font-semibold flex items-center">
+              {chain.name}
+              {chain.coupon_percents && chain.coupon_percents.length > 0 && (
+                <span className="ml-2 text-sm font-medium bg-rose-100 text-rose-600 rounded px-2 py-0.5">
+                  クーポン{" "}
+                  {chain.coupon_percents.map((p: number) => `${p}%`).join(" / ")}
+                </span>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1">
@@ -79,6 +88,14 @@ export default async function StoresPage() {
                 </li>
               ))}
             </ul>
+
+            {/* クーポン編集フォーム */}
+            <div className="mt-4">
+              <CouponForm
+                chainId={chain.id}
+                current={chain.coupon_percents ?? []}
+              />
+            </div>
           </CardContent>
         </Card>
       ))}

@@ -1,13 +1,15 @@
 import React from "react";
 import Link from "next/link";
 import { createSupabaseServerClient } from "../../lib/supabase/server";
-import { formatYen, formatJst, packageLabel } from "../../lib/prices/format";
+import { formatJst, packageLabel } from "../../lib/prices/format";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
+import PriceDisplay from "@/components/PriceDisplay";
+import { couponPercentsFromShop } from "@/lib/prices/coupon";
 
 type SearchParams = Promise<{
   q?: string;
@@ -61,7 +63,7 @@ export default async function Page({
     const { data: observations, error: obsError } = await supabase
       .from("price_observations")
       .select(
-        "product_package_id, price, observed_at, created_at, is_sale, shops ( name, store_chains ( name ) )",
+        "product_package_id, price, observed_at, created_at, is_sale, shops ( name, store_chains ( name, coupon_percents ) )",
       )
       .in("product_package_id", packageIds)
       .order("observed_at", { ascending: false })
@@ -141,9 +143,11 @@ export default async function Page({
                     <div className="text-right mt-4 sm:mt-0">
                       {latest ? (
                         <>
-                          <p className="text-4xl font-bold tabular-nums">
-                            {formatYen(latest.price)}
-                          </p>
+                          <PriceDisplay
+                            price={latest.price}
+                            couponPercents={couponPercentsFromShop(latest.shops)}
+                            size="md"
+                          />
                           <p className="text-sm text-gray-600">{shopInfo}</p>
                           <p className="text-xs text-gray-500">
                             {formatJst(latest.observed_at)}
