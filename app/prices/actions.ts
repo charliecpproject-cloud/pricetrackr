@@ -1,88 +1,108 @@
 "use server";
 
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import {
-  priceEntrySchema,
-  parsePriceYen,
-  toObservedAt,
-} from "@/lib/prices/schema";
+import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
 
-/**
- * 価格観測データを追加するアクション
- *
- * @param _prevState 前回の状態（未使用）
- * @param formData   フォームから送信されたデータ
- * @returns エラー情報と成功メッセージ
- */
+type State = { error: string | null; message?: string | null };
+
+const schema = z.object({
+  product_package_id: z.string().uuid("商品・容量を選んでください"),
+  store_chain_id: z.string().uuid("チェーンを選んでください"),
+  shop_id: z.string().uuid("支店が正しくありません").nullable(),
+  new_shop_name: z
+    .string()
+    .trim()
+    .max(100, "支店名は100文字以内で入力してください")
+    .nullable(),
+  notes: z.string().trim().max(200, "メモは200文字以内で入力してください").nullable(),
+});
+
+// Returns the trimmed text value, or null when missing or empty.
+function text(formData: FormData, key: string): string | null {
+  const value = formData.get(key);
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed === "" ? null : trimmed;
+}
+
 export async function addPriceObservation(
-  _prevState: { error: string | null; message?: string | null },
-  formData: FormData,
-): Promise<{ error: string | null; message?: string | null }> {
-  // ----- フィールド取得 -----
-  const raw = {
-    product_package_id: formData.get("product_package_id"),
-    shop_id: formData.get("shop_id"),
-    price: formData.get("price"),
-    observed_at: formData.get("observed_at"),
-    is_sale: formData.get("is_sale"),
-    notes: formData.get("notes"),
-  };
-
-  // ----- is_sale のチェックボックス処理 -----
-  const isSale = raw.is_sale === "on";
-
-  // ----- Zod スキーマで基本項目を検証 -----
-  const schemaResult = priceEntrySchema.safeParse({
-    product_package_id: raw.product_package_id,
-    shop_id: raw.shop_id,
-    is_sale: isSale,
-    notes: raw.notes,
+  _prevState: State,
+  formData: FormData
+): Promise<State> {
+  const parsed = schema.safeParse({
+    product_package_id: text(formData, "product_package_id"),
+    store_chain_id: text(formData, "store_chain_id"),
+    shop_id: text(formData, "shop_id"),
+    new_shop_name: text(formData, "new_shop_name"),
+    notes: text(formData, "notes"),
   });
-
-  if (!schemaResult.success) {
-    const firstMsg = schemaResult.error.issues[0].message;
-    return { error: firstMsg };
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
   }
 
-  // ----- 価格のパース -----
-  const price = parsePriceYen(String(raw.price ?? ""));
+  const price = parsePriceYen(text(formData, "price") ?? "");
   if (price === null) {
-    return { error: "価格が無効です。" };
+    return { error: "価格は1円以上で正しく入力してください" };
   }
-
-  // ----- 日付のパース -----
-  const observedAt = toObservedAt(String(raw.observed_at ?? ""));
+  const observedAt = toObservedAt(text(formData, "observed_at") ?? "");
   if (observedAt === null) {
-    return { error: "観測日時が無効です。" };
+    return { error: "日時が正しくありません" };
   }
 
-  // ----- notes のトリムと null 化 -----
-  let notes: string | null = null;
-  if (typeof raw.notes === "string") {
-    const trimmed = raw.notes.trim();
-    notes = trimmed === "" ? null : trimmed;
-  }
+  const { product_package_id, store_chain_id, new_shop_name, notes } = parsed.data;
+  let shopId = parsed.data.shop_id;
+  const isSale = formData.get("is_sale") === "on";
 
-  // ----- Supabase へ挿入 -----
   const supabase = await createSupabaseServerClient();
 
+  // A new branch name: reuse the branch if it already exists in this chain.
+  if (new_shop_name) {
+    const { data: existing } = await supabase
+      .from("shops")
+      .select("id")
+      .eq("store_chain_id", store_chain_id)
+      .eq("name", new_shop_name)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      shopId = existing[0].id;
+    } else {
+      const { data: created, error: shopError } = await supabase
+        .from("shops")
+        .insert({ store_chain_id, name: new_shop_name })
+        .select("id")
+        .single();
+      if (shopError || !created) {
+        console.error("Shop insert error:", shopError?.message, shopError?.code);
+        return { error: "支店を追加できませんでした" };
+      }
+      shopId = created.id;
+    }
+  }
+
   const { error } = await supabase.from("price_observations").insert({
-    product_package_id: schemaResult.data.product_package_id,
-    shop_id: schemaResult.data.shop_id,
+    product_package_id,
+    store_chain_id,
+    shop_id: shopId,
     price,
     observed_at: observedAt,
-    is_sale: schemaResult.data.is_sale,
-    notes, // トリム後、空なら null が入ります
+    is_sale: isSale,
+    notes,
   });
 
   if (error) {
-    console.error("Supabase insert price observation error:", error);
-    return { error: "データベースエラー: " + error.message };
+    console.error("Price insert error:", error.message, error.code);
+    return {
+      error:
+        error.code === "23503"
+          ? "選んだ支店はこのチェーンのものではありません"
+          : "保存できませんでした。もう一度お試しください。",
+    };
   }
 
-  // ----- 再検証 -----
+  revalidatePath("/check", "layout");
   revalidatePath("/prices/new");
-  return { error: null, message: "Saved" };
+  return { error: null, message: "保存しました" };
 }

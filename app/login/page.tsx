@@ -34,7 +34,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md rounded-2xl border border-stone-200 shadow-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">価格トラッカー</CardTitle>
+          <CardTitle className="text-2xl font-bold">PriceTrackr</CardTitle>
           <CardDescription className="text-lg">ログイン</CardDescription>
         </CardHeader>
         <CardContent>

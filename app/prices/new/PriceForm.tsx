@@ -1,200 +1,259 @@
 "use client";
 
-import { useActionState } from "react";
-import { useEffect, useRef, useState } from "react";
-import { addPriceObservation } from "../actions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useActionState, useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { addPriceObservation } from "@/app/prices/actions";
 
-type Package = { id: string; label: string; search: string };
-type Shop = { id: string; label: string };
+type Pkg = { id: string; label: string; search: string };
+type Chain = { id: string; name: string };
+type Branch = { id: string; chainId: string; name: string };
 
-type Props = {
-  packages: Package[];
-  shops: Shop[];
+const initialState: { error: string | null; message?: string | null } = {
+  error: null,
+  message: null,
 };
 
-export default function PriceForm({ packages, shops }: Props) {
-  // 初期状態: エラーメッセージと成功メッセージなし
-  const initialState = {
-    error: null as string | null,
-    message: null as string | null,
-  };
-  const [state, formAction] = useActionState(addPriceObservation, initialState);
+const labelCls = "mb-1.5 block text-sm font-medium text-stone-700";
+const controlCls =
+  "h-12 w-full rounded-xl border border-stone-200 bg-white px-3 text-base focus:outline-none focus:ring-2 focus:ring-teal-600";
 
-  // price フィールドだけをリセットするための ref
-  const priceRef = useRef<HTMLInputElement>(null);
+// Current date and time in Japan, formatted for a datetime-local input.
+function nowInJapan(): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
+}
 
-  // 成功時に price フィールドをクリア（他は保持）
+export default function PriceForm({
+  packages,
+  chains,
+  branches,
+}: {
+  packages: Pkg[];
+  chains: Chain[];
+  branches: Branch[];
+}) {
+  const [state, formAction, pending] = useActionState(addPriceObservation, initialState);
+  const [search, setSearch] = useState("");
+  const [packageId, setPackageId] = useState("");
+  const [chainId, setChainId] = useState("");
+  const [branchId, setBranchId] = useState("");
+  const [isNewBranch, setIsNewBranch] = useState(false);
+  const [newBranch, setNewBranch] = useState("");
+  const [price, setPrice] = useState("");
+  const [observedAt, setObservedAt] = useState("");
+
+  // Default time is set after mount, so server and browser output match.
   useEffect(() => {
-    if (state.message) {
-      if (priceRef.current) {
-        priceRef.current.value = "";
-      }
-    }
-  }, [state.message]);
-
-  // datetime-local のデフォルト値（マウント後に設定）
-  const [defaultObservedAt, setDefaultObservedAt] = useState<string>("");
-
-  useEffect(() => {
-    // Asia/Tokyo の現在時刻を取得し、分単位で切り捨てる
-    const formatter = new Intl.DateTimeFormat("en-CA", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-      timeZone: "Asia/Tokyo",
-    });
-
-    const parts = formatter.formatToParts(new Date());
-    // formatToParts の順序はロケールに依存しないようにキーで取得
-    const get = (type: string) =>
-      parts.find((p) => p.type === type)?.value ?? "";
-
-    const year = get("year");
-    const month = get("month");
-    const day = get("day");
-    const hour = get("hour");
-    const minute = get("minute");
-
-    const defaultValue = `${year}-${month}-${day}T${hour}:${minute}`;
-    setDefaultObservedAt(defaultValue);
+    setObservedAt(nowInJapan());
   }, []);
 
-  // ---------- ここから検索ロジック ----------
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedPackageId, setSelectedPackageId] = useState<string>("");
-
-  // フィルタリング（大文字小文字を区別しない）
-  const filteredPackages = packages.filter((pkg) =>
-    pkg.search.includes(searchTerm.trim().toLowerCase()),
-  );
-
-  // 選択中のパッケージがフィルタ結果に無い場合はクリア
+  // After a successful save: clear the price, go back to the branch dropdown.
   useEffect(() => {
-    if (
-      selectedPackageId &&
-      !filteredPackages.some((p) => p.id === selectedPackageId)
-    ) {
-      setSelectedPackageId("");
+    if (state.message) {
+      setPrice("");
+      setIsNewBranch(false);
+      setNewBranch("");
     }
-  }, [searchTerm, filteredPackages, selectedPackageId]);
+  }, [state]);
 
-  // ---------- ここまで検索ロジック ----------
+  const keyword = search.trim().toLowerCase();
+  const filtered = keyword
+    ? packages.filter((p) => `${p.label} ${p.search}`.toLowerCase().includes(keyword))
+    : packages;
+  const selectedPackage = filtered.some((p) => p.id === packageId) ? packageId : "";
+
+  const branchOptions = branches.filter((b) => b.chainId === chainId);
+  const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
+
   return (
-    <div className="max-w-xl mx-auto px-4">
-      {/* ページ見出し */}
-      <h1 className="text-2xl font-bold mb-4">価格入力</h1>
+    <form action={formAction} className="space-y-5">
+      <div>
+        <label className={labelCls} htmlFor="search">
+          商品を検索
+        </label>
+        <input
+          id="search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="商品名・ブランドで絞り込み"
+          className={controlCls}
+        />
+      </div>
 
-      {state.error && <p className="text-red-500 mb-2">{state.error}</p>}
-      {state.message && <p className="text-green-500 mb-2">{state.message}</p>}
-
-      {/* 検索入力 */}
-      <Input
-        type="text"
-        placeholder="商品名・ブランドで絞り込み"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-2"
-      />
-
-      <form action={formAction} className="flex flex-col space-y-4">
-        {/* 商品・容量 選択 */}
-        <Label htmlFor="product_package_id" className="block font-medium">
+      <div>
+        <label className={labelCls} htmlFor="product_package_id">
           商品・容量
-        </Label>
+        </label>
         <select
           id="product_package_id"
           name="product_package_id"
           required
-          className="border rounded p-2"
-          value={selectedPackageId}
-          onChange={(e) => setSelectedPackageId(e.target.value)}
+          value={selectedPackage}
+          onChange={(e) => setPackageId(e.target.value)}
+          className={controlCls}
         >
           <option value="">商品・容量を選択</option>
-          {filteredPackages.length > 0 ? (
-            filteredPackages.map((pkg) => (
-              <option key={pkg.id} value={pkg.id}>
-                {pkg.label}
-              </option>
-            ))
-          ) : (
-            <option disabled>該当する商品がありません</option>
-          )}
-        </select>
-
-        {/* 店舗 選択 */}
-        <Label htmlFor="shop_id" className="block font-medium">
-          店舗
-        </Label>
-        <select
-          id="shop_id"
-          name="shop_id"
-          required
-          className="border rounded p-2"
-        >
-          <option value="">店舗を選択</option>
-          {shops.map((shop) => (
-            <option key={shop.id} value={shop.id}>
-              {shop.label}
+          {filtered.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
             </option>
           ))}
         </select>
+        {filtered.length === 0 && (
+          <p className="mt-1.5 text-sm text-stone-500">該当する商品がありません</p>
+        )}
+      </div>
 
-        {/* 価格（円）入力 */}
-        <Label htmlFor="price" className="block font-medium">
+      <div>
+        <label className={labelCls} htmlFor="store_chain_id">
+          チェーン
+        </label>
+        <select
+          id="store_chain_id"
+          name="store_chain_id"
+          required
+          value={chainId}
+          onChange={(e) => {
+            setChainId(e.target.value);
+            setBranchId("");
+          }}
+          className={controlCls}
+        >
+          <option value="">チェーンを選択</option>
+          {chains.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className={labelCls} htmlFor={isNewBranch ? "new_shop_name" : "shop_id"}>
+          支店（任意）
+        </label>
+        <div className="flex gap-2">
+          {isNewBranch ? (
+            <input
+              id="new_shop_name"
+              name="new_shop_name"
+              type="text"
+              value={newBranch}
+              onChange={(e) => setNewBranch(e.target.value)}
+              maxLength={100}
+              placeholder="新しい支店名（例：練馬店）"
+              className={controlCls}
+            />
+          ) : (
+            <select
+              id="shop_id"
+              name="shop_id"
+              value={selectedBranch}
+              onChange={(e) => setBranchId(e.target.value)}
+              className={controlCls}
+            >
+              <option value="">指定しない</option>
+              {branchOptions.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <label
+            className={`flex h-12 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-sm font-medium ${
+              isNewBranch
+                ? "border-teal-600 bg-teal-50 text-teal-700"
+                : "border-stone-200 bg-white text-stone-600"
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={isNewBranch}
+              onChange={(e) => {
+                setIsNewBranch(e.target.checked);
+                setBranchId("");
+                setNewBranch("");
+              }}
+              className="h-4 w-4 accent-teal-600"
+            />
+            <Plus className="h-4 w-4" />
+            新規
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label className={labelCls} htmlFor="price">
           価格（円）
-        </Label>
-        <Input
+        </label>
+        <input
           id="price"
-          type="text"
           name="price"
-          placeholder="価格（円）"
+          type="text"
           inputMode="decimal"
           required
-          ref={priceRef}
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="例：198"
+          className={controlCls}
         />
+      </div>
 
-        {/* 日時 入力 */}
-        <Label htmlFor="observed_at" className="block font-medium">
+      <div>
+        <label className={labelCls} htmlFor="observed_at">
           日時
-        </Label>
-        <Input
+        </label>
+        <input
           id="observed_at"
-          type="datetime-local"
           name="observed_at"
-          defaultValue={defaultObservedAt}
+          type="datetime-local"
           required
-          suppressHydrationWarning={true}
+          value={observedAt}
+          onChange={(e) => setObservedAt(e.target.value)}
+          className={controlCls}
         />
+      </div>
 
-        {/* 特売 チェックボックス */}
-        <Label className="flex items-center space-x-2">
-          <input type="checkbox" name="is_sale" className="h-4 w-4" />
-          <span>特売</span>
-        </Label>
+      <label className="flex h-12 items-center gap-3 text-base text-stone-800">
+        <input type="checkbox" name="is_sale" className="h-5 w-5 accent-teal-600" />
+        特売
+      </label>
 
-        {/* メモ（任意）入力 */}
-        <Label htmlFor="notes" className="block font-medium">
+      <div>
+        <label className={labelCls} htmlFor="notes">
           メモ（任意）
-        </Label>
-        <Input
+        </label>
+        <input
           id="notes"
-          type="text"
           name="notes"
-          placeholder="メモ（任意）"
+          type="text"
           maxLength={200}
+          className={controlCls}
         />
+      </div>
 
-        {/* 送信ボタン */}
-        <Button type="submit" disabled={filteredPackages.length === 0}>
-          保存
-        </Button>
-      </form>
-    </div>
+      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+
+      <Button
+        type="submit"
+        disabled={pending || filtered.length === 0}
+        className="h-12 w-full text-base"
+      >
+        {pending ? "保存中…" : "保存"}
+      </Button>
+    </form>
   );
 }

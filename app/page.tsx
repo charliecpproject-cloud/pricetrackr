@@ -21,7 +21,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-slate-50 p-4 flex flex-col items-center">
       {/* ヒーローエリア */}
       <div className="w-full max-w-xl mb-8 bg-gradient-to-br from-teal-600 to-teal-500 text-white rounded-3xl p-6 text-center">
-        <h1 className="text-3xl font-bold mb-2">価格トラッカー</h1>
+        <h1 className="text-3xl font-bold mb-2">PriceTrackr</h1>
         <p className="text-lg">見た価格を記録して、安い店を見つけよう</p>
       </div>
 

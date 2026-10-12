@@ -1,6 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { packageLabel } from "@/lib/prices/format";
-import PriceForm from "./PriceForm"; 
+import PriceForm from "./PriceForm";
 
 export default async function NewPricePage() {
   const supabase = await createSupabaseServerClient();
@@ -12,17 +12,19 @@ export default async function NewPricePage() {
     )
     .order("name_en", { ascending: true });
 
-  const { data: shops, error: shopsError } = await supabase
-    .from("shops")
-    .select("id, name, store_chains (name)")
+  const { data: chains, error: chainsError } = await supabase
+    .from("store_chains")
+    .select("id, name")
     .order("name", { ascending: true });
 
-  if (productsError) {
-    console.error("Products fetch error:", productsError.message, productsError.code);
-  }
-  if (shopsError) {
-    console.error("Shops fetch error:", shopsError.message, shopsError.code);
-  }
+  const { data: shops, error: shopsError } = await supabase
+    .from("shops")
+    .select("id, store_chain_id, name")
+    .order("name", { ascending: true });
+
+  if (productsError) console.error("Products fetch error:", productsError.message, productsError.code);
+  if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
+  if (shopsError) console.error("Shops fetch error:", shopsError.message, shopsError.code);
 
   const packages = (products ?? []).flatMap((product: any) => {
     const productName = product.name_ja || product.name_en || "名称未設定";
@@ -38,13 +40,16 @@ export default async function NewPricePage() {
     }));
   });
 
-  const shopOptions = (shops ?? []).map((shop: any) => {
-    const chain = [shop.store_chains].flat()[0];
-    return {
-      id: shop.id as string,
-      label: `${chain?.name ?? ""} — ${shop.name}`,
-    };
-  });
+  const chainOptions = (chains ?? []).map((chain: any) => ({
+    id: chain.id as string,
+    name: chain.name as string,
+  }));
+
+  const branchOptions = (shops ?? []).map((shop: any) => ({
+    id: shop.id as string,
+    chainId: shop.store_chain_id as string,
+    name: shop.name as string,
+  }));
 
   return (
     <div className="space-y-6">
@@ -52,7 +57,7 @@ export default async function NewPricePage() {
         <h1 className="text-2xl font-bold text-stone-900">価格入力</h1>
         <p className="mt-1 text-sm text-stone-500">店で見た価格を記録します</p>
       </div>
-      <PriceForm packages={packages} shops={shopOptions} />
+      <PriceForm packages={packages} chains={chainOptions} branches={branchOptions} />
     </div>
   );
 }

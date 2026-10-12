@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "価格トラッカー",
+  title: "PriceTrackr",
   description: "買い物の価格を記録して比較するアプリ",
 };
 
