@@ -49,6 +49,7 @@ export function formatJst(iso: string): string {
 /**
  * パッケージサイズと単位からラベル文字列を作ります。
  * 例: (500, "ml") => "500 ml", ("1000.0", "ml") => "1000 ml"
+ * 「count」または「個」の場合はスペースなしで「個」を付与します。
  */
 export function packageLabel(size: number | string, unit: string): string {
   const num = typeof size === "string" ? Number(size) : size;
@@ -56,5 +57,11 @@ export function packageLabel(size: number | string, unit: string): string {
     return "";
   }
   const numStr = Number.isInteger(num) ? num.toString() : num.toString();
+
+  // 「count」または「個」のときは「個」をスペースなしで付ける
+  if (unit === "count" || unit === "個") {
+    return `${numStr}個`;
+  }
+
   return `${numStr} ${unit}`;
 }

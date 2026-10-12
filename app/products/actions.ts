@@ -70,13 +70,13 @@ export async function addPackage(
       (val) => (typeof val === "string" ? parseFloat(val) : val),
       z
         .number()
-        .gt(0, { message: "サイズは 0 より大きい数値で入力してください。" }),
+        .gt(0, { message: "サイズは0より大きい数値で入力してください。" }),
     ),
     package_unit: z
       .string()
       .trim()
-      .min(1, { message: "単位は 1 文字以上で入力してください。" })
-      .max(20, { message: "単位は 20 文字以内で入力してください。" }),
+      .min(1, { message: "単位は1文字以上で入力してください。" })
+      .max(20, { message: "単位は20文字以内で入力してください。" }),
   });
 
   const parseResult = schema.safeParse({
@@ -102,7 +102,7 @@ export async function addPackage(
     console.error("Supabase insert package error:", error);
     if (error.code === "23505") {
       // unique_violation
-      return { error: "That package already exists for this product" };
+      return { error: "この商品に対して同じパッケージはすでに登録されています。" };
     }
     return { error: "データベースエラー: " + error.message };
   }

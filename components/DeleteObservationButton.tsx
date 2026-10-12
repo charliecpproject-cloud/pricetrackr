@@ -14,7 +14,11 @@ export default function DeleteObservationButton({
   action,
 }: DeleteObservationButtonProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (!window.confirm("Delete this price entry? This cannot be undone.")) {
+    if (
+      !window.confirm(
+        "この価格を削除しますか？この操作は元に戻せません。"
+      )
+    ) {
       e.preventDefault();
     }
   };
@@ -23,22 +27,16 @@ export default function DeleteObservationButton({
     <form
       action={action}
       onSubmit={handleSubmit}
-      style={{ minHeight: "44px", display: "inline-block" }}
+      style={{ minHeight: "44px" }}
+      className="inline-block"
     >
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="packageId" value={packageId} />
       <button
         type="submit"
-        style={{
-          minHeight: "44px",
-          padding: "0 8px",
-          background: "none",
-          border: "none",
-          color: "#e00",
-          cursor: "pointer",
-        }}
+        className="h-11 px-2 bg-transparent border-0 text-red-600 cursor-pointer"
       >
-        Delete
+        削除
       </button>
     </form>
   );

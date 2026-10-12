@@ -11,11 +11,16 @@ export async function addStoreChain(
 ) {
   // ---- バリデーション ----
   const nameRaw = formData.get("name");
-  const schema = z.string().trim().min(1).max(100);
+  const schema = z
+    .string()
+    .trim()
+    .min(1, { message: "名前は1文字以上で入力してください。" })
+    .max(100, { message: "名前は100文字以下で入力してください。" });
   const parseResult = schema.safeParse(nameRaw);
 
   if (!parseResult.success) {
-    return { error: "名前は1〜100文字で入力してください。" };
+    // バリデーションエラーメッセージは Zod が提供する日本語メッセージを使用
+    return { error: parseResult.error.issues[0].message };
   }
 
   // ---- DB 挿入 ----
@@ -44,18 +49,24 @@ export async function addShop(
 ) {
   // ---- バリデーション ----
   const schema = z.object({
-    store_chain_id: z.string().uuid(),
-    name: z.string().trim().min(1).max(100),
+    store_chain_id: z
+      .string()
+      .uuid({ message: "店舗チェーンIDは有効なUUIDである必要があります。" }),
+    name: z
+      .string()
+      .trim()
+      .min(1, { message: "名前は必須です。" })
+      .max(100, { message: "名前は100文字以下で入力してください。" }),
     address: z
       .string()
       .trim()
-      .max(200)
+      .max(200, { message: "住所は200文字以下で入力してください。" })
       .optional()
       .transform((val) => (val === "" ? undefined : val)),
     region: z
       .string()
       .trim()
-      .max(200)
+      .max(200, { message: "地域は200文字以下で入力してください。" })
       .optional()
       .transform((val) => (val === "" ? undefined : val)),
   });
@@ -68,7 +79,8 @@ export async function addShop(
   });
 
   if (!parseResult.success) {
-    return { error: "入力内容が正しくありません。" };
+    // Zod が生成した最初のエラーメッセージを返す
+    return { error: parseResult.error.issues[0].message };
   }
 
   // ---- DB 挿入 ----

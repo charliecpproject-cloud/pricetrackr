@@ -87,28 +87,35 @@ export default function PriceForm({ packages, shops }: Props) {
   // ---------- ここまで検索ロジック ----------
   return (
     <div className="max-w-xl mx-auto px-4">
+      {/* ページ見出し */}
+      <h1 className="text-2xl font-bold mb-4">価格入力</h1>
+
       {state.error && <p className="text-red-500 mb-2">{state.error}</p>}
       {state.message && <p className="text-green-500 mb-2">{state.message}</p>}
 
       {/* 検索入力 */}
       <Input
         type="text"
-        placeholder="Search product"
+        placeholder="商品名・ブランドで絞り込み"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="mb-2"
       />
 
       <form action={formAction} className="flex flex-col space-y-4">
-        {/* 商品パッケージ選択 */}
+        {/* 商品・容量 選択 */}
+        <Label htmlFor="product_package_id" className="block font-medium">
+          商品・容量
+        </Label>
         <select
+          id="product_package_id"
           name="product_package_id"
           required
           className="border rounded p-2"
           value={selectedPackageId}
           onChange={(e) => setSelectedPackageId(e.target.value)}
         >
-          <option value="">Select package</option>
+          <option value="">商品・容量を選択</option>
           {filteredPackages.length > 0 ? (
             filteredPackages.map((pkg) => (
               <option key={pkg.id} value={pkg.id}>
@@ -116,13 +123,21 @@ export default function PriceForm({ packages, shops }: Props) {
               </option>
             ))
           ) : (
-            <option disabled>No matches</option>
+            <option disabled>該当する商品がありません</option>
           )}
         </select>
 
-        {/* 店舗選択 */}
-        <select name="shop_id" required className="border rounded p-2">
-          <option value="">Select shop</option>
+        {/* 店舗 選択 */}
+        <Label htmlFor="shop_id" className="block font-medium">
+          店舗
+        </Label>
+        <select
+          id="shop_id"
+          name="shop_id"
+          required
+          className="border rounded p-2"
+        >
+          <option value="">店舗を選択</option>
           {shops.map((shop) => (
             <option key={shop.id} value={shop.id}>
               {shop.label}
@@ -130,18 +145,26 @@ export default function PriceForm({ packages, shops }: Props) {
           ))}
         </select>
 
-        {/* 価格入力 */}
+        {/* 価格（円）入力 */}
+        <Label htmlFor="price" className="block font-medium">
+          価格（円）
+        </Label>
         <Input
+          id="price"
           type="text"
           name="price"
-          placeholder="Price"
+          placeholder="価格（円）"
           inputMode="decimal"
           required
           ref={priceRef}
         />
 
-        {/* 観測日時（datetime-local） */}
+        {/* 日時 入力 */}
+        <Label htmlFor="observed_at" className="block font-medium">
+          日時
+        </Label>
         <Input
+          id="observed_at"
           type="datetime-local"
           name="observed_at"
           defaultValue={defaultObservedAt}
@@ -149,23 +172,27 @@ export default function PriceForm({ packages, shops }: Props) {
           suppressHydrationWarning={true}
         />
 
-        {/* セールチェックボックス */}
+        {/* 特売 チェックボックス */}
         <Label className="flex items-center space-x-2">
           <input type="checkbox" name="is_sale" className="h-4 w-4" />
-          <span>Sale?</span>
+          <span>特売</span>
         </Label>
 
-        {/* 任意メモ */}
+        {/* メモ（任意）入力 */}
+        <Label htmlFor="notes" className="block font-medium">
+          メモ（任意）
+        </Label>
         <Input
+          id="notes"
           type="text"
           name="notes"
-          placeholder="Notes (optional)"
+          placeholder="メモ（任意）"
           maxLength={200}
         />
 
         {/* 送信ボタン */}
         <Button type="submit" disabled={filteredPackages.length === 0}>
-          Add
+          保存
         </Button>
       </form>
     </div>

@@ -15,7 +15,7 @@ export default function StoreForm() {
         <input
           type="text"
           name="name"
-          placeholder="Store chain name"
+          placeholder="例：ライフ"
           className="border rounded p-2 mb-2"
           required
         />

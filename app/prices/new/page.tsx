@@ -1,64 +1,58 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import PriceForm from "./PriceForm";
+import { packageLabel } from "@/lib/prices/format";
+import PriceForm from "./PriceForm"; 
 
-export default async function PricesNewPage() {
+export default async function NewPricePage() {
   const supabase = await createSupabaseServerClient();
 
-  // ----- 商品とパッケージ情報を取得 -----
-  const { data: products, error: prodError } = await supabase.from("products")
-    .select(`
-      id,
-      name_en,
-      name_ja,
-      brand,
-      product_packages (
-        id,
-        package_size,
-        package_unit
-      )
-    `);
+  const { data: products, error: productsError } = await supabase
+    .from("products")
+    .select(
+      "id, name_en, name_ja, brand, product_packages (id, package_size, package_unit)"
+    )
+    .order("name_en", { ascending: true });
 
-  // ----- 店舗情報を取得（チェーン名も含む） -----
-  const { data: shops, error: shopError } = await supabase.from("shops")
-    .select(`
-      id,
-      name,
-      store_chain:store_chains (
-        name
-      )
-    `);
+  const { data: shops, error: shopsError } = await supabase
+    .from("shops")
+    .select("id, name, store_chains (name)")
+    .order("name", { ascending: true });
 
-  if (prodError) {
-    console.error("Failed to load products:", prodError);
-    throw prodError;
+  if (productsError) {
+    console.error("Products fetch error:", productsError.message, productsError.code);
   }
-  if (shopError) {
-    console.error("Failed to load shops:", shopError);
-    throw shopError;
+  if (shopsError) {
+    console.error("Shops fetch error:", shopsError.message, shopsError.code);
   }
 
-  // ----- パッケージ選択肢の作成 -----
-  const packages = (products ?? []).flatMap((product) => {
-    const baseName = product.name_en || product.name_ja || "";
-    const brandPart = product.brand ? ` (${product.brand})` : "";
-    // 検索用文字列を作成（name_ja, name_en, brand をスペースで結合し小文字化）
-    const search =
-      `${product.name_ja ?? ""} ${product.name_en ?? ""} ${product.brand ?? ""}`
-        .trim()
-        .toLowerCase();
-
-    return (product.product_packages ?? []).map((pkg) => ({
-      id: pkg.id,
-      label: `${baseName}${brandPart} — ${pkg.package_size} ${pkg.package_unit}`,
+  const packages = (products ?? []).flatMap((product: any) => {
+    const productName = product.name_ja || product.name_en || "名称未設定";
+    const brand = product.brand ? `（${product.brand}）` : "";
+    const search = [product.name_ja, product.name_en, product.brand]
+      .filter(Boolean)
+      .join(" ");
+    const pkgs = [product.product_packages].flat().filter(Boolean) as any[];
+    return pkgs.map((pkg) => ({
+      id: pkg.id as string,
+      label: `${productName}${brand} — ${packageLabel(pkg.package_size, pkg.package_unit)}`,
       search,
     }));
   });
 
-  // ----- 店舗選択肢の作成 -----
-  const shopOptions = (shops ?? []).map((shop) => ({
-    id: shop.id,
-    label: `${[shop.store_chain].flat()[0]?.name ?? ""} — ${shop.name}`,
-  }));
+  const shopOptions = (shops ?? []).map((shop: any) => {
+    const chain = [shop.store_chains].flat()[0];
+    return {
+      id: shop.id as string,
+      label: `${chain?.name ?? ""} — ${shop.name}`,
+    };
+  });
 
-  return <PriceForm packages={packages} shops={shopOptions} />;
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-stone-900">価格入力</h1>
+        <p className="mt-1 text-sm text-stone-500">店で見た価格を記録します</p>
+      </div>
+      <PriceForm packages={packages} shops={shopOptions} />
+    </div>
+  );
 }

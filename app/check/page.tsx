@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Search } from "lucide-react";
 
 type SearchParams = Promise<{
   q?: string;
@@ -92,49 +93,55 @@ export default async function Page({
       {/* 検索フォーム */}
       <form method="GET" className="mb-6 flex items-center gap-2">
         <Label htmlFor="q" className="font-medium">
-          Search product
+          商品検索
         </Label>
-        <Input
-          type="text"
-          name="q"
-          id="q"
-          defaultValue={sanitizedQ}
-          className="flex-1 h-12"
-        />
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Input
+            type="text"
+            name="q"
+            id="q"
+            defaultValue={sanitizedQ}
+            placeholder="商品名を入力"
+            className="pl-10 h-12"
+          />
+        </div>
         <Button type="submit" className="h-12">
-          Search
+          検索
         </Button>
       </form>
 
       {/* 結果表示 */}
       {(!products || products.length === 0) && (
-        <div className="text-gray-600">No results</div>
+        <div className="text-gray-600">見つかりませんでした</div>
       )}
 
       <div className="grid gap-4">
         {products?.map((product: any) => {
-          const productName = product.name_en || product.name_ja || "Unnamed";
+          const productName = product.name_ja || product.name_en || "Unnamed";
           return product.product_packages?.map((pkg: any) => {
             const latest = observationsMap.get(pkg.id);
             const shopInfo = latest
               ? `${latest.shops?.store_chains?.name ?? ""} — ${latest.shops?.name ?? ""}`
               : "";
-
             return (
               <Link key={pkg.id} href={`/check/${pkg.id}`} className="block">
                 <Card className="bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow">
                   <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4">
+                    {/* 商品情報 */}
                     <div>
-                      <h2 className="text-lg font-semibold">{productName}</h2>
-                      <p className="text-sm text-gray-500">{product.brand}</p>
-                      <p className="mt-2 text-sm text-gray-700">
-                        {packageLabel(pkg.package_size, pkg.package_unit)}
-                      </p>
+                      <h2 className="text-2xl font-bold">{productName}</h2>
+                      {product.brand && (
+                        <p className="text-sm text-gray-500">{product.brand}</p>
+                      )}
+                      <Badge className="mt-1">{packageLabel(pkg.package_size, pkg.package_unit)}</Badge>
                     </div>
+
+                    {/* 価格情報 */}
                     <div className="text-right mt-4 sm:mt-0">
                       {latest ? (
                         <>
-                          <p className="text-3xl font-bold tabular-nums">
+                          <p className="text-4xl font-bold tabular-nums">
                             {formatYen(latest.price)}
                           </p>
                           <p className="text-sm text-gray-600">{shopInfo}</p>
@@ -142,13 +149,13 @@ export default async function Page({
                             {formatJst(latest.observed_at)}
                           </p>
                           {latest.is_sale && (
-                            <Badge className="mt-1 bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">
-                              Sale
+                            <Badge className="mt-1 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded">
+                              特売
                             </Badge>
                           )}
                         </>
                       ) : (
-                        <p className="text-gray-500">No prices yet</p>
+                        <p className="text-gray-500">まだ価格がありません</p>
                       )}
                     </div>
                   </CardHeader>

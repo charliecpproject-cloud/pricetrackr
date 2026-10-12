@@ -68,7 +68,7 @@ export default async function Page({
   }
 
   // ----- 5. UI 描画 -----
-  const productName = product.name_en || product.name_ja || "Unnamed";
+  const productName = product.name_ja || product.name_en || "名称不明";
   const brand = product.brand || "";
 
   const latestObs = observations?.[0];
@@ -82,7 +82,7 @@ export default async function Page({
           variant="link"
           className="text-indigo-600 hover:underline"
         >
-          <Link href="/check">← Back to search</Link>
+          <Link href="/check">← 検索に戻る</Link>
         </Button>
       </div>
 
@@ -112,7 +112,7 @@ export default async function Page({
           htmlFor="search"
           className="block text-sm font-medium text-gray-700"
         >
-          Search observations
+          観測を検索
         </Label>
         <Input
           id="search"
@@ -125,7 +125,7 @@ export default async function Page({
       {/* 価格観測リスト */}
       <div>
         {!observations || observations.length === 0 ? (
-          <p className="text-gray-500">No prices yet</p>
+          <p className="text-gray-500">まだ価格がありません</p>
         ) : (
           <ul className="space-y-4">
             {observations.map((obs: any, idx: number) => {
@@ -158,7 +158,7 @@ export default async function Page({
                           <p className="text-sm text-gray-600">{shopLabel}</p>
                           {obs.is_sale && (
                             <span className="inline-block mt-1 bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">
-                              Sale
+                              特売
                             </span>
                           )}
                         </div>

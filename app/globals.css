@@ -128,3 +128,15 @@
     @apply font-sans;
   }
 }
+
+/* Price Tracker theme overrides */
+:root {
+  --background: #f6f7f5;
+  --foreground: #1c1917;
+  --primary: #0d9488;
+  --primary-foreground: #ffffff;
+  --ring: #0d9488;
+  --radius: 0.875rem;
+}
+html { color-scheme: light; }
+body { font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif; }

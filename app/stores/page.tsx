@@ -33,34 +33,49 @@ export default async function StoresPage() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold mb-6">Store Chains</h1>
+      {/* ページ見出し */}
+      <h1 className="text-2xl font-bold mb-6">店舗</h1>
 
+      {/* エラーメッセージ */}
       {chainsError && (
         <p className="text-red-500 mb-4">
-          データ取得エラー (チェーン): {chainsError.message}
+          チェーンの取得エラー: {chainsError.message}
         </p>
       )}
 
       {shopsError && (
         <p className="text-red-500 mb-4">
-          データ取得エラー (ショップ): {shopsError.message}
+          ショップの取得エラー: {shopsError.message}
         </p>
+      )}
+
+      {/* 空状態表示 */}
+      {(!chains || chains.length === 0) && (
+        <p className="text-gray-500 text-center my-8">まだ店舗がありません。</p>
       )}
 
       {/* チェーンごとのカード表示 */}
       {chains?.map((chain) => (
-        <Card key={chain.id} className="mb-4">
+        <Card
+          key={chain.id}
+          className="mb-4 bg-white rounded-2xl border border-stone-200 shadow-sm"
+        >
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold">
-              {chain.name}
-            </CardTitle>
+            <CardTitle className="text-lg font-semibold">{chain.name}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1">
               {shopsByChain[chain.id]?.map((shop) => (
                 <li key={shop.id} className="text-sm">
                   {shop.name}
-                  {shop.region ? ` (${shop.region})` : ""}
+                  {shop.region ? (
+                    <span className="text-gray-500 text-xs">
+                      {" "}
+                      ({shop.region})
+                    </span>
+                  ) : (
+                    ""
+                  )}
                 </li>
               ))}
             </ul>
@@ -68,10 +83,11 @@ export default async function StoresPage() {
         </Card>
       ))}
 
-      <h2 className="text-xl font-semibold mt-8 mb-4">Add New Store Chain</h2>
+      {/* フォームセクション */}
+      <h2 className="text-xl font-semibold mt-8 mb-4">チェーンを追加</h2>
       <StoreForm />
 
-      <h2 className="text-xl font-semibold mt-8 mb-4">Add New Shop</h2>
+      <h2 className="text-xl font-semibold mt-8 mb-4">支店を追加</h2>
       <ShopForm chains={chains ?? []} />
     </div>
   );

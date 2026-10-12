@@ -34,4 +34,8 @@ describe("packageLabel", () => {
   it("removes trailing zeros from string input", () => {
     expect(packageLabel("1000.0", "ml")).toBe("1000 ml");
   });
+
+  it("formats count unit without space and with 個 suffix", () => {
+    expect(packageLabel(6, "count")).toBe("6個");
+  });
 });
