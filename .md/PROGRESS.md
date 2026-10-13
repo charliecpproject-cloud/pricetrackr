@@ -20,6 +20,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14e (chain membership and bonus-points settings) done
 - Step 14f (membership price and bonus points on price entry and price display) done
 - Step 14g part A (product_variations table, package variation_id, and variation helper functions) done
+- Step 14g part B (variation forms and display, jobs G1 to G6) done
 - Step 15 (delete own price entries) done
 - Step 16 (housekeeping) done
 - Step 17 (deploy and phone smoke test) done
@@ -30,7 +31,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 
 ## Next Up
 - Step 14f (price entry fields and price display for membership and bonus points)
-- Step 14g part B (variation forms and display, jobs G1 to G9)
+- Step 14g part B (variation forms and display, jobs G7 to G9)
 - Plan Phase 2 (freshness score, trust score, unit price)
 
 ## Known Issues

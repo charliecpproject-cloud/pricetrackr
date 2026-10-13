@@ -50,6 +50,7 @@ export function formatJst(iso: string): string {
  * パッケージサイズと単位からラベル文字列を作ります。
  * 例: (500, "ml") => "500 ml", ("1000.0", "ml") => "1000 ml"
  * 「count」または「個」の場合はスペースなしで「個」を付与します。
+ * 「sheet」単位は「枚」、 「bag」単位は「袋」を付与します。
  */
 export function packageLabel(size: number | string, unit: string): string {
   const num = typeof size === "string" ? Number(size) : size;
@@ -61,6 +62,16 @@ export function packageLabel(size: number | string, unit: string): string {
   // 「count」または「個」のときは「個」をスペースなしで付ける
   if (unit === "count" || unit === "個") {
     return `${numStr}個`;
+  }
+
+  // 「sheet」単位は「枚」を付与
+  if (unit === "sheet") {
+    return `${numStr}枚`;
+  }
+
+  // 「bag」単位は「袋」を付与
+  if (unit === "bag") {
+    return `${numStr}袋`;
   }
 
   return `${numStr} ${unit}`;

@@ -1,12 +1,24 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductForm from "./ProductForm";
 import PackageForm from "./PackageForm";
+import VariationForm from "./VariationForm";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  parseAttributes,
+  variationLabel,
+} from "@/lib/products/variation";
 
 type Package = {
+  id: string;
+  variation_id?: string | null;
   package_size: number;
   package_unit: string;
+};
+
+type Variation = {
+  id: string;
+  attributes: unknown;
 };
 
 type Product = {
@@ -15,8 +27,13 @@ type Product = {
   name_en: string | null;
   brand: string | null;
   category: string | null;
+  product_variations: Variation[] | null;
   product_packages: Package[] | null;
 };
+
+/** パッケージを「サイズ 単位」の文字列に変換 */
+const packageLabel = (pkg: { package_size: number; package_unit: string }) =>
+  `${pkg.package_size} ${pkg.package_unit}`;
 
 export default async function ProductsPage() {
   const supabase = await createSupabaseServerClient();
@@ -24,7 +41,7 @@ export default async function ProductsPage() {
   const { data: products, error } = await supabase
     .from("products")
     .select(
-      "id, name_ja, name_en, brand, category, product_packages (package_size, package_unit)",
+      "id, name_ja, name_en, brand, category, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)",
     )
     .order("name_ja", { ascending: true });
 
@@ -33,6 +50,31 @@ export default async function ProductsPage() {
   }
 
   const productList: Product[] = (products as any) ?? [];
+
+  /** Variation の一覧（PackageForm 用） */
+  const variationList = productList.flatMap((p) =>
+    (p.product_variations ?? []).map((v) => ({
+      id: v.id,
+      productId: p.id,
+      label: variationLabel(parseAttributes(v.attributes)),
+    }))
+  );
+
+  /** 商品一覧（VariationForm 用） */
+  const productOptions = productList.map((p) => ({
+    id: p.id,
+    label: p.name_ja || p.name_en || "商品名なし",
+  }));
+
+  /** 全バリエーションで使用されている属性名の集合 */
+  const attributeNameSet = new Set<string>();
+  productList.forEach((p) => {
+    (p.product_variations ?? []).forEach((v) => {
+      const attrs = parseAttributes(v.attributes);
+      attrs.forEach((a) => attributeNameSet.add(a.name));
+    });
+  });
+  const attributeNames = Array.from(attributeNameSet).sort();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,10 +88,19 @@ export default async function ProductsPage() {
           <ProductForm />
         </section>
 
+        {/* バリエーション追加セクション */}
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">バリエーションを追加</h2>
+          <VariationForm
+            products={productOptions}
+            attributeNames={attributeNames}
+          />
+        </section>
+
         {/* 容量追加セクション */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4">容量を追加</h2>
-          <PackageForm products={productList} />
+          <PackageForm products={productList} variations={variationList} />
         </section>
 
         {/* 商品一覧 */}
@@ -83,16 +134,61 @@ export default async function ProductsPage() {
                     </p>
                   </CardHeader>
 
-                  {/* パッケージバッジ */}
-                  {product.product_packages &&
-                    product.product_packages.length > 0 && (
+                  {/* バリエーションとそのパッケージ */}
+                  {product.product_variations &&
+                    product.product_variations.length > 0 && (
                       <CardContent className="pt-2">
+                        <div className="space-y-2">
+                          {product.product_variations.map((variation) => {
+                            const attrs = parseAttributes(
+                              variation.attributes
+                            );
+                            const label = variationLabel(attrs);
+                            const packagesForVariation =
+                              product.product_packages?.filter(
+                                (pkg) => pkg.variation_id === variation.id
+                              ) ?? [];
+
+                            return (
+                              <div key={variation.id} className="space-y-1">
+                                <p className="font-medium">{label}</p>
+                                {packagesForVariation.length > 0 && (
+                                  <div className="flex flex-wrap">
+                                    {packagesForVariation.map((pkg) => (
+                                      <Badge
+                                        key={pkg.id}
+                                        className="mr-2 mb-2"
+                                      >
+                                        {packageLabel(pkg)}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    )}
+
+                  {/* バリエーションなしパッケージ */}
+                  {product.product_packages &&
+                    product.product_packages.some(
+                      (pkg) => !pkg.variation_id
+                    ) && (
+                      <CardContent className="pt-2">
+                        <p className="font-medium mb-1">バリエーションなし</p>
                         <div className="flex flex-wrap">
-                          {product.product_packages.map((pkg, idx) => (
-                            <Badge key={idx} className="mr-2 mb-2">
-                              {pkg.package_size} {pkg.package_unit}
-                            </Badge>
-                          ))}
+                          {product.product_packages
+                            .filter((pkg) => !pkg.variation_id)
+                            .map((pkg) => (
+                              <Badge
+                                key={pkg.id}
+                                className="mr-2 mb-2"
+                              >
+                                {packageLabel(pkg)}
+                              </Badge>
+                            ))}
                         </div>
                       </CardContent>
                     )}
