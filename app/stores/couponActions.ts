@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+// Saves all of a chain's options: coupons, membership discount, bonus points.
 const schema = z.object({
   chainId: z.string().uuid("チェーンが正しくありません"),
   percents: z.array(
@@ -30,18 +31,37 @@ export async function updateChainCoupons(
 
   const percents = Array.from(new Set(parsed.data.percents)).sort((a, b) => a - b);
 
+  let memberPercent: number | null = null;
+  if (formData.get("member_enabled") === "on") {
+    const n = Number(formData.get("member_discount_percent"));
+    if (!Number.isInteger(n) || n < 1 || n > 30) {
+      return {
+        error: "会員価格の割引率は1〜30の整数で入力してください",
+        message: null,
+      };
+    }
+    memberPercent = n;
+  }
+
+  const hasBonusPoints = formData.get("has_bonus_points") === "on";
+
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("store_chains")
-    .update({ coupon_percents: percents })
+    .update({
+      coupon_percents: percents,
+      member_discount_percent: memberPercent,
+      has_bonus_points: hasBonusPoints,
+    })
     .eq("id", parsed.data.chainId);
 
   if (error) {
-    console.error("Coupon update error:", error.message, error.code);
+    console.error("Chain options update error:", error.message, error.code);
     return { error: "保存できませんでした。もう一度お試しください。", message: null };
   }
 
   revalidatePath("/stores");
   revalidatePath("/check", "layout");
+  revalidatePath("/prices/new");
   return { error: null, message: "保存しました" };
 }
