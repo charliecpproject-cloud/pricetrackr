@@ -37,7 +37,7 @@ export default async function PackageDetailPage({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, price, observed_at, created_at, is_sale, notes, store_chains (name, coupon_percents), shops (name)"
+      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, notes, store_chains (name, coupon_percents, member_discount_percent), shops (name)"
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -55,7 +55,7 @@ export default async function PackageDetailPage({
       price: obs.price as number | string,
       observedAt: obs.observed_at as string,
       isSale: !!obs.is_sale,
-      notes: (obs.notes as string | null) ?? "",
+      notes: (obs.notes as string | null) ?? "", isMemberPrice: !!obs.is_member_price, bonusPoints: (obs.bonus_points as number | null) ?? null, memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
       chainName: (chain?.name as string | undefined) ?? "",
       branchName: (branch?.name as string | undefined) ?? "",
       couponPercents: (chain?.coupon_percents as number[] | undefined) ?? [],
@@ -82,11 +82,11 @@ export default async function PackageDetailPage({
         <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
-            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} size="lg" />
+            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} size="lg" />
           </div>
           <p className="mt-2 text-sm text-stone-500">
             {latest.chainName}
-            {latest.branchName ? `（${latest.branchName}）` : ""} ・ {formatJst(latest.observedAt)}
+            {latest.branchName ? `（${latest.branchName}）` : ""} ・ {formatJst(latest.observedAt)}{latest.bonusPoints ? <span className="ml-2 text-amber-700">+{latest.bonusPoints}ポイント</span> : null}
           </p>
         </div>
       ) : (
@@ -116,9 +116,9 @@ export default async function PackageDetailPage({
                       </span>
                     )}
                   </p>
-                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} size="md" />
+                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} size="md" />
                 </div>
-                <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}</p>
+                <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
                 {r.notes && <p className="mt-2 text-sm text-stone-700">{r.notes}</p>}
                 <div className="mt-2">
                   <DeleteObservationButton

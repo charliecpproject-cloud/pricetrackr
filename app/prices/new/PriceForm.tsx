@@ -3,10 +3,10 @@
 import { useActionState, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { addPriceObservation } from "@/app/prices/actions";
+import { addPriceObservation } from "@/app/prices/actions"; import ChainExtras from "./ChainExtras";
 
 type Pkg = { id: string; label: string; search: string };
-type Chain = { id: string; name: string };
+type Chain = { id: string; name: string; memberPercent: number | null; hasBonusPoints: boolean };
 type Branch = { id: string; chainId: string; name: string };
 
 const initialState: { error: string | null; message?: string | null } = {
@@ -72,7 +72,7 @@ export default function PriceForm({
     : packages;
   const selectedPackage = filtered.some((p) => p.id === packageId) ? packageId : "";
 
-  const branchOptions = branches.filter((b) => b.chainId === chainId);
+  const branchOptions = branches.filter((b) => b.chainId === chainId); const selectedChain = chains.find((c) => c.id === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
 
   return (
@@ -212,7 +212,7 @@ export default function PriceForm({
       </div>
 
       <div>
-        <label className={labelCls} htmlFor="observed_at">
+        <ChainExtras chain={selectedChain} /><label className={labelCls} htmlFor="observed_at">
           日時
         </label>
         <input

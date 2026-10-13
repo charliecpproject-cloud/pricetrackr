@@ -14,7 +14,7 @@ export default async function NewPricePage() {
 
   const { data: chains, error: chainsError } = await supabase
     .from("store_chains")
-    .select("id, name")
+    .select("id, name, member_discount_percent, has_bonus_points")
     .order("name", { ascending: true });
 
   const { data: shops, error: shopsError } = await supabase
@@ -42,7 +42,7 @@ export default async function NewPricePage() {
 
   const chainOptions = (chains ?? []).map((chain: any) => ({
     id: chain.id as string,
-    name: chain.name as string,
+    name: chain.name as string, memberPercent: (chain.member_discount_percent ?? null) as number | null, hasBonusPoints: !!chain.has_bonus_points,
   }));
 
   const branchOptions = (shops ?? []).map((shop: any) => ({

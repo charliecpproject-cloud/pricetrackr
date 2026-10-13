@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
-import { bestCouponPercent, couponPrice } from "@/lib/prices/coupon";
+import { effectivePrice } from "@/lib/prices/coupon";
 import PriceDisplay from "@/components/PriceDisplay";
 
 type ChainPrice = {
@@ -11,7 +11,7 @@ type ChainPrice = {
   price: number;
   observedAt: string;
   isSale: boolean;
-  couponPercents: number[];
+  couponPercents: number[]; memberPercent: number | null; isMemberPrice: boolean; bonusPoints: number | null;
   effective: number;
 };
 
@@ -53,7 +53,7 @@ export default async function CheckPage({
     const { data: observations, error: obsError } = await supabase
       .from("price_observations")
       .select(
-        "product_package_id, price, observed_at, created_at, is_sale, store_chain_id, store_chains (name, coupon_percents)"
+        "product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points, store_chains (name, coupon_percents, member_discount_percent)"
       )
       .in("product_package_id", packageIds)
       .order("observed_at", { ascending: false })
@@ -70,15 +70,15 @@ export default async function CheckPage({
         const chain = [obs.store_chains].flat()[0];
         const price = Number(obs.price);
         const percents: number[] = chain?.coupon_percents ?? [];
-        const percent = bestCouponPercent(percents);
+        const memberPercent: number | null = chain?.member_discount_percent ?? null; const isMemberPrice = !!obs.is_member_price;
         perPackage.set(obs.store_chain_id, {
           chainId: obs.store_chain_id,
           chainName: chain?.name ?? "",
           price,
           observedAt: obs.observed_at,
           isSale: !!obs.is_sale,
-          couponPercents: percents,
-          effective: percent === null ? price : couponPrice(price, percent),
+          couponPercents: percents, memberPercent, isMemberPrice, bonusPoints: (obs.bonus_points as number | null) ?? null,
+          effective: effectivePrice(price, { couponPercents: percents, memberPercent, isMemberPrice }),
         });
       }
       latest.set(obs.product_package_id, perPackage);
@@ -166,11 +166,11 @@ export default async function CheckPage({
                             </span>
                           )}
                         </p>
-                        <p className="text-xs text-stone-500">{formatJst(r.observedAt)}</p>
+                        <p className="text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
                       </div>
                       <PriceDisplay
                         price={r.price}
-                        couponPercents={r.couponPercents}
+                        couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice}
                         size="md"
                       />
                     </li>

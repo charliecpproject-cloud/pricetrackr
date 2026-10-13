@@ -57,6 +57,33 @@ export async function addPriceObservation(
 
   const supabase = await createSupabaseServerClient();
 
+  // Read the chain's options on the server; never trust the browser for these.
+  const { data: chainRow, error: chainError } = await supabase
+    .from("store_chains")
+    .select("member_discount_percent, has_bonus_points")
+    .eq("id", store_chain_id)
+    .single();
+  if (chainError || !chainRow) {
+    console.error("Chain fetch error:", chainError?.message, chainError?.code);
+    return { error: "チェーンが見つかりません" };
+  }
+
+  const isMemberPrice =
+    formData.get("is_member_price") === "on" && chainRow.member_discount_percent !== null;
+
+  let bonusPoints: number | null = null;
+  const rawPoints = text(formData, "bonus_points");
+  if (chainRow.has_bonus_points && rawPoints !== null) {
+    const asciiPoints = rawPoints.replace(/[０-９]/g, (d) =>
+      String(d.charCodeAt(0) - 0xff10)
+    );
+    const n = Number(asciiPoints);
+    if (!Number.isInteger(n) || n < 0 || n > 100000) {
+      return { error: "ポイントは0以上の整数で入力してください" };
+    }
+    bonusPoints = n;
+  }
+
   // A new branch name: reuse the branch if it already exists in this chain.
   if (new_shop_name) {
     const { data: existing } = await supabase
@@ -88,7 +115,7 @@ export async function addPriceObservation(
     shop_id: shopId,
     price,
     observed_at: observedAt,
-    is_sale: isSale,
+    is_sale: isSale, is_member_price: isMemberPrice, bonus_points: bonusPoints,
     notes,
   });
 

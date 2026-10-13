@@ -17,6 +17,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14b (Japanese interface and visual refresh) done
 - Step 14c (chain coupons) done
 - Step 14d (chain-first prices) done
+- Step 14e (chain membership and bonus-points settings) done
 - Step 15 (delete own price entries) done
 - Step 16 (housekeeping) done
 - Step 17 (deploy and phone smoke test) done
@@ -26,6 +27,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - (none)
 
 ## Next Up
+- Step 14f (price entry fields and price display for membership and bonus points)
 - Plan Phase 2 (freshness score, trust score, unit price)
 
 ## Known Issues
@@ -38,6 +40,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-11: npm is used, not pnpm
 - 2026-10-11: zod v4, so errors are read with error.issues
 - 2026-10-11: Aider jobs are kept small because of the Groq free-tier limit of about 8k tokens per minute
-- 2026-10-12: UI is Japanese only with hardcoded strings, no i18n library; product names show name_ja first with name_en as fallback; teal theme with a bottom tab bar; package units are chosen from a native dropdown, with count stored and shown as 個.
+- 2026-10-12: UI is Japanese only with hardcoded strings, no i18n library, product names show name_ja first with name_en as fallback; teal theme with a bottom tab bar; package units are chosen from a native dropdown, with count stored and shown as 個.
 - 2026-10-12: coupons are set per chain in store_chains.coupon_percents (allowed 5, 10, 15, default none); the coupon price is calculated at display time and never stored; the best enabled percent is shown as the coupon price with the normal price in brackets; coupon price = floor(price × (100 − percent) / 100), an estimate that ignores tax and the one-item limit.
 - 2026-10-12: coupons are set per chain in `store_chains.coupon_percents` (allowed 5, 10, 15, default none) and the coupon price is calculated at display time, never stored; `price_observations.store_chain_id` is required and `shop_id` is optional, with a composite foreign key ensuring a branch belongs to its chain; the price form takes the chain first, with an optional branch dropdown and a **新規** checkbox that creates a branch; price check shows the latest price per chain, cheapest first.
+- 2026-10-13: store_chains.member_discount_percent (null means no membership price) and store_chains.has_bonus_points (default false) are chain options; price_observations.is_member_price and bonus_points are per-price details; discounts do not stack and the larger one is shown; bonus points never change the price.
