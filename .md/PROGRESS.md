@@ -19,8 +19,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14d (chain-first prices) done
 - Step 14e (chain membership and bonus-points settings) done
 - Step 14f (membership price and bonus points on price entry and price display) done
-- Step 14g part A (product_variations table, package variation_id, and variation helper functions) done
-- Step 14g part B (variation forms and display, jobs G1 to G6) done
+- Step 14g (product variations: custom attributes, packages per variation, shown in price entry, price check and the detail page) done
 - Step 15 (delete own price entries) done
 - Step 16 (housekeeping) done
 - Step 17 (deploy and phone smoke test) done

@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
 import PriceDisplay from "@/components/PriceDisplay";
+import { variationLabel, parseAttributes } from "@/lib/products/variation";
 
 type ChainPrice = {
   chainId: string;
@@ -11,7 +12,10 @@ type ChainPrice = {
   price: number;
   observedAt: string;
   isSale: boolean;
-  couponPercents: number[]; memberPercent: number | null; isMemberPrice: boolean; bonusPoints: number | null;
+  couponPercents: number[];
+  memberPercent: number | null;
+  isMemberPrice: boolean;
+  bonusPoints: number | null;
   effective: number;
 };
 
@@ -29,7 +33,14 @@ export default async function CheckPage({
   let query = supabase
     .from("products")
     .select(
-      "id, name_en, name_ja, brand, product_packages (id, package_size, package_unit)"
+      `id, name_en, name_ja, brand,
+       product_packages (
+         id,
+         package_size,
+         package_unit,
+         variation_id,
+         product_variations (id, attributes)
+       )`
     )
     .order("name_en", { ascending: true })
     .limit(20);
@@ -40,11 +51,17 @@ export default async function CheckPage({
   }
   const { data: products, error: productsError } = await query;
   if (productsError) {
-    console.error("Products fetch error:", productsError.message, productsError.code);
+    console.error(
+      "Products fetch error:",
+      productsError.message,
+      productsError.code
+    );
   }
 
   const packageIds = (products ?? []).flatMap((p: any) =>
-    ([p.product_packages].flat().filter(Boolean) as any[]).map((pkg) => pkg.id as string)
+    ([p.product_packages].flat().filter(Boolean) as any[]).map(
+      (pkg) => pkg.id as string
+    )
   );
 
   // For every package: the latest price at each chain.
@@ -53,14 +70,19 @@ export default async function CheckPage({
     const { data: observations, error: obsError } = await supabase
       .from("price_observations")
       .select(
-        "product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points, store_chains (name, coupon_percents, member_discount_percent)"
+        `product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points,
+         store_chains (name, coupon_percents, member_discount_percent)`
       )
       .in("product_package_id", packageIds)
       .order("observed_at", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(500);
     if (obsError) {
-      console.error("Observations fetch error:", obsError.message, obsError.code);
+      console.error(
+        "Observations fetch error:",
+        obsError.message,
+        obsError.code
+      );
     }
 
     for (const obs of (observations ?? []) as any[]) {
@@ -70,15 +92,23 @@ export default async function CheckPage({
         const chain = [obs.store_chains].flat()[0];
         const price = Number(obs.price);
         const percents: number[] = chain?.coupon_percents ?? [];
-        const memberPercent: number | null = chain?.member_discount_percent ?? null; const isMemberPrice = !!obs.is_member_price;
+        const memberPercent: number | null = chain?.member_discount_percent ?? null;
+        const isMemberPrice = !!obs.is_member_price;
         perPackage.set(obs.store_chain_id, {
           chainId: obs.store_chain_id,
           chainName: chain?.name ?? "",
           price,
           observedAt: obs.observed_at,
           isSale: !!obs.is_sale,
-          couponPercents: percents, memberPercent, isMemberPrice, bonusPoints: (obs.bonus_points as number | null) ?? null,
-          effective: effectivePrice(price, { couponPercents: percents, memberPercent, isMemberPrice }),
+          couponPercents: percents,
+          memberPercent,
+          isMemberPrice,
+          bonusPoints: (obs.bonus_points as number | null) ?? null,
+          effective: effectivePrice(price, {
+            couponPercents: percents,
+            memberPercent,
+            isMemberPrice,
+          }),
         });
       }
       latest.set(obs.product_package_id, perPackage);
@@ -91,15 +121,24 @@ export default async function CheckPage({
       .filter(Boolean)
       .join(" ・ ");
     const pkgs = [product.product_packages].flat().filter(Boolean) as any[];
-    return pkgs.map((pkg) => ({
-      id: pkg.id as string,
-      name: name as string,
-      sub,
-      size: packageLabel(pkg.package_size, pkg.package_unit),
-      rows: Array.from(latest.get(pkg.id)?.values() ?? []).sort(
-        (a, b) => a.effective - b.effective
-      ),
-    }));
+    return pkgs.map((pkg) => {
+      // Variation handling
+      const variationObj = (pkg.product_variations ?? []).flat()[0];
+      const variationText = variationObj?.attributes
+        ? variationLabel(parseAttributes(variationObj.attributes))
+        : null;
+
+      return {
+        id: pkg.id as string,
+        name: name as string,
+        sub,
+        size: packageLabel(pkg.package_size, pkg.package_unit),
+        variationLabel: variationText,
+        rows: Array.from(latest.get(pkg.id)?.values() ?? []).sort(
+          (a, b) => a.effective - b.effective
+        ),
+      };
+    });
   });
 
   return (
@@ -136,7 +175,12 @@ export default async function CheckPage({
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-lg font-bold text-stone-900">{card.name}</p>
-                  {card.sub && <p className="text-sm text-stone-500">{card.sub}</p>}
+                  {card.sub && (
+                    <p className="text-sm text-stone-500">{card.sub}</p>
+                  )}
+                  {card.variationLabel && (
+                    <p className="text-sm text-gray-500">{card.variationLabel}</p>
+                  )}
                 </div>
                 <span className="shrink-0 rounded-full bg-stone-100 px-2.5 py-1 text-sm font-medium text-stone-700">
                   {card.size}
@@ -166,11 +210,20 @@ export default async function CheckPage({
                             </span>
                           )}
                         </p>
-                        <p className="text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
+                        <p className="text-xs text-stone-500">
+                          {formatJst(r.observedAt)}
+                          {r.bonusPoints ? (
+                            <span className="ml-2 text-amber-700">
+                              +{r.bonusPoints}ポイント
+                            </span>
+                          ) : null}
+                        </p>
                       </div>
                       <PriceDisplay
                         price={r.price}
-                        couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice}
+                        couponPercents={r.couponPercents}
+                        memberPercent={r.memberPercent}
+                        isMemberPrice={r.isMemberPrice}
                         size="md"
                       />
                     </li>

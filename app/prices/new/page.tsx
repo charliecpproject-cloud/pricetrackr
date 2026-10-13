@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { packageLabel } from "@/lib/prices/format";
+import { parseAttributes, variationLabel } from "@/lib/products/variation";
 import PriceForm from "./PriceForm";
 
 export default async function NewPricePage() {
@@ -8,7 +9,7 @@ export default async function NewPricePage() {
   const { data: products, error: productsError } = await supabase
     .from("products")
     .select(
-      "id, name_en, name_ja, brand, product_packages (id, package_size, package_unit)"
+      "id, name_en, name_ja, brand, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)"
     )
     .order("name_en", { ascending: true });
 
@@ -29,20 +30,48 @@ export default async function NewPricePage() {
   const packages = (products ?? []).flatMap((product: any) => {
     const productName = product.name_ja || product.name_en || "名称未設定";
     const brand = product.brand ? `（${product.brand}）` : "";
-    const search = [product.name_ja, product.name_en, product.brand]
-      .filter(Boolean)
-      .join(" ");
-    const pkgs = [product.product_packages].flat().filter(Boolean) as any[];
-    return pkgs.map((pkg) => ({
-      id: pkg.id as string,
-      label: `${productName}${brand} — ${packageLabel(pkg.package_size, pkg.package_unit)}`,
-      search,
-    }));
+    const baseSearch = [product.name_ja, product.name_en, product.brand].filter(Boolean).join(" ");
+
+    const variations: readonly any[] = product.product_variations ?? [];
+    const pkgs: readonly any[] = product.product_packages ?? [];
+
+    return pkgs.map((pkg) => {
+      // Find the variation that matches the package's variation_id (if any)
+      const variation = variations.find((v) => v.id === pkg.variation_id);
+      let variationText = "";
+      let variationSearch = "";
+
+      if (variation) {
+        const attrs = parseAttributes(variation.attributes);
+        variationText = variationLabel(attrs);
+        // Add attribute values to the search string
+        variationSearch = attrs.map((a) => a.value).join(" ");
+      }
+
+      // Build label: productName + brand [+ variation] + packageLabel
+      const labelParts = [`${productName}${brand}`];
+      if (variationText) {
+        labelParts.push(variationText);
+      }
+      labelParts.push(packageLabel(pkg.package_size, pkg.package_unit));
+      const label = labelParts.join(" — ");
+
+      // Build search string: base product info + variation attribute values (if any)
+      const search = [baseSearch, variationSearch].filter(Boolean).join(" ");
+
+      return {
+        id: pkg.id as string,
+        label,
+        search,
+      };
+    });
   });
 
   const chainOptions = (chains ?? []).map((chain: any) => ({
     id: chain.id as string,
-    name: chain.name as string, memberPercent: (chain.member_discount_percent ?? null) as number | null, hasBonusPoints: !!chain.has_bonus_points,
+    name: chain.name as string,
+    memberPercent: (chain.member_discount_percent ?? null) as number | null,
+    hasBonusPoints: !!chain.has_bonus_points,
   }));
 
   const branchOptions = (shops ?? []).map((shop: any) => ({

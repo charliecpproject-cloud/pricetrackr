@@ -6,6 +6,7 @@ import { formatJst, packageLabel } from "@/lib/prices/format";
 import PriceDisplay from "@/components/PriceDisplay";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
 import { deletePriceObservation } from "./actions";
+import { parseAttributes, variationLabel } from "@/lib/products/variation";
 
 export default async function PackageDetailPage({
   params,
@@ -21,7 +22,9 @@ export default async function PackageDetailPage({
 
   const { data: pkg, error: pkgError } = await supabase
     .from("product_packages")
-    .select("id, package_size, package_unit, products (name_en, name_ja, brand)")
+    .select(
+      "id, package_size, package_unit, products (name_en, name_ja, brand), product_variations (attributes)"
+    )
     .eq("id", packageId)
     .single();
   if (pkgError) {
@@ -33,6 +36,13 @@ export default async function PackageDetailPage({
 
   const product: any = [pkg.products].flat()[0] ?? {};
   const name = product.name_ja || product.name_en || "名称未設定";
+
+  // Variation handling
+  const variation = [pkg.product_variations].flat()[0];
+  const variationText =
+    variation && variation.attributes
+      ? variationLabel(parseAttributes(variation.attributes))
+      : null;
 
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
@@ -55,7 +65,10 @@ export default async function PackageDetailPage({
       price: obs.price as number | string,
       observedAt: obs.observed_at as string,
       isSale: !!obs.is_sale,
-      notes: (obs.notes as string | null) ?? "", isMemberPrice: !!obs.is_member_price, bonusPoints: (obs.bonus_points as number | null) ?? null, memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
+      notes: (obs.notes as string | null) ?? "",
+      isMemberPrice: !!obs.is_member_price,
+      bonusPoints: (obs.bonus_points as number | null) ?? null,
+      memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
       chainName: (chain?.name as string | undefined) ?? "",
       branchName: (branch?.name as string | undefined) ?? "",
       couponPercents: (chain?.coupon_percents as number[] | undefined) ?? [],
@@ -71,6 +84,9 @@ export default async function PackageDetailPage({
 
       <div>
         <h1 className="text-2xl font-bold text-stone-900">{name}</h1>
+        {variationText && (
+          <p className="text-sm text-stone-500">{variationText}</p>
+        )}
         <p className="mt-1 text-sm text-stone-500">
           {[product.brand, packageLabel(pkg.package_size, pkg.package_unit)]
             .filter(Boolean)
