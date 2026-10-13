@@ -145,7 +145,7 @@ export default async function CheckPage({
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-stone-900">価格確認</h1>
 
-      <form action="/check" method="get" className="relative">
+      <form action="/check" className="relative">
         <input
           name="q"
           type="search"

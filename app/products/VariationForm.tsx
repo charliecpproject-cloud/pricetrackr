@@ -92,7 +92,7 @@ export default function VariationForm({ products, attributeNames }: Props) {
         <p className="text-green-600 mb-2">{actionState.message}</p>
       )}
 
-      <form action={formAction} method="post" className="space-y-4">
+      <form action={formAction} className="space-y-4">
         {/* 商品選択 */}
         <div>
           <label htmlFor="product_id" className="block mb-1 font-medium">

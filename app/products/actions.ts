@@ -38,9 +38,66 @@ export async function addProduct(
     return { error: parseResult.error.issues[0].message };
   }
 
-  // ---- DB 挿入 ----
+  // ---- 重複チェック ----
   const supabase = await createSupabaseServerClient();
 
+  // 既存商品を取得
+  const { data: existingProducts, error: fetchError } = await supabase
+    .from("products")
+    .select("name_ja,name_en,brand");
+
+  if (fetchError) {
+    console.error("Supabase fetch products error:", fetchError);
+    return { error: "データベースエラー: " + fetchError.message };
+  }
+
+  // 正規化ヘルパー
+  const normalize = (str: string | null | undefined) =>
+    (str ?? "")
+      .normalize("NFKC")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
+  const newBrandNorm = normalize(parseResult.data.brand);
+  const newNameJaNorm = normalize(parseResult.data.name_ja);
+  const newNameEnNorm = normalize(parseResult.data.name_en);
+
+  const duplicate = existingProducts?.some((p) => {
+    const existingBrandNorm = normalize(p.brand);
+    // ブランドが両方空（または空文字）か、正規化後に一致する場合のみ比較対象
+    const brandMatches =
+      (newBrandNorm === "" && existingBrandNorm === "") ||
+      newBrandNorm === existingBrandNorm;
+
+    if (!brandMatches) return false;
+
+    const existingNameJaNorm = normalize(p.name_ja);
+    const existingNameEnNorm = normalize(p.name_en);
+
+    // name_ja が両方非空で一致、または name_en が両方非空で一致したら重複
+    if (
+      newNameJaNorm !== "" &&
+      existingNameJaNorm !== "" &&
+      newNameJaNorm === existingNameJaNorm
+    ) {
+      return true;
+    }
+    if (
+      newNameEnNorm !== "" &&
+      existingNameEnNorm !== "" &&
+      newNameEnNorm === existingNameEnNorm
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  if (duplicate) {
+    return { error: "同じ商品がすでに登録されています" };
+  }
+
+  // ---- DB 挿入 ----
   const { error } = await supabase.from("products").insert({
     name_ja: parseResult.data.name_ja,
     name_en: parseResult.data.name_en,
@@ -88,7 +145,7 @@ export async function addPackage(
     product_id: formData.get("product_id"),
     package_size: formData.get("package_size"),
     package_unit: formData.get("package_unit"),
-    variation_id: formData.get("variation_id"),
+    variation_id: (formData.get("variation_id") ?? ""),
   });
 
   if (!parseResult.success) {
