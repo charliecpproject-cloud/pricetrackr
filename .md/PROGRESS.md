@@ -1,9 +1,15 @@
 # Progress Log
 
+
+
 ## Current Phase
+
 Phase 1 complete (manual entry and price lookup, live on Vercel)
 
+
+
 ## Done
+
 - Step 1 done
 - Step 2 done
 - Step 3 done
@@ -20,23 +26,36 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14e (chain membership and bonus-points settings) done
 - Step 14f (membership price and bonus points on price entry and price display) done
 - Step 14g (product variations: custom attributes, packages per variation, shown in price entry, price check and the detail page) done (jobs G1‑G6: units 枚 and 袋, adding variations, adding packages into variations, the products page showing them)
+- Step 14h (product memo) done
 - Step 15 (delete own price entries) done
 - Step 16 (housekeeping) done
 - Step 17 (deploy and phone smoke test) done
 - Step 18 (Phase 1 close-out) done
 
+
+
 ## In Progress
+
 - (none)
 
+
+
 ## Next Up
+
 - Step 14f (price entry fields and price display for membership and bonus points)
 - Step 14g part B (variation forms and display, jobs G7 to G9)
 - Plan Phase 2 (freshness score, trust score, unit price)
 
+
+
 ## Known Issues
+
 - (none yet)
 
+
+
 ## Decisions Log
+
 - Using Supabase for DB/auth/storage, Vercel for hosting (2026-09-05)
 - 2026-10-11: observed_at is stored as timestamptz, entered as Japan time with minutes
 - 2026-10-11: price_observations is insert-only, with no update policy and owner-only delete
@@ -49,3 +68,4 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-13: store_chains.member_discount_percent (null means no membership price) and store_chains.has_bonus_points (default false) are chain options; price_observations.is_member_price and bonus_points are per-price details; discounts do not stack; the larger one is shown; bonuses never change the price.
 - 2026-10-13: When a chain has a membership price, the price entry form shows a checkbox indicating the entered price is already the membership price; otherwise the membership price is calculated and displayed alongside the normal price in brackets. Discounts never stack and the larger discount (coupon or membership) is shown; cheapest‑first ranking uses the discounted price. Bonus points are stored per price observation and displayed as small text only, never affecting the price.
 - 2026-10-13: variations are user-defined attribute rows stored as JSON with a canonical key (full-width converted, trimmed, case and order ignored) that is unique per product; a package may belong to a variation of its own product; each exact package has its own price history; products with variations require choosing a variation when adding a package; to share a history across sizes, use one package and note the detail in the price memo.
+- 2026-10-14: products.memo is an optional free-text note (maximum 1000 characters), set when adding a product, editable from the products page, and shown on the product detail page.

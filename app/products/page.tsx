@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductForm from "./ProductForm";
 import PackageForm from "./PackageForm";
 import VariationForm from "./VariationForm";
+import ProductMemoEditor from "./ProductMemoEditor";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,6 +28,7 @@ type Product = {
   name_en: string | null;
   brand: string | null;
   category: string | null;
+  memo: string | null;
   product_variations: Variation[] | null;
   product_packages: Package[] | null;
 };
@@ -41,7 +43,7 @@ export default async function ProductsPage() {
   const { data: products, error } = await supabase
     .from("products")
     .select(
-      "id, name_ja, name_en, brand, category, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)",
+      "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)",
     )
     .order("name_ja", { ascending: true });
 
@@ -133,6 +135,21 @@ export default async function ProductsPage() {
                       {product.category ?? "カテゴリなし"}
                     </p>
                   </CardHeader>
+
+                  {/* メモ表示とエディタ */}
+                  {product.memo && (
+                    <CardContent className="pt-2">
+                      <p className="text-sm text-gray-500 whitespace-pre-wrap">
+                        {product.memo}
+                      </p>
+                    </CardContent>
+                  )}
+                  <CardContent className="pt-2">
+                    <ProductMemoEditor
+                      productId={product.id}
+                      memo={product.memo ?? null}
+                    />
+                  </CardContent>
 
                   {/* バリエーションとそのパッケージ */}
                   {product.product_variations &&

@@ -16,6 +16,11 @@ export async function addProduct(
       name_en: z.string().trim().max(100).optional(),
       brand: z.string().trim().max(100).optional(),
       category: z.string().trim().max(100).optional(),
+      memo: z
+        .string()
+        .trim()
+        .max(1000, { message: "メモは1000文字以内で入力してください" })
+        .optional(),
     })
     .refine(
       (data) =>
@@ -32,6 +37,7 @@ export async function addProduct(
     name_en: formData.get("name_en"),
     brand: formData.get("brand"),
     category: formData.get("category"),
+    memo: formData.get("memo"),
   });
 
   if (!parseResult.success) {
@@ -98,11 +104,18 @@ export async function addProduct(
   }
 
   // ---- DB 挿入 ----
+  // memo が空文字列または未入力の場合は null に変換
+  const memoToInsert =
+    parseResult.data.memo && parseResult.data.memo.length > 0
+      ? parseResult.data.memo
+      : null;
+
   const { error } = await supabase.from("products").insert({
     name_ja: parseResult.data.name_ja,
     name_en: parseResult.data.name_en,
     brand: parseResult.data.brand,
     category: parseResult.data.category,
+    memo: memoToInsert,
   });
 
   if (error) {

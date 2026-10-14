@@ -123,7 +123,9 @@ export default async function CheckPage({
     const pkgs = [product.product_packages].flat().filter(Boolean) as any[];
     return pkgs.map((pkg) => {
       // Variation handling
-      const variationObj = (pkg.product_variations ?? []).flat()[0];
+      const variationObj = Array.isArray(pkg.product_variations)
+        ? pkg.product_variations[0]
+        : pkg.product_variations ?? null;
       const variationText = variationObj?.attributes
         ? variationLabel(parseAttributes(variationObj.attributes))
         : null;

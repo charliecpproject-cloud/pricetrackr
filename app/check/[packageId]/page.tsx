@@ -23,7 +23,7 @@ export default async function PackageDetailPage({
   const { data: pkg, error: pkgError } = await supabase
     .from("product_packages")
     .select(
-      "id, package_size, package_unit, products (name_en, name_ja, brand), product_variations (attributes)"
+      "id, package_size, package_unit, products (name_en, name_ja, brand, memo), product_variations (attributes)"
     )
     .eq("id", packageId)
     .single();
@@ -92,6 +92,12 @@ export default async function PackageDetailPage({
             .filter(Boolean)
             .join(" ・ ")}
         </p>
+        {product.memo && (
+          <div className="mt-4 rounded-md border border-stone-200 bg-white p-3 shadow-sm">
+            <h3 className="text-sm font-medium text-stone-900 mb-1">メモ</h3>
+            <p className="whitespace-pre-wrap text-sm text-stone-700">{product.memo}</p>
+          </div>
+        )}
       </div>
 
       {latest ? (

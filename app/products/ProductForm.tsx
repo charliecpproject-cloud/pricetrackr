@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function ProductForm() {
   const initialState = { error: null as string | null };
@@ -57,6 +58,17 @@ export default function ProductForm() {
               type="text"
               name="category"
               placeholder="例: 飲料"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="memo">メモ（任意）</Label>
+            <Textarea
+              id="memo"
+              name="memo"
+              placeholder="例：月曜は特売になりやすい"
+              rows={3}
+              maxLength={1000}
             />
           </div>
 
