@@ -1,22 +1,26 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { addPriceObservation } from "@/app/prices/actions"; import ChainExtras from "./ChainExtras";
+import { addPriceObservation } from "@/app/prices/actions";
+import ChainExtras from "./ChainExtras";
+import NewPackageFields, { type ProductOption } from "./NewPackageFields";
+import { Badge, Field, NewToggle, controlCls, labelCls } from "./FormParts";
 
 type Pkg = { id: string; label: string; search: string };
-type Chain = { id: string; name: string; memberPercent: number | null; hasBonusPoints: boolean };
+type Chain = {
+  id: string;
+  name: string;
+  memberPercent: number | null;
+  hasBonusPoints: boolean;
+};
 type Branch = { id: string; chainId: string; name: string };
 
-const initialState: { error: string | null; message?: string | null } = {
-  error: null,
-  message: null,
-};
-
-const labelCls = "mb-1.5 block text-sm font-medium text-stone-700";
-const controlCls =
-  "h-12 w-full rounded-xl border border-stone-200 bg-white px-3 text-base focus:outline-none focus:ring-2 focus:ring-teal-600";
+const initialState: {
+  error: string | null;
+  message?: string | null;
+  packageId?: string | null;
+} = { error: null, message: null, packageId: null };
 
 // Current date and time in Japan, formatted for a datetime-local input.
 function nowInJapan(): string {
@@ -35,16 +39,19 @@ function nowInJapan(): string {
 
 export default function PriceForm({
   packages,
+  products,
   chains,
   branches,
 }: {
   packages: Pkg[];
+  products: ProductOption[];
   chains: Chain[];
   branches: Branch[];
 }) {
   const [state, formAction, pending] = useActionState(addPriceObservation, initialState);
   const [search, setSearch] = useState("");
   const [packageId, setPackageId] = useState("");
+  const [isNewPackage, setIsNewPackage] = useState(false);
   const [chainId, setChainId] = useState("");
   const [branchId, setBranchId] = useState("");
   const [isNewBranch, setIsNewBranch] = useState(false);
@@ -57,12 +64,18 @@ export default function PriceForm({
     setObservedAt(nowInJapan());
   }, []);
 
-  // After a successful save: clear the price, go back to the branch dropdown.
+  // After a successful save: clear the price and go back to the dropdowns,
+  // with the package just used (or just created) selected.
   useEffect(() => {
     if (state.message) {
       setPrice("");
       setIsNewBranch(false);
       setNewBranch("");
+      if (state.packageId) {
+        setPackageId(state.packageId);
+        setIsNewPackage(false);
+        setSearch("");
+      }
     }
   }, [state]);
 
@@ -72,53 +85,71 @@ export default function PriceForm({
     : packages;
   const selectedPackage = filtered.some((p) => p.id === packageId) ? packageId : "";
 
-  const branchOptions = branches.filter((b) => b.chainId === chainId); const selectedChain = chains.find((c) => c.id === chainId);
+  const branchOptions = branches.filter((b) => b.chainId === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
+  const selectedChain = chains.find((c) => c.id === chainId);
 
   return (
     <form action={formAction} className="space-y-5">
-      <div>
-        <label className={labelCls} htmlFor="search">
-          商品を検索
-        </label>
-        <input
-          id="search"
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="商品名・ブランドで絞り込み"
-          className={controlCls}
-        />
-      </div>
+      <p className="flex items-center text-sm text-stone-500">
+        <Badge kind="required" />
+        <span className="ml-1">は必ず入力してください。</span>
+      </p>
 
-      <div>
-        <label className={labelCls} htmlFor="product_package_id">
-          商品・容量
-        </label>
-        <select
-          id="product_package_id"
-          name="product_package_id"
-          required
-          value={selectedPackage}
-          onChange={(e) => setPackageId(e.target.value)}
-          className={controlCls}
-        >
-          <option value="">商品・容量を選択</option>
-          {filtered.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.label}
-            </option>
-          ))}
-        </select>
-        {filtered.length === 0 && (
-          <p className="mt-1.5 text-sm text-stone-500">該当する商品がありません</p>
-        )}
-      </div>
+      {isNewPackage ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className={`${labelCls} mb-0`}>新しい商品・容量を登録</span>
+            <NewToggle checked onChange={setIsNewPackage} />
+          </div>
+          <NewPackageFields products={products} />
+        </div>
+      ) : (
+        <>
+          <Field label="商品を検索" kind="optional" htmlFor="search">
+            <input
+              id="search"
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="商品名・ブランドで絞り込み"
+              className={controlCls}
+            />
+          </Field>
 
-      <div>
-        <label className={labelCls} htmlFor="store_chain_id">
-          チェーン
-        </label>
+          <Field
+            label="商品・容量"
+            kind="required"
+            htmlFor="product_package_id"
+            hint={
+              filtered.length === 0
+                ? "該当する商品がありません。右の「新規」から登録できます。"
+                : "リストにない場合は「新規」で商品・容量を登録できます。"
+            }
+          >
+            <div className="flex gap-2">
+              <select
+                id="product_package_id"
+                name="product_package_id"
+                required
+                value={selectedPackage}
+                onChange={(e) => setPackageId(e.target.value)}
+                className={controlCls}
+              >
+                <option value="">商品・容量を選択</option>
+                {filtered.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+              <NewToggle checked={false} onChange={setIsNewPackage} />
+            </div>
+          </Field>
+        </>
+      )}
+
+      <Field label="チェーン" kind="required" htmlFor="store_chain_id">
         <select
           id="store_chain_id"
           name="store_chain_id"
@@ -137,12 +168,13 @@ export default function PriceForm({
             </option>
           ))}
         </select>
-      </div>
+      </Field>
 
-      <div>
-        <label className={labelCls} htmlFor={isNewBranch ? "new_shop_name" : "shop_id"}>
-          支店（任意）
-        </label>
+      <Field
+        label="支店"
+        kind="optional"
+        htmlFor={isNewBranch ? "new_shop_name" : "shop_id"}
+      >
         <div className="flex gap-2">
           {isNewBranch ? (
             <input
@@ -171,33 +203,18 @@ export default function PriceForm({
               ))}
             </select>
           )}
-          <label
-            className={`flex h-12 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-sm font-medium ${
-              isNewBranch
-                ? "border-teal-600 bg-teal-50 text-teal-700"
-                : "border-stone-200 bg-white text-stone-600"
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={isNewBranch}
-              onChange={(e) => {
-                setIsNewBranch(e.target.checked);
-                setBranchId("");
-                setNewBranch("");
-              }}
-              className="h-4 w-4 accent-teal-600"
-            />
-            <Plus className="h-4 w-4" />
-            新規
-          </label>
+          <NewToggle
+            checked={isNewBranch}
+            onChange={(checked) => {
+              setIsNewBranch(checked);
+              setBranchId("");
+              setNewBranch("");
+            }}
+          />
         </div>
-      </div>
+      </Field>
 
-      <div>
-        <label className={labelCls} htmlFor="price">
-          価格（円）
-        </label>
+      <Field label="価格（円）" kind="required" htmlFor="price">
         <input
           id="price"
           name="price"
@@ -209,12 +226,11 @@ export default function PriceForm({
           placeholder="例：198"
           className={controlCls}
         />
-      </div>
+      </Field>
 
-      <div>
-        <ChainExtras chain={selectedChain} /><label className={labelCls} htmlFor="observed_at">
-          日時
-        </label>
+      <ChainExtras chain={selectedChain} />
+
+      <Field label="日時" kind="required" htmlFor="observed_at">
         <input
           id="observed_at"
           name="observed_at"
@@ -224,17 +240,15 @@ export default function PriceForm({
           onChange={(e) => setObservedAt(e.target.value)}
           className={controlCls}
         />
-      </div>
+      </Field>
 
       <label className="flex h-12 items-center gap-3 text-base text-stone-800">
         <input type="checkbox" name="is_sale" className="h-5 w-5 accent-teal-600" />
         特売
+        <Badge kind="optional" />
       </label>
 
-      <div>
-        <label className={labelCls} htmlFor="notes">
-          メモ（任意）
-        </label>
+      <Field label="メモ" kind="optional" htmlFor="notes">
         <input
           id="notes"
           name="notes"
@@ -242,14 +256,14 @@ export default function PriceForm({
           maxLength={200}
           className={controlCls}
         />
-      </div>
+      </Field>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
 
       <Button
         type="submit"
-        disabled={pending || filtered.length === 0}
+        disabled={pending || (!isNewPackage && filtered.length === 0)}
         className="h-12 w-full text-base"
       >
         {pending ? "保存中…" : "保存"}

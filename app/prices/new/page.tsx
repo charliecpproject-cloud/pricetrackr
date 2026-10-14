@@ -27,45 +27,35 @@ export default async function NewPricePage() {
   if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
   if (shopsError) console.error("Shops fetch error:", shopsError.message, shopsError.code);
 
-  const packages = (products ?? []).flatMap((product: any) => {
+  const packages: { id: string; label: string; search: string }[] = [];
+  const productOptions: {
+    id: string;
+    label: string;
+    variations: { id: string; label: string }[];
+  }[] = [];
+
+  for (const product of (products ?? []) as any[]) {
     const productName = product.name_ja || product.name_en || "名称未設定";
-    const brand = product.brand ? `（${product.brand}）` : "";
-    const baseSearch = [product.name_ja, product.name_en, product.brand].filter(Boolean).join(" ");
+    const title = `${productName}${product.brand ? `（${product.brand}）` : ""}`;
+    const variations = ([product.product_variations].flat().filter(Boolean) as any[]).map(
+      (v) => ({ id: v.id as string, label: variationLabel(parseAttributes(v.attributes)) })
+    );
 
-    const variations: readonly any[] = product.product_variations ?? [];
-    const pkgs: readonly any[] = product.product_packages ?? [];
+    productOptions.push({ id: product.id as string, label: title, variations });
 
-    return pkgs.map((pkg) => {
-      // Find the variation that matches the package's variation_id (if any)
+    for (const pkg of ([product.product_packages].flat().filter(Boolean) as any[])) {
       const variation = variations.find((v) => v.id === pkg.variation_id);
-      let variationText = "";
-      let variationSearch = "";
-
-      if (variation) {
-        const attrs = parseAttributes(variation.attributes);
-        variationText = variationLabel(attrs);
-        // Add attribute values to the search string
-        variationSearch = attrs.map((a) => a.value).join(" ");
-      }
-
-      // Build label: productName + brand [+ variation] + packageLabel
-      const labelParts = [`${productName}${brand}`];
-      if (variationText) {
-        labelParts.push(variationText);
-      }
-      labelParts.push(packageLabel(pkg.package_size, pkg.package_unit));
-      const label = labelParts.join(" — ");
-
-      // Build search string: base product info + variation attribute values (if any)
-      const search = [baseSearch, variationSearch].filter(Boolean).join(" ");
-
-      return {
+      packages.push({
         id: pkg.id as string,
-        label,
-        search,
-      };
-    });
-  });
+        label: [title, variation?.label, packageLabel(pkg.package_size, pkg.package_unit)]
+          .filter(Boolean)
+          .join(" — "),
+        search: [product.name_ja, product.name_en, product.brand, variation?.label]
+          .filter(Boolean)
+          .join(" "),
+      });
+    }
+  }
 
   const chainOptions = (chains ?? []).map((chain: any) => ({
     id: chain.id as string,
@@ -86,7 +76,12 @@ export default async function NewPricePage() {
         <h1 className="text-2xl font-bold text-stone-900">価格入力</h1>
         <p className="mt-1 text-sm text-stone-500">店で見た価格を記録します</p>
       </div>
-      <PriceForm packages={packages} chains={chainOptions} branches={branchOptions} />
+      <PriceForm
+        packages={packages}
+        products={productOptions}
+        chains={chainOptions}
+        branches={branchOptions}
+      />
     </div>
   );
 }

@@ -27,11 +27,12 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14f (membership price and bonus points on price entry and price display) done
 - Step 14g (product variations: custom attributes, packages per variation, shown in price entry, price check and the detail page) done (jobs G1‑G6: units 枚 and 袋, adding variations, adding packages into variations, the products page showing them)
 - Step 14h (product memo) done
+- Step 14i (app icon and web app manifest) done
 - Step 15 (delete own price entries) done
 - Step 16 (housekeeping) done
 - Step 17 (deploy and phone smoke test) done
 - Step 18 (Phase 1 close-out) done
-
+- Step 14j (price entry inline creation, duplicate handling, field markings) done
 
 
 ## In Progress
@@ -69,3 +70,5 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-13: When a chain has a membership price, the price entry form shows a checkbox indicating the entered price is already the membership price; otherwise the membership price is calculated and displayed alongside the normal price in brackets. Discounts never stack and the larger discount (coupon or membership) is shown; cheapest‑first ranking uses the discounted price. Bonus points are stored per price observation and displayed as small text only, never affecting the price.
 - 2026-10-13: variations are user-defined attribute rows stored as JSON with a canonical key (full-width converted, trimmed, case and order ignored) that is unique per product; a package may belong to a variation of its own product; each exact package has its own price history; products with variations require choosing a variation when adding a package; to share a history across sizes, use one package and note the detail in the price memo.
 - 2026-10-14: products.memo is an optional free-text note (maximum 1000 characters), set when adding a product, editable from the products page, and shown on the product detail page.
+- 2026-10-14: the app has a web app manifest (app/manifest.ts) with icons in public/icons (192, 512 and a maskable 512) generated from priceTrackr-logo.png, plus app/icon.png and app/apple-icon.png; the login guard skips manifest.webmanifest so Android can read it without logging in.
+- 2026-10-14: price entry form can create a new product and package inline with a 新規 toggle (new product, or a new size of an existing product, with a required variation when the product has variations); an exact duplicate product (same normalized name and brand) is refused instead of merged, and an identical existing package is reused; every field on the form is marked 必須, 任意, or どちらか必須.
