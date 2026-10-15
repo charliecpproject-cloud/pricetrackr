@@ -33,7 +33,7 @@ export default async function StoresPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-4">
+    <div>
       {/* ページ見出し */}
       <h1 className="text-2xl font-bold mb-6">店舗</h1>
 

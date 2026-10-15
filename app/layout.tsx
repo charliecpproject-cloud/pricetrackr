@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
-        <main className="mx-auto max-w-xl px-4 pb-28 pt-6">{children}</main>
+        <main className="mx-auto w-full min-w-0 max-w-xl px-4 pb-28 pt-6 [overflow-wrap:anywhere] [&_input]:min-w-0 [&_select]:min-w-0 [&_textarea]:min-w-0">{children}</main>
         <AppNav />
       </body>
     </html>

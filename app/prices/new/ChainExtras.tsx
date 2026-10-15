@@ -1,4 +1,5 @@
 import { Badge, controlCls, labelCls } from "@/components/FormParts";
+import Collapsible from "@/components/Collapsible";
 
 type Chain = {
   id: string;
@@ -11,8 +12,15 @@ type Chain = {
 export default function ChainExtras({ chain }: { chain: Chain | undefined }) {
   if (!chain || (chain.memberPercent === null && !chain.hasBonusPoints)) return null;
 
+  const title = [
+    chain.memberPercent !== null ? "会員価格" : null,
+    chain.hasBonusPoints ? "ポイント" : null,
+  ]
+    .filter(Boolean)
+    .join("・");
+
   return (
-    <div className="mb-5 space-y-4">
+    <Collapsible title={title} badge={<Badge kind="optional" />}>
       {chain.memberPercent !== null && (
         <label className="flex items-start gap-3 rounded-xl bg-indigo-50 p-3 text-base text-stone-800">
           <input
@@ -22,7 +30,6 @@ export default function ChainExtras({ chain }: { chain: Chain | undefined }) {
           />
           <span>
             入力した価格は会員価格です（会員・現金払い {chain.memberPercent}%引き後）
-            <Badge kind="optional" />
             <span className="mt-0.5 block text-xs text-stone-500">
               チェックしない場合は通常価格として扱い、会員価格は自動で計算して表示します。
             </span>
@@ -33,7 +40,6 @@ export default function ChainExtras({ chain }: { chain: Chain | undefined }) {
         <div>
           <label htmlFor="bonus_points" className={labelCls}>
             ボーナスポイント
-            <Badge kind="optional" />
           </label>
           <input
             id="bonus_points"
@@ -45,6 +51,6 @@ export default function ChainExtras({ chain }: { chain: Chain | undefined }) {
           />
         </div>
       )}
-    </div>
+    </Collapsible>
   );
 }

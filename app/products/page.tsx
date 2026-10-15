@@ -80,8 +80,8 @@ export default async function ProductsPage() {
   const attributeNames = Array.from(attributeNameSet).sort();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-xl mx-auto px-4 py-6">
+    <div>
+      <div className="min-w-0">
         {/* ページ見出し */}
         <h1 className="text-2xl font-bold mb-6">商品</h1>
 
