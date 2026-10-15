@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { addPriceObservation } from "@/app/prices/actions";
 import ChainExtras from "./ChainExtras";
+import { TAX_BASES, TAX_RADIO_LABEL } from "@/lib/prices/tax";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
@@ -227,6 +228,29 @@ export default function PriceForm({
           className={controlCls}
         />
       </Field>
+
+      <fieldset>
+        <legend className={labelCls}>
+          税の扱い <Badge kind="required" />
+        </legend>
+        <div className="flex gap-2">
+          {TAX_BASES.map((b) => (
+            <label
+              key={b}
+              className="flex h-12 flex-1 cursor-pointer items-center justify-center rounded-xl border border-stone-200 bg-white text-base text-stone-800 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600"
+            >
+              <input
+                type="radio"
+                name="tax_basis"
+                value={b}
+                defaultChecked={b === "unknown"}
+                className="sr-only"
+              />
+              {TAX_RADIO_LABEL[b]}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <ChainExtras chain={selectedChain} />
 

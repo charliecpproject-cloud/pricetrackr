@@ -1,5 +1,6 @@
 import { bestDiscount, couponPrice } from "@/lib/prices/coupon";
 import { formatYen } from "@/lib/prices/format";
+import { TAX_BADGE_LABEL, type TaxBasis } from "@/lib/prices/tax";
 
 type Props = {
   price: number | string;
@@ -7,9 +8,33 @@ type Props = {
   memberPercent?: number | null;
   isMemberPrice?: boolean;
   size?: "md" | "lg";
+  taxBasis?: TaxBasis;
 };
 
-export default function PriceDisplay({
+export default function PriceDisplay({ taxBasis, ...rest }: Props) {
+  return (
+    <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
+      <PriceCore {...rest} />
+      {taxBasis && <TaxBadge basis={taxBasis} />}
+    </span>
+  );
+}
+
+function TaxBadge({ basis }: { basis: TaxBasis }) {
+  const cls =
+    basis === "unknown"
+      ? "bg-stone-100 text-stone-600"
+      : "bg-sky-100 text-sky-700";
+  return (
+    <span
+      className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-bold ${cls}`}
+    >
+      {TAX_BADGE_LABEL[basis]}
+    </span>
+  );
+}
+
+function PriceCore({
   price,
   couponPercents,
   memberPercent,

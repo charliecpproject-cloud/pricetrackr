@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
+import { TAX_BASES } from "@/lib/prices/tax";
 
 type State = {
   error: string | null;
@@ -189,6 +190,9 @@ export async function addPriceObservation(
   if (price === null) return { error: "価格は1円以上で正しく入力してください" };
   const observedAt = toObservedAt(text(formData, "observed_at") ?? "");
   if (observedAt === null) return { error: "日時が正しくありません" };
+  const taxRaw = text(formData, "tax_basis");
+  const taxBasis = TAX_BASES.find((b) => b === taxRaw);
+  if (!taxBasis) return { error: "税抜き・税込み・不明のどれかを選んでください" };
 
   const { store_chain_id, new_shop_name, notes } = parsed.data;
   let shopId = parsed.data.shop_id;
@@ -264,6 +268,7 @@ export async function addPriceObservation(
     observed_at: observedAt,
     is_sale: isSale,
     is_member_price: isMemberPrice,
+    tax_basis: taxBasis,
     bonus_points: bonusPoints,
     notes,
   });

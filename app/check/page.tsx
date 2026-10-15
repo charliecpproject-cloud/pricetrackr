@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
 import PriceDisplay from "@/components/PriceDisplay";
+import { canCompare, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
 import { variationLabel, parseAttributes } from "@/lib/products/variation";
 
 type ChainPrice = {
@@ -17,6 +18,7 @@ type ChainPrice = {
   isMemberPrice: boolean;
   bonusPoints: number | null;
   effective: number;
+  taxBasis: TaxBasis;
 };
 
 export default async function CheckPage({
@@ -70,7 +72,7 @@ export default async function CheckPage({
     const { data: observations, error: obsError } = await supabase
       .from("price_observations")
       .select(
-        `product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points,
+        `product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points, tax_basis,
          store_chains (name, coupon_percents, member_discount_percent)`
       )
       .in("product_package_id", packageIds)
@@ -104,6 +106,7 @@ export default async function CheckPage({
           memberPercent,
           isMemberPrice,
           bonusPoints: (obs.bonus_points as number | null) ?? null,
+          taxBasis: parseTaxBasis(obs.tax_basis),
           effective: effectivePrice(price, {
             couponPercents: percents,
             memberPercent,
@@ -137,7 +140,7 @@ export default async function CheckPage({
         size: packageLabel(pkg.package_size, pkg.package_unit),
         variationLabel: variationText,
         rows: Array.from(latest.get(pkg.id)?.values() ?? []).sort(
-          (a, b) => a.effective - b.effective
+          (a, b) => new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime()
         ),
       };
     });
@@ -206,7 +209,7 @@ export default async function CheckPage({
                               特売
                             </span>
                           )}
-                          {card.rows.length > 1 && i === 0 && (
+                          {canCompare(card.rows.map((x) => x.taxBasis)) && r.effective === Math.min(...card.rows.map((x) => x.effective)) && (
                             <span className="rounded-md bg-teal-100 px-1.5 py-0.5 text-xs font-bold text-teal-700">
                               最安
                             </span>
@@ -226,6 +229,7 @@ export default async function CheckPage({
                         couponPercents={r.couponPercents}
                         memberPercent={r.memberPercent}
                         isMemberPrice={r.isMemberPrice}
+                        taxBasis={r.taxBasis}
                         size="md"
                       />
                     </li>
