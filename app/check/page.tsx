@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
 import PriceDisplay from "@/components/PriceDisplay";
-import { canCompare, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
+import { isCheapest, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
 import { variationLabel, parseAttributes } from "@/lib/products/variation";
 
 type ChainPrice = {
@@ -209,7 +209,7 @@ export default async function CheckPage({
                               特売
                             </span>
                           )}
-                          {canCompare(card.rows.map((x) => x.taxBasis)) && r.effective === Math.min(...card.rows.map((x) => x.effective)) && (
+                          {isCheapest(r, card.rows) && (
                             <span className="rounded-md bg-teal-100 px-1.5 py-0.5 text-xs font-bold text-teal-700">
                               最安
                             </span>

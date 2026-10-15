@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import PriceDisplay from "@/components/PriceDisplay";
+import { parseTaxBasis } from "@/lib/prices/tax";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
 import { deletePriceObservation } from "./actions";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
@@ -47,7 +48,7 @@ export default async function PackageDetailPage({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, notes, store_chains (name, coupon_percents, member_discount_percent), shops (name)"
+      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, notes, store_chains (name, coupon_percents, member_discount_percent), shops (name)"
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -68,6 +69,7 @@ export default async function PackageDetailPage({
       notes: (obs.notes as string | null) ?? "",
       isMemberPrice: !!obs.is_member_price,
       bonusPoints: (obs.bonus_points as number | null) ?? null,
+      taxBasis: parseTaxBasis(obs.tax_basis),
       memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
       chainName: (chain?.name as string | undefined) ?? "",
       branchName: (branch?.name as string | undefined) ?? "",
@@ -104,7 +106,7 @@ export default async function PackageDetailPage({
         <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
-            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} size="lg" />
+            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} taxBasis={latest.taxBasis} size="lg" />
           </div>
           <p className="mt-2 text-sm text-stone-500">
             {latest.chainName}
@@ -138,7 +140,7 @@ export default async function PackageDetailPage({
                       </span>
                     )}
                   </p>
-                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} size="md" />
+                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} taxBasis={r.taxBasis} size="md" />
                 </div>
                 <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
                 {r.notes && <p className="mt-2 text-sm text-stone-700">{r.notes}</p>}

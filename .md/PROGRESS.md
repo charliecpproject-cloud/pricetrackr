@@ -1,11 +1,9 @@
 # Progress Log
 
 
-
 ## Current Phase
 
 Phase 1 complete (manual entry and price lookup, live on Vercel)
-
 
 
 ## Done
@@ -34,6 +32,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 18 (Phase 1 close-out) done
 - Step 14j (price entry inline creation, duplicate handling, field markings) done
 - Step 14k done
+- Step 14l (tax basis on prices: 税抜き/税込み/不明 radio on price entry, tax badge on every price, price check lists by most recent date, 最安 only among prices from the last 6 months that share the same known basis) done
 
 
 ## In Progress
@@ -44,8 +43,6 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 
 ## Next Up
 
-- Step 14f (price entry fields and price display for membership and bonus points)
-- Step 14g part B (variation forms and display, jobs G7 to G9)
 - Plan Phase 2 (freshness score, trust score, unit price)
 
 
@@ -65,7 +62,6 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-11: zod v4, so errors are read with error.issues
 - 2026-10-11: Aider jobs are kept small because of the Groq free-tier limit of about 8k tokens per minute
 - 2026-10-12: UI is Japanese only with hardcoded strings, no i18n library, product names show name_ja first with name_en as fallback; teal theme with a bottom tab bar; package units are chosen from a native dropdown, with count stored and shown as 個.
-- 2026-10-12: coupons are set per chain (`store_chains.coupon_percents` (allowed 5, 10, 15, default none); the coupon price is calculated at display time and never stored; the best enabled percent is shown as the coupon price with the normal price in brackets; coupon price = floor(price × (100 − percent) / 100), an estimate that ignores tax and the one-item limit.
 - 2026-10-12: coupons are set per chain in `store_chains.coupon_percents` (allowed 5, 10, 15, default none) and the coupon price is calculated at display time, never stored; `price_observations.store_chain_id` is required and `shop_id` is optional, with a composite foreign key ensuring a branch belongs to its chain; the price form takes the chain first, with an optional branch dropdown and a **新規** checkbox that creates a branch; price check shows the latest price per chain, cheapest first.
 - 2026-10-13: store_chains.member_discount_percent (null means no membership price) and store_chains.has_bonus_points (default false) are chain options; price_observations.is_member_price and bonus_points are per-price details; discounts do not stack; the larger one is shown; bonuses never change the price.
 - 2026-10-13: When a chain has a membership price, the price entry form shows a checkbox indicating the entered price is already the membership price; otherwise the membership price is calculated and displayed alongside the normal price in brackets; discounts never stack and the larger discount (coupon or membership) is shown; cheapest‑first ranking uses the discounted price. Bonus points are stored per price observation and displayed as small text only, never affecting the price.
@@ -74,3 +70,5 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-14: the app has a web app manifest (app/manifest.ts) with icons in public/icons (192, 512 and a maskable 512) generated from priceTrackr-logo.png, plus app/icon.png and app/apple-icon.png; the login guard skips manifest.webmanifest so Android can read it without logging in.
 - 2026-10-14: price entry form can create a new product and package inline with a 新規 toggle (new product, or a new size of an existing product, with a required variation when the product has variations); an exact duplicate product (same normalized name and brand) is refused instead of merged, and an identical existing package is reused; every field on the form is marked 必須, 任意, or どちらか必須.
 - 2026-10-15: product names are typed in one field and saved in `name_ja` when the text contains Japanese characters, otherwise in `name_en`, with an optional second name stored in the other column (handled by `lib/products/name.ts`); products and variations can be edited from the products page (name, optional second name, brand, category; variation attribute rows); editing into an exact duplicate (same normalized name and brand, or same variation attributes on the same product) is refused; form parts moved to `components/FormParts.tsx`.
+
+- 2026-10-15: price_observations.tax_basis ('excl', 'incl', 'unknown', default 'unknown') records whether the entered price excludes or includes tax; no tax rate is assumed or calculated; the price entry form requires choosing it with 不明 preselected; every price shows a tax badge; the price check page lists chains by most recent observation and shows the 最安 badge only among prices from the last 6 months that share the same known basis.

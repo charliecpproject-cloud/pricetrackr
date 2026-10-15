@@ -1,10 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { Check, HelpCircle, Receipt, Tag, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Collapsible from "@/components/Collapsible";
 import { addPriceObservation } from "@/app/prices/actions";
+import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import ChainExtras from "./ChainExtras";
-import { TAX_BASES, TAX_RADIO_LABEL } from "@/lib/prices/tax";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
@@ -22,6 +24,12 @@ const initialState: {
   message?: string | null;
   packageId?: string | null;
 } = { error: null, message: null, packageId: null };
+
+const TAX_ICON: Record<TaxBasis, LucideIcon> = {
+  excl: Tag,
+  incl: Receipt,
+  unknown: HelpCircle,
+};
 
 // Current date and time in Japan, formatted for a datetime-local input.
 function nowInJapan(): string {
@@ -59,6 +67,9 @@ export default function PriceForm({
   const [newBranch, setNewBranch] = useState("");
   const [price, setPrice] = useState("");
   const [observedAt, setObservedAt] = useState("");
+  const [saveVisible, setSaveVisible] = useState(true);
+  const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
+  const saveRef = useRef<HTMLDivElement>(null);
 
   // Default time is set after mount, so server and browser output match.
   useEffect(() => {
@@ -80,6 +91,28 @@ export default function PriceForm({
     }
   }, [state]);
 
+  // Is the main Save button on screen? The bottom margin ignores the part
+  // hidden behind the bottom tab bar.
+  useEffect(() => {
+    const el = saveRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setSaveVisible(entry.isIntersecting),
+      { rootMargin: "0px 0px -80px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // A short message at the top, shown only while the main Save button is off screen.
+  useEffect(() => {
+    const text = state.error ?? state.message;
+    if (!text) return;
+    setToast({ text, ok: !state.error });
+    const id = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(id);
+  }, [state]);
+
   const keyword = search.trim().toLowerCase();
   const filtered = keyword
     ? packages.filter((p) => `${p.label} ${p.search}`.toLowerCase().includes(keyword))
@@ -89,14 +122,14 @@ export default function PriceForm({
   const branchOptions = branches.filter((b) => b.chainId === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
   const selectedChain = chains.find((c) => c.id === chainId);
+  const branchSummary = isNewBranch
+    ? newBranch.trim()
+    : (branchOptions.find((b) => b.id === selectedBranch)?.name ?? "");
+
+  const saveDisabled = pending || (!isNewPackage && filtered.length === 0);
 
   return (
     <form action={formAction} className="space-y-5">
-      <p className="flex items-center text-sm text-stone-500">
-        <Badge kind="required" />
-        <span className="ml-1">は必ず入力してください。</span>
-      </p>
-
       {isNewPackage ? (
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-3">
@@ -171,17 +204,14 @@ export default function PriceForm({
         </select>
       </Field>
 
-      <Field
-        label="支店"
-        kind="optional"
-        htmlFor={isNewBranch ? "new_shop_name" : "shop_id"}
-      >
+      <Collapsible title="支店" badge={<Badge kind="optional" />} summary={branchSummary}>
         <div className="flex gap-2">
           {isNewBranch ? (
             <input
               id="new_shop_name"
               name="new_shop_name"
               type="text"
+              aria-label="新しい支店名"
               value={newBranch}
               onChange={(e) => setNewBranch(e.target.value)}
               maxLength={100}
@@ -192,6 +222,7 @@ export default function PriceForm({
             <select
               id="shop_id"
               name="shop_id"
+              aria-label="支店"
               value={selectedBranch}
               onChange={(e) => setBranchId(e.target.value)}
               className={controlCls}
@@ -213,7 +244,7 @@ export default function PriceForm({
             }}
           />
         </div>
-      </Field>
+      </Collapsible>
 
       <Field label="価格（円）" kind="required" htmlFor="price">
         <input
@@ -229,26 +260,30 @@ export default function PriceForm({
         />
       </Field>
 
-      <fieldset>
+      <fieldset className="min-w-0">
         <legend className={labelCls}>
           税の扱い <Badge kind="required" />
         </legend>
-        <div className="flex gap-2">
-          {TAX_BASES.map((b) => (
-            <label
-              key={b}
-              className="flex h-12 flex-1 cursor-pointer items-center justify-center rounded-xl border border-stone-200 bg-white text-base text-stone-800 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600"
-            >
-              <input
-                type="radio"
-                name="tax_basis"
-                value={b}
-                defaultChecked={b === "unknown"}
-                className="sr-only"
-              />
-              {TAX_RADIO_LABEL[b]}
-            </label>
-          ))}
+        <div className="grid grid-cols-3 gap-2">
+          {TAX_BASES.map((b) => {
+            const Icon = TAX_ICON[b];
+            return (
+              <label
+                key={b}
+                className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-stone-200 bg-white py-3 text-stone-600 transition has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600"
+              >
+                <input
+                  type="radio"
+                  name="tax_basis"
+                  value={b}
+                  defaultChecked={b === "unknown"}
+                  className="sr-only"
+                />
+                <Icon className="h-6 w-6" aria-hidden="true" />
+                <span className="text-base">{TAX_RADIO_LABEL[b]}</span>
+              </label>
+            );
+          })}
         </div>
       </fieldset>
 
@@ -285,13 +320,34 @@ export default function PriceForm({
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
 
-      <Button
-        type="submit"
-        disabled={pending || (!isNewPackage && filtered.length === 0)}
-        className="h-12 w-full text-base"
-      >
-        {pending ? "保存中…" : "保存"}
-      </Button>
+      <div ref={saveRef}>
+        <Button type="submit" disabled={saveDisabled} className="h-12 w-full text-base">
+          {pending ? "保存中…" : "保存"}
+        </Button>
+      </div>
+
+      {!saveVisible && (
+        <>
+          {toast && (
+            <div
+              role="status"
+              className={`fixed inset-x-4 top-4 z-50 mx-auto max-w-xl rounded-xl px-4 py-3 text-sm font-medium text-white shadow-lg ${
+                toast.ok ? "bg-teal-700" : "bg-red-600"
+              }`}
+            >
+              {toast.text}
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={saveDisabled}
+            aria-label="保存"
+            className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-teal-600 text-white shadow-lg transition active:scale-95 disabled:opacity-50"
+          >
+            <Check className="h-7 w-7" />
+          </button>
+        </>
+      )}
     </form>
   );
 }

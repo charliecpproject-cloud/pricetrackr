@@ -26,3 +26,29 @@ export function canCompare(bases: TaxBasis[]): boolean {
     bases.every((b) => b === bases[0])
   );
 }
+
+// True when the timestamp is no older than `months` months before `now`.
+export function isWithinMonths(
+  iso: string,
+  months: number,
+  now: Date = new Date(),
+): boolean {
+  const limit = new Date(now);
+  limit.setMonth(limit.getMonth() - months);
+  return new Date(iso).getTime() >= limit.getTime();
+}
+
+type Comparable = { observedAt: string; taxBasis: TaxBasis; effective: number };
+
+// True when `row` is the cheapest of the prices from the last 6 months,
+// and those prices (at least two) all share the same known tax basis.
+export function isCheapest(
+  row: Comparable,
+  rows: Comparable[],
+  now: Date = new Date(),
+): boolean {
+  const recent = rows.filter((r) => isWithinMonths(r.observedAt, 6, now));
+  if (!recent.includes(row)) return false;
+  if (!canCompare(recent.map((r) => r.taxBasis))) return false;
+  return row.effective === Math.min(...recent.map((r) => r.effective));
+}
