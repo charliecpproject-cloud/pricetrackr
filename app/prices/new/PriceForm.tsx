@@ -1,12 +1,19 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { Check, HelpCircle, Receipt, Tag, type LucideIcon } from "lucide-react";
+import {
+  HelpCircle,
+  Percent,
+  Receipt,
+  Save,
+  Tag,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Collapsible from "@/components/Collapsible";
 import { addPriceObservation } from "@/app/prices/actions";
 import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
-import ChainExtras from "./ChainExtras";
+import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
@@ -66,6 +73,7 @@ export default function PriceForm({
   const [isNewBranch, setIsNewBranch] = useState(false);
   const [newBranch, setNewBranch] = useState("");
   const [price, setPrice] = useState("");
+  const [isSale, setIsSale] = useState(false);
   const [observedAt, setObservedAt] = useState("");
   const [saveVisible, setSaveVisible] = useState(true);
   const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
@@ -183,82 +191,108 @@ export default function PriceForm({
         </>
       )}
 
-      <Field label="チェーン" kind="required" htmlFor="store_chain_id">
-        <select
-          id="store_chain_id"
-          name="store_chain_id"
-          required
-          value={chainId}
-          onChange={(e) => {
-            setChainId(e.target.value);
-            setBranchId("");
-          }}
-          className={controlCls}
-        >
-          <option value="">チェーンを選択</option>
-          {chains.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </Field>
-
-      <Collapsible title="支店" badge={<Badge kind="optional" />} summary={branchSummary}>
-        <div className="flex gap-2">
-          {isNewBranch ? (
-            <input
-              id="new_shop_name"
-              name="new_shop_name"
-              type="text"
-              aria-label="新しい支店名"
-              value={newBranch}
-              onChange={(e) => setNewBranch(e.target.value)}
-              maxLength={100}
-              placeholder="新しい支店名（例：練馬店）"
-              className={controlCls}
-            />
-          ) : (
-            <select
-              id="shop_id"
-              name="shop_id"
-              aria-label="支店"
-              value={selectedBranch}
-              onChange={(e) => setBranchId(e.target.value)}
-              className={controlCls}
-            >
-              <option value="">指定しない</option>
-              {branchOptions.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-          )}
-          <NewToggle
-            checked={isNewBranch}
-            onChange={(checked) => {
-              setIsNewBranch(checked);
+      <div className="space-y-1">
+        <Field label="チェーン" kind="required" htmlFor="store_chain_id">
+          <select
+            id="store_chain_id"
+            name="store_chain_id"
+            required
+            value={chainId}
+            onChange={(e) => {
+              setChainId(e.target.value);
               setBranchId("");
-              setNewBranch("");
             }}
-          />
-        </div>
-      </Collapsible>
+            className={controlCls}
+          >
+            <option value="">チェーンを選択</option>
+            {chains.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </Field>
 
-      <Field label="価格（円）" kind="required" htmlFor="price">
-        <input
-          id="price"
-          name="price"
-          type="text"
-          inputMode="decimal"
-          required
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          placeholder="例：198"
-          className={controlCls}
-        />
-      </Field>
+        <Collapsible title="支店" badge={<Badge kind="optional" />} summary={branchSummary}>
+          <div className="flex gap-2">
+            {isNewBranch ? (
+              <input
+                id="new_shop_name"
+                name="new_shop_name"
+                type="text"
+                aria-label="新しい支店名"
+                value={newBranch}
+                onChange={(e) => setNewBranch(e.target.value)}
+                maxLength={100}
+                placeholder="新しい支店名（例：練馬店）"
+                className={controlCls}
+              />
+            ) : (
+              <select
+                id="shop_id"
+                name="shop_id"
+                aria-label="支店"
+                value={selectedBranch}
+                onChange={(e) => setBranchId(e.target.value)}
+                className={controlCls}
+              >
+                <option value="">指定しない</option>
+                {branchOptions.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            <NewToggle
+              checked={isNewBranch}
+              onChange={(checked) => {
+                setIsNewBranch(checked);
+                setBranchId("");
+                setNewBranch("");
+              }}
+            />
+          </div>
+        </Collapsible>
+      </div>
+
+      <div className="space-y-2">
+        <Field label="価格（円）" kind="required" htmlFor="price">
+          <div className="flex gap-2">
+            <div className="w-40 shrink-0">
+              <input
+                id="price"
+                name="price"
+                type="text"
+                inputMode="decimal"
+                required
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="例：198"
+                className={controlCls}
+              />
+            </div>
+            <label
+              className={`flex h-12 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-sm font-medium ${
+                isSale
+                  ? "border-amber-500 bg-amber-50 text-amber-700"
+                  : "border-stone-200 bg-white text-stone-600"
+              }`}
+            >
+              <input
+                type="checkbox"
+                name="is_sale"
+                checked={isSale}
+                onChange={(e) => setIsSale(e.target.checked)}
+                className="h-4 w-4 accent-amber-500"
+              />
+              <Percent className="h-4 w-4" />
+              特売
+            </label>
+          </div>
+        </Field>
+        <MemberPriceCheck chain={selectedChain} />
+      </div>
 
       <fieldset className="min-w-0">
         <legend className={labelCls}>
@@ -270,7 +304,7 @@ export default function PriceForm({
             return (
               <label
                 key={b}
-                className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-stone-200 bg-white py-3 text-stone-600 transition has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600"
+                className="flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white px-2 text-sm text-stone-600 transition has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600"
               >
                 <input
                   type="radio"
@@ -279,15 +313,15 @@ export default function PriceForm({
                   defaultChecked={b === "unknown"}
                   className="sr-only"
                 />
-                <Icon className="h-6 w-6" aria-hidden="true" />
-                <span className="text-base">{TAX_RADIO_LABEL[b]}</span>
+                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                {TAX_RADIO_LABEL[b]}
               </label>
             );
           })}
         </div>
       </fieldset>
 
-      <ChainExtras chain={selectedChain} />
+      <BonusPointsField chain={selectedChain} />
 
       <Field label="日時" kind="required" htmlFor="observed_at">
         <input
@@ -300,12 +334,6 @@ export default function PriceForm({
           className={controlCls}
         />
       </Field>
-
-      <label className="flex h-12 items-center gap-3 text-base text-stone-800">
-        <input type="checkbox" name="is_sale" className="h-5 w-5 accent-teal-600" />
-        特売
-        <Badge kind="optional" />
-      </label>
 
       <Field label="メモ" kind="optional" htmlFor="notes">
         <input
@@ -344,7 +372,7 @@ export default function PriceForm({
             aria-label="保存"
             className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-teal-600 text-white shadow-lg transition active:scale-95 disabled:opacity-50"
           >
-            <Check className="h-7 w-7" />
+            <Save className="h-6 w-6" />
           </button>
         </>
       )}
