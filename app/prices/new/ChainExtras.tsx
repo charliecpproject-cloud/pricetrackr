@@ -13,10 +13,11 @@ export function MemberPriceCheck({ chain }: { chain: Chain | undefined }) {
   if (!chain || chain.memberPercent === null) return null;
 
   return (
-    <label className="flex items-start gap-3 rounded-xl bg-indigo-50 p-3 text-sm text-stone-800">
+    <label key={chain.id} className="flex items-start gap-3 rounded-xl bg-indigo-50 p-3 text-sm text-stone-800">
       <input
         type="checkbox"
         name="is_member_price"
+        defaultChecked
         className="mt-0.5 h-5 w-5 shrink-0 accent-indigo-600"
       />
       <span>

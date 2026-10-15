@@ -34,6 +34,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14k done
 - Step 14l (tax basis on prices: 税抜き/税込み/不明 radio on price entry, tax badge on every price, price check lists by most recent date, 最安 only among prices from the last 6 months that share the same known basis) done
 - Step 14m (UI polish: price form with tax radio icons, collapsible 支店 and 会員価格・ポイント, floating save button; same column width on every page; simpler home page) done
+- Step 14n (member-price box checked by default on chains with a membership price; 店舗 page shows one chain at a time from a dropdown, with the add forms collapsed) done
 
 
 ## In Progress

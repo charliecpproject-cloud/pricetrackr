@@ -1,111 +1,125 @@
+import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import StoreForm from "./StoreForm";
 import ShopForm from "./ShopForm";
 import CouponForm from "./CouponForm";
+import ChainPicker from "./ChainPicker";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-export default async function StoresPage() {
+export default async function StoresPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ chain?: string }>;
+}) {
+  const { chain: chainParam } = await searchParams;
+
   // Supabase client (server side) – reads session from cookies
   const supabase = await createSupabaseServerClient();
 
-  // Fetch all store chains ordered by name (including coupon_percents)
+  // All chains (small list), used for the dropdown and the add-branch form
   const { data: chains, error: chainsError } = await supabase
     .from("store_chains")
     .select("id, name, coupon_percents")
     .order("name", { ascending: true });
 
-  // Fetch all shops ordered by name
-  const { data: shops, error: shopsError } = await supabase
-    .from("shops")
-    .select("id, store_chain_id, name, region")
-    .order("name", { ascending: true });
+  // The chain chosen in the dropdown (the id must be a valid UUID and exist)
+  const parsedId = z.string().uuid().safeParse(chainParam);
+  const selected = parsedId.success
+    ? (chains ?? []).find((c) => c.id === parsedId.data)
+    : undefined;
 
-  // Group shops by their store_chain_id
-  const shopsByChain: Record<string, typeof shops> = {};
-  if (shops) {
-    shops.forEach((shop) => {
-      const key = shop.store_chain_id;
-      if (!shopsByChain[key]) {
-        shopsByChain[key] = [];
-      }
-      shopsByChain[key]!.push(shop);
-    });
-  }
+  // Branches are loaded only for the chosen chain
+  const { data: shops, error: shopsError } = selected
+    ? await supabase
+        .from("shops")
+        .select("id, name, region")
+        .eq("store_chain_id", selected.id)
+        .order("name", { ascending: true })
+    : { data: null, error: null };
 
   return (
     <div>
-      {/* ページ見出し */}
-      <h1 className="text-2xl font-bold mb-6">店舗</h1>
+      <h1 className="mb-6 text-2xl font-bold">店舗</h1>
 
-      {/* エラーメッセージ */}
       {chainsError && (
-        <p className="text-red-500 mb-4">
-          チェーンの取得エラー: {chainsError.message}
-        </p>
+        <p className="mb-4 text-red-500">チェーンの取得エラー: {chainsError.message}</p>
       )}
-
       {shopsError && (
-        <p className="text-red-500 mb-4">
-          ショップの取得エラー: {shopsError.message}
-        </p>
+        <p className="mb-4 text-red-500">ショップの取得エラー: {shopsError.message}</p>
       )}
 
-      {/* 空状態表示 */}
-      {(!chains || chains.length === 0) && (
-        <p className="text-gray-500 text-center my-8">まだ店舗がありません。</p>
-      )}
+      {!chains || chains.length === 0 ? (
+        <p className="my-8 text-center text-gray-500">まだ店舗がありません。</p>
+      ) : (
+        <div className="space-y-4">
+          <ChainPicker
+            chains={chains.map((c) => ({ id: c.id, name: c.name }))}
+            selectedId={selected?.id ?? ""}
+          />
 
-      {/* チェーンごとのカード表示 */}
-      {chains?.map((chain) => (
-        <Card
-          key={chain.id}
-          className="mb-4 bg-white rounded-2xl border border-stone-200 shadow-sm"
-        >
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold flex items-center">
-              {chain.name}
-              {chain.coupon_percents && chain.coupon_percents.length > 0 && (
-                <span className="ml-2 text-sm font-medium bg-rose-100 text-rose-600 rounded px-2 py-0.5">
-                  クーポン{" "}
-                  {chain.coupon_percents.map((p: number) => `${p}%`).join(" / ")}
-                </span>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc list-inside space-y-1">
-              {shopsByChain[chain.id]?.map((shop) => (
-                <li key={shop.id} className="text-sm">
-                  {shop.name}
-                  {shop.region ? (
-                    <span className="text-gray-500 text-xs">
-                      {" "}
-                      ({shop.region})
+          {selected ? (
+            <Card className="rounded-2xl border border-stone-200 bg-white shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center text-lg font-semibold">
+                  {selected.name}
+                  {selected.coupon_percents && selected.coupon_percents.length > 0 && (
+                    <span className="ml-2 rounded bg-rose-100 px-2 py-0.5 text-sm font-medium text-rose-600">
+                      クーポン{" "}
+                      {selected.coupon_percents.map((p: number) => `${p}%`).join(" / ")}
                     </span>
-                  ) : (
-                    ""
                   )}
-                </li>
-              ))}
-            </ul>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {shops && shops.length > 0 ? (
+                  <ul className="list-inside list-disc space-y-1">
+                    {shops.map((shop) => (
+                      <li key={shop.id} className="text-sm">
+                        {shop.name}
+                        {shop.region ? (
+                          <span className="text-xs text-gray-500"> ({shop.region})</span>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-stone-500">支店はまだありません。</p>
+                )}
 
-            {/* クーポン編集フォーム */}
-            <div className="mt-4">
-              <CouponForm
-                chainId={chain.id}
-                current={chain.coupon_percents ?? []}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+                {/* クーポン編集フォーム */}
+                <div className="mt-4">
+                  <CouponForm
+                    chainId={selected.id}
+                    current={selected.coupon_percents ?? []}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <p className="text-sm text-stone-500">
+              チェーンを選ぶと、支店とクーポンの設定が表示されます。
+            </p>
+          )}
+        </div>
+      )}
 
-      {/* フォームセクション */}
-      <h2 className="text-xl font-semibold mt-8 mb-4">チェーンを追加</h2>
-      <StoreForm />
+      <details className="mt-8 rounded-2xl border border-stone-200 bg-white p-4">
+        <summary className="cursor-pointer text-base font-semibold text-stone-900">
+          チェーンを追加
+        </summary>
+        <div className="mt-4">
+          <StoreForm />
+        </div>
+      </details>
 
-      <h2 className="text-xl font-semibold mt-8 mb-4">支店を追加</h2>
-      <ShopForm chains={chains ?? []} />
+      <details className="mt-4 rounded-2xl border border-stone-200 bg-white p-4">
+        <summary className="cursor-pointer text-base font-semibold text-stone-900">
+          支店を追加
+        </summary>
+        <div className="mt-4">
+          <ShopForm chains={chains ?? []} />
+        </div>
+      </details>
     </div>
   );
 }
