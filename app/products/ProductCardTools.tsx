@@ -30,7 +30,7 @@ function Messages({ state }: { state: State }) {
 function ProductEditForm({ product }: { product: Product }) {
   const [state, formAction, pending] = useActionState(updateProduct, initial);
   const main = product.name_ja || product.name_en || "";
-  const other = product.name_ja ? (product.name_en ?? "") : "";
+  const alias = product.name_ja ? (product.name_en ?? "") : "";
 
   return (
     <form action={formAction} className="space-y-4">
@@ -45,22 +45,20 @@ function ProductEditForm({ product }: { product: Product }) {
           className={controlCls}
         />
       </Field>
-      <details>
-        <summary className="cursor-pointer text-sm text-stone-600">
-          英語名・別名を入力する（任意）
-        </summary>
-        <div className="mt-2">
-          <Field label="英語名・別名" kind="optional" htmlFor={`other-${product.id}`}>
-            <input
-              id={`other-${product.id}`}
-              name="other_name"
-              maxLength={100}
-              defaultValue={other}
-              className={controlCls}
-            />
-          </Field>
-        </div>
-      </details>
+      <Field
+        label="英語名・別名"
+        kind="optional"
+        htmlFor={`other-${product.id}`}
+        hint="英語名やニックネームなど、検索に使える別の呼び方を入力できます。"
+      >
+        <input
+          id={`other-${product.id}`}
+          name="other_name"
+          maxLength={100}
+          defaultValue={alias}
+          className={controlCls}
+        />
+      </Field>
       <Field label="ブランド" kind="optional" htmlFor={`brand-${product.id}`}>
         <input
           id={`brand-${product.id}`}
@@ -86,7 +84,6 @@ function ProductEditForm({ product }: { product: Product }) {
     </form>
   );
 }
-
 function VariationEditForm({ id, attributes }: { id: string; attributes: Attribute[] }) {
   const [state, formAction, pending] = useActionState(updateVariation, initial);
   const [rows, setRows] = useState(() =>

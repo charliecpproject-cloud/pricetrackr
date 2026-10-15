@@ -61,7 +61,7 @@ export default function NewPackageFields({ products }: { products: ProductOption
             label="商品名"
             kind="required"
             htmlFor="np_name"
-            hint="日本語の名前があれば日本語で入力してください。英語名しかない場合は英語で入力できます。"
+            hint="日本語でも英語でも入力できます。"
           >
             <input
               id="np_name"

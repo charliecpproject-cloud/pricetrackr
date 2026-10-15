@@ -21,18 +21,28 @@ export default function ProductForm() {
         <span className="ml-1">は必ず入力してください。</span>
       </p>
 
-      <Field
-        label="商品名"
-        kind="required"
-        htmlFor="name"
-        hint="日本語の名前があれば日本語で入力してください。英語名しかない場合は英語で入力できます。"
-      >
+      <Field label="商品名" kind="required" htmlFor="name">
         <input
           id="name"
           name="name"
           required
           maxLength={100}
           placeholder="例：超熟 食パン"
+          className={controlCls}
+        />
+      </Field>
+
+      <Field
+        label="英語名・別名"
+        kind="optional"
+        htmlFor="other_name"
+        hint="英語名やニックネームなど、検索に使える別の呼び方を入力できます。"
+      >
+        <input
+          id="other_name"
+          name="other_name"
+          maxLength={100}
+          placeholder="例：Choujuku bread"
           className={controlCls}
         />
       </Field>

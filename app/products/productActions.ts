@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { splitProductName } from "@/lib/products/name";
+
 import {
   duplicateAttributeName,
   normalizeAttributes,
@@ -21,7 +21,7 @@ const fields = {
     .trim()
     .min(1, "商品名を入力してください")
     .max(100, "商品名は100文字以内で入力してください"),
-  brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください"),
+  brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください"), other_name: z.string().trim().max(100, "英語名・別名は100文字以内で入力してください"),
   category: z.string().trim().max(100, "カテゴリは100文字以内で入力してください"),
 };
 
@@ -63,8 +63,8 @@ async function checkDuplicate(
     (p) =>
       p.id !== excludeId &&
       norm(p.brand) === norm(brand) &&
-      ((names.name_ja && norm(p.name_ja) === norm(names.name_ja)) ||
-        (names.name_en && norm(p.name_en) === norm(names.name_en)))
+      ((names.name_ja && norm(p.name_ja || p.name_en) === norm(names.name_ja)) ||
+        false)
   );
   return duplicate ? "duplicate" : "ok";
 }
@@ -80,12 +80,12 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
     name: get(formData, "name"),
     brand: get(formData, "brand"),
     category: get(formData, "category"),
-    memo: get(formData, "memo"),
+    memo: get(formData, "memo"), other_name: get(formData, "other_name"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const { name, brand, category, memo } = parsed.data;
-  const names = splitProductName(name, null);
+  const { name, other_name, brand, category, memo } = parsed.data;
+  const names = { name_ja: name, name_en: other_name || null };
 
   const supabase = await createSupabaseServerClient();
   const check = await checkDuplicate(supabase, names, brand || null);
@@ -118,7 +118,7 @@ export async function updateProduct(_prevState: State, formData: FormData): Prom
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const { id, name, other_name, brand, category } = parsed.data;
-  const names = splitProductName(name, other_name);
+  const names = { name_ja: name, name_en: other_name || null };
 
   const supabase = await createSupabaseServerClient();
   const check = await checkDuplicate(supabase, names, brand || null, id);

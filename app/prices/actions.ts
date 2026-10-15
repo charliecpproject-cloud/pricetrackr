@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { parsePriceYen, toObservedAt } from "@/lib/prices/schema"; import { splitProductName } from "@/lib/products/name";
+import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
 
 type State = {
   error: string | null;
@@ -70,7 +70,7 @@ async function resolveNewPackage(
   const size = parseSize(text(formData, "np_size"));
   if (size === null) return { error: "容量は0より大きい数値で入力してください" };
 
-  const { name, brand, unit } = parsed.data; const { name_ja, name_en } = splitProductName(name ?? "", null);
+  const { name, brand, unit } = parsed.data; const name_ja = name; const name_en: string | null = null;
   let productId = parsed.data.product_id;
   let variationId = parsed.data.variation_id;
 
@@ -91,7 +91,7 @@ async function resolveNewPackage(
     }
   } else {
     if (!name_ja && !name_en) {
-      return { error: "商品名（日本語または英語）を入力してください" };
+      return { error: "商品名を入力してください" };
     }
 
     // Refuse an exact duplicate instead of merging products silently.
