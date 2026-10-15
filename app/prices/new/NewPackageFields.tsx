@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Field, controlCls } from "./FormParts";
+import { Field, controlCls } from "@/components/FormParts";
 
 export type ProductOption = {
   id: string;
@@ -57,28 +57,18 @@ export default function NewPackageFields({ products }: { products: ProductOption
 
       {productId === "" ? (
         <>
-          <Field label="商品名（日本語）" kind="either" htmlFor="np_name_ja">
+          <Field
+            label="商品名"
+            kind="required"
+            htmlFor="np_name"
+            hint="日本語の名前があれば日本語で入力してください。英語名しかない場合は英語で入力できます。"
+          >
             <input
-              id="np_name_ja"
-              name="np_name_ja"
+              id="np_name"
+              name="np_name"
               type="text"
               maxLength={100}
               placeholder="例：超熟 食パン"
-              className={controlCls}
-            />
-          </Field>
-          <Field
-            label="商品名（英語）"
-            kind="either"
-            htmlFor="np_name_en"
-            hint="日本語か英語のどちらかは必ず入力してください。"
-          >
-            <input
-              id="np_name_en"
-              name="np_name_en"
-              type="text"
-              maxLength={100}
-              placeholder="例：Choujuku bread"
               className={controlCls}
             />
           </Field>

@@ -3,6 +3,7 @@ import ProductForm from "./ProductForm";
 import PackageForm from "./PackageForm";
 import VariationForm from "./VariationForm";
 import ProductMemoEditor from "./ProductMemoEditor";
+import ProductCardTools from "./ProductCardTools";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -149,6 +150,7 @@ export default async function ProductsPage() {
                       productId={product.id}
                       memo={product.memo ?? null}
                     />
+                    <ProductCardTools product={product} />
                   </CardContent>
 
                   {/* バリエーションとそのパッケージ */}

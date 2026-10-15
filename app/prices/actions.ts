@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
+import { parsePriceYen, toObservedAt } from "@/lib/prices/schema"; import { splitProductName } from "@/lib/products/name";
 
 type State = {
   error: string | null;
@@ -29,8 +29,8 @@ const baseSchema = z.object({
 const newPackageSchema = z.object({
   product_id: z.string().uuid("商品が正しくありません").nullable(),
   variation_id: z.string().uuid("バリエーションが正しくありません").nullable(),
-  name_ja: z.string().trim().max(100, "商品名は100文字以内で入力してください").nullable(),
-  name_en: z.string().trim().max(100, "商品名は100文字以内で入力してください").nullable(),
+  name: z.string().trim().max(100, "商品名は100文字以内で入力してください").nullable(),
+  
   brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください").nullable(),
   unit: z.enum(UNITS, { error: "単位を選んでください" }),
 });
@@ -60,8 +60,8 @@ async function resolveNewPackage(
   const parsed = newPackageSchema.safeParse({
     product_id: text(formData, "np_product_id"),
     variation_id: text(formData, "np_variation_id"),
-    name_ja: text(formData, "np_name_ja"),
-    name_en: text(formData, "np_name_en"),
+    name: text(formData, "np_name"),
+    
     brand: text(formData, "np_brand"),
     unit: text(formData, "np_unit") ?? "",
   });
@@ -70,7 +70,7 @@ async function resolveNewPackage(
   const size = parseSize(text(formData, "np_size"));
   if (size === null) return { error: "容量は0より大きい数値で入力してください" };
 
-  const { name_ja, name_en, brand, unit } = parsed.data;
+  const { name, brand, unit } = parsed.data; const { name_ja, name_en } = splitProductName(name ?? "", null);
   let productId = parsed.data.product_id;
   let variationId = parsed.data.variation_id;
 

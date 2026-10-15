@@ -1,82 +1,79 @@
 "use client";
 
 import { useActionState } from "react";
-import { addProduct } from "./actions";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge, Field, controlCls } from "@/components/FormParts";
+import { createProduct } from "@/app/products/productActions";
+
+const initialState: { error: string | null; message?: string | null } = {
+  error: null,
+  message: null,
+};
 
 export default function ProductForm() {
-  const initialState = { error: null as string | null };
-  const [state, formAction] = useActionState(addProduct, initialState);
+  const [state, formAction, pending] = useActionState(createProduct, initialState);
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">商品を追加</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {state.error && <p className="text-red-600 mb-2">{state.error}</p>}
+    <form action={formAction} className="space-y-4">
+      <p className="flex items-center text-sm text-stone-500">
+        <Badge kind="required" />
+        <span className="ml-1">は必ず入力してください。</span>
+      </p>
 
-        <form action={formAction} className="grid grid-cols-1 gap-3">
-          <div>
-            <Label htmlFor="name_ja">商品名（日本語）</Label>
-            <Input
-              id="name_ja"
-              type="text"
-              name="name_ja"
-              placeholder="例: みかん"
-            />
-          </div>
+      <Field
+        label="商品名"
+        kind="required"
+        htmlFor="name"
+        hint="日本語の名前があれば日本語で入力してください。英語名しかない場合は英語で入力できます。"
+      >
+        <input
+          id="name"
+          name="name"
+          required
+          maxLength={100}
+          placeholder="例：超熟 食パン"
+          className={controlCls}
+        />
+      </Field>
 
-          <div>
-            <Label htmlFor="name_en">商品名（英語）</Label>
-            <Input
-              id="name_en"
-              type="text"
-              name="name_en"
-              placeholder="例: Orange"
-            />
-          </div>
+      <Field label="ブランド" kind="optional" htmlFor="brand">
+        <input
+          id="brand"
+          name="brand"
+          maxLength={100}
+          placeholder="例：パスコ"
+          className={controlCls}
+        />
+      </Field>
 
-          <div>
-            <Label htmlFor="brand">ブランド</Label>
-            <Input
-              id="brand"
-              type="text"
-              name="brand"
-              placeholder="例: サントリー"
-            />
-          </div>
+      <Field label="カテゴリ" kind="optional" htmlFor="category">
+        <input
+          id="category"
+          name="category"
+          maxLength={100}
+          placeholder="例：パン"
+          className={controlCls}
+        />
+      </Field>
 
-          <div>
-            <Label htmlFor="category">カテゴリ</Label>
-            <Input
-              id="category"
-              type="text"
-              name="category"
-              placeholder="例: 飲料"
-            />
-          </div>
+      <Field label="メモ" kind="optional" htmlFor="memo">
+        <Textarea
+          id="memo"
+          name="memo"
+          rows={3}
+          maxLength={1000}
+          placeholder="例：月曜は特売になりやすい"
+          className="text-base"
+        />
+      </Field>
 
-          <div>
-            <Label htmlFor="memo">メモ（任意）</Label>
-            <Textarea
-              id="memo"
-              name="memo"
-              placeholder="例：月曜は特売になりやすい"
-              rows={3}
-              maxLength={1000}
-            />
-          </div>
+      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
 
-          <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
-            追加
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <Button type="submit" disabled={pending} className="h-12 w-full">
+        {pending ? "追加中…" : "追加"}
+      </Button>
+    </form>
   );
 }

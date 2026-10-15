@@ -1,4 +1,4 @@
-import { Badge, controlCls, labelCls } from "./FormParts";
+import { Badge, controlCls, labelCls } from "@/components/FormParts";
 
 type Chain = {
   id: string;

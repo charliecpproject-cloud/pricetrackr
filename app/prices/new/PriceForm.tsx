@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { addPriceObservation } from "@/app/prices/actions";
 import ChainExtras from "./ChainExtras";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
-import { Badge, Field, NewToggle, controlCls, labelCls } from "./FormParts";
+import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
 type Pkg = { id: string; label: string; search: string };
 type Chain = {

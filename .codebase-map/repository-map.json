@@ -1,0 +1,2763 @@
+{
+  "schema_version": 1,
+  "generator_version": "1.0.0",
+  "generated_at": "2026-10-14T03:01:30+00:00",
+  "repository": {
+    "root": "C:\\Users\\charl\\Documents\\pricetrackr",
+    "name": "pricetrackr",
+    "branch": "main",
+    "commit": "1207da368deabbcc6d385472cade1b769fd30a09",
+    "dirty": true,
+    "focus": null,
+    "changed_only": false,
+    "agents_files": [
+      "AGENTS.md"
+    ]
+  },
+  "stats": {
+    "files_analyzed": 60,
+    "relationships": 168,
+    "routes": 0,
+    "languages": {
+      "TypeScript": 50,
+      "JSON": 3,
+      "Markdown": 3,
+      "JavaScript": 2,
+      "CSS": 1,
+      "Other": 1
+    },
+    "roles": {
+      "Frontend component / page": 29,
+      "Source": 13,
+      "Configuration": 5,
+      "Test": 4,
+      "Other": 3,
+      "Documentation": 3,
+      "Authentication": 1,
+      "Schema / validation": 1,
+      "Utility": 1
+    }
+  },
+  "frameworks": [
+    "Next.js",
+    "React"
+  ],
+  "package_managers": [
+    "npm-compatible"
+  ],
+  "build_systems": [],
+  "runtimes": [
+    "Node.js / browser JavaScript"
+  ],
+  "files": [
+    {
+      "path": "app/products/PackageForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 4706,
+      "hash": "886a0f9eeac05fb5b107f43c085a61474e7cc81c8487442fc2c6fe410bf8a37a",
+      "purpose": "Renders user interface or page behavior. Located at `app/products/PackageForm.tsx`.",
+      "symbols": [
+        "PackageForm",
+        "initialState",
+        "productVariations"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 16,
+      "incoming": 2,
+      "outgoing": 10,
+      "architecture_hash": "3d9e6e042d5d3561f8af9af2de07d5db486a40a4d41e14a9c4e2db9af3e8507f"
+    },
+    {
+      "path": "app/prices/new/PriceForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 8918,
+      "hash": "e3523a32d2307035fec7b2e263ad70a19da79446b7a7c9c9584d751b8135e2f3",
+      "purpose": "Renders user interface or page behavior. Located at `app/prices/new/PriceForm.tsx`.",
+      "symbols": [
+        "PriceForm",
+        "branchOptions",
+        "filtered",
+        "get",
+        "keyword",
+        "nowInJapan",
+        "parts",
+        "selectedBranch",
+        "selectedChain",
+        "selectedPackage"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 15,
+      "incoming": 2,
+      "outgoing": 9,
+      "architecture_hash": "a1d1ab23542d3d9e537bc1816902c54450012f73a9f1f651d4e44ed008879f19"
+    },
+    {
+      "path": "app/products/ProductForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 2447,
+      "hash": "e6880d7eee32930ebf5df4cc32060ead1ebfb2bc3072cf8b0074e77bca10af29",
+      "purpose": "Renders user interface or page behavior. Located at `app/products/ProductForm.tsx`.",
+      "symbols": [
+        "ProductForm",
+        "initialState"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 13,
+      "incoming": 2,
+      "outgoing": 7,
+      "architecture_hash": "8b17b2f1e61ebf811ad0b4eb43e321cd9d34fff34808612c6c0e5d7446d99f94"
+    },
+    {
+      "path": "app/stores/ShopForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 2422,
+      "hash": "3367896d4277956b752785733bb2f69db3230d19b659a7030066d61f61179c5d",
+      "purpose": "Renders user interface or page behavior. Located at `app/stores/ShopForm.tsx`.",
+      "symbols": [
+        "ShopForm",
+        "initialState"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 13,
+      "incoming": 2,
+      "outgoing": 7,
+      "architecture_hash": "df856c59996ce9d279eb94192192391bda78a4b900ff10bace69b653e6d8f675"
+    },
+    {
+      "path": "app/products/page.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 8448,
+      "hash": "c30e129391381bf470acd4ca99384ffd2cb3c2b344aadd55ad6e7fed69ac9a31",
+      "purpose": "Renders user interface or page behavior. Located at `app/products/page.tsx`.",
+      "symbols": [
+        "ProductsPage",
+        "attributeNameSet",
+        "attributeNames",
+        "attrs",
+        "label",
+        "packageLabel",
+        "packagesForVariation",
+        "productOptions",
+        "supabase",
+        "variationList"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 12,
+      "incoming": 0,
+      "outgoing": 12,
+      "architecture_hash": "9632f3c969c720efc40e759298cd1a53bef719be264dfb13572c89a60e163e5d"
+    },
+    {
+      "path": "app/check/[packageId]/page.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 6540,
+      "hash": "43256811613db63efa494d0670a7db4b9ced4c294d78cbdb8755f499f8b56fef",
+      "purpose": "Renders user interface or page behavior. Located at `app/check/[packageId]/page.tsx`.",
+      "symbols": [
+        "PackageDetailPage",
+        "branch",
+        "chain",
+        "latest",
+        "name",
+        "rows",
+        "supabase",
+        "variation",
+        "variationText"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 11,
+      "incoming": 0,
+      "outgoing": 11,
+      "architecture_hash": "6533a025b1bb814e5e5eadeeb1963a67b2130b8a801eade1b3569dc9953883af"
+    },
+    {
+      "path": "app/prices/new/FormParts.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 1985,
+      "hash": "27c3bae9c8e292bab62f5d15f7884b95f68c7662abfc7caacc60aacceb15ec1c",
+      "purpose": "Renders user interface or page behavior. Located at `app/prices/new/FormParts.tsx`.",
+      "symbols": [
+        "Badge",
+        "Field",
+        "NewToggle",
+        "badgeBase",
+        "controlCls",
+        "labelCls"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 10,
+      "incoming": 3,
+      "outgoing": 1,
+      "architecture_hash": "014f2fd31b2c532c71fe4b87faf93e56fa438b415c725d17541e5d3963cc084f"
+    },
+    {
+      "path": "app/products/ProductMemoEditor.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 1494,
+      "hash": "b2bd7f77714154539251f3dcdcf66968f7913d03ad6843fbe2ab5854478195c5",
+      "purpose": "Renders user interface or page behavior. Located at `app/products/ProductMemoEditor.tsx`.",
+      "symbols": [
+        "ProductMemoEditor"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 10,
+      "incoming": 2,
+      "outgoing": 4,
+      "architecture_hash": "d9a53eaf090ec3229518a7bd0bf90738b7cf436ed90d2000902412d565d73be8"
+    },
+    {
+      "path": "app/products/VariationForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 5354,
+      "hash": "f66b3ffbb1f94a2c89e5fc5578cdd9b5ea16b2300c72bd3f3c07b437c78cb624",
+      "purpose": "Renders user interface or page behavior. Located at `app/products/VariationForm.tsx`.",
+      "symbols": [
+        "VariationForm",
+        "addRow",
+        "createEmptyRow",
+        "generateId",
+        "handleNameChange",
+        "handleValueChange",
+        "idCounter",
+        "removeRow"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 9,
+      "incoming": 2,
+      "outgoing": 3,
+      "architecture_hash": "94ee74cda2b13e5d3dd8ff2a985ce8d65389abee9ac6d343b3b13fccbcd7c7d5"
+    },
+    {
+      "path": "app/products/actions.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 7242,
+      "hash": "e1d4fee6c4d17d0af9130e5688d867e8737b95de5940ce9dac3e4b7611ee15fd",
+      "purpose": "Contains source code or project material. Located at `app/products/actions.ts`.",
+      "symbols": [
+        "addPackage",
+        "addProduct",
+        "brandMatches",
+        "duplicate",
+        "existingBrandNorm",
+        "existingNameEnNorm",
+        "existingNameJaNorm",
+        "memoToInsert",
+        "newBrandNorm",
+        "newNameEnNorm",
+        "newNameJaNorm",
+        "normalize",
+        "parseResult",
+        "schema",
+        "supabase"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 9,
+      "incoming": 2,
+      "outgoing": 3,
+      "architecture_hash": "434ec671e36bf2530dc09d02b3f6b22f527e2c444488f825043d74abd4b6217d"
+    },
+    {
+      "path": "app/stores/ChainOptionsForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 3409,
+      "hash": "d6e87c5c17b6b2905c76b45669543dcbf707b0b3876224a171ac98e1fc1b0565",
+      "purpose": "Renders user interface or page behavior. Located at `app/stores/ChainOptionsForm.tsx`.",
+      "symbols": [
+        "COUPON_OPTIONS",
+        "ChainOptionsForm",
+        "boxCls",
+        "legendCls"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 9,
+      "incoming": 2,
+      "outgoing": 3,
+      "architecture_hash": "f003d0d5e13a7fe0db0954b5e5cebabe947762a76162ec933586073ca26ac1cd"
+    },
+    {
+      "path": "app/stores/CouponForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 1192,
+      "hash": "f106cd217f890eebf0190325e21c2d5a0d027d508af52b8bd46bddd34e8da8a3",
+      "purpose": "Renders user interface or page behavior. Located at `app/stores/CouponForm.tsx`.",
+      "symbols": [
+        "CouponForm",
+        "options",
+        "supabase"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 9,
+      "incoming": 2,
+      "outgoing": 3,
+      "architecture_hash": "8e224962f02104062d21d5a46c0e5c79776c6edc66978b4e890ec03408223879"
+    },
+    {
+      "path": "app/stores/actions.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 3337,
+      "hash": "90b6736cd925602171b092194eb9c60c5b2a49953c010e0ce4bb44ef3d188b63",
+      "purpose": "Contains source code or project material. Located at `app/stores/actions.ts`.",
+      "symbols": [
+        "addShop",
+        "addStoreChain",
+        "nameRaw",
+        "parseResult",
+        "schema",
+        "supabase"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 9,
+      "incoming": 2,
+      "outgoing": 3,
+      "architecture_hash": "dea84a72d79a20d60f38ab9d25c6af55bd0517da651348e57b446ba4e832b27d"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "language": "JavaScript",
+      "role": "Configuration",
+      "size": 465,
+      "hash": "870f1adccecf3051cbcd9fd307cef51d7633cf510979c181a81f4b1797273493",
+      "purpose": "Controls build, runtime, or tool behavior. Located at `eslint.config.mjs`.",
+      "symbols": [
+        "eslintConfig"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 9,
+      "incoming": 0,
+      "outgoing": 4,
+      "architecture_hash": "07a8d167071f20ee8ec24d2af73fd8e4c6dbd4a800f764b2f83535734a7b8808"
+    },
+    {
+      "path": "next-env.d.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 296,
+      "hash": "0f70629890b72a0a82e91972cc032c04b658b26c265373cb711cf576bfbf8fcc",
+      "purpose": "Contains source code or project material. Located at `next-env.d.ts`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 9,
+      "incoming": 2,
+      "outgoing": 3,
+      "architecture_hash": "dd8c4a36317d8abd7d0506d9dda84f09f87d19daec39da2e6347d5ea07166c4b"
+    },
+    {
+      "path": "app/check/page.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 8894,
+      "hash": "dc474160131b7775127f2bb88f7d7792d1253aa30f2039df481e68dc33372caf",
+      "purpose": "Renders user interface or page behavior. Located at `app/check/page.tsx`.",
+      "symbols": [
+        "CheckPage",
+        "cards",
+        "chain",
+        "isMemberPrice",
+        "latest",
+        "name",
+        "packageIds",
+        "perPackage",
+        "pkgs",
+        "price",
+        "sub",
+        "supabase",
+        "term",
+        "variationObj",
+        "variationText"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 8,
+      "incoming": 0,
+      "outgoing": 8,
+      "architecture_hash": "059169d64c297a848ad1f60b593b70ab3adb4e940befefb005c03a4efeb6d91b"
+    },
+    {
+      "path": "app/stores/StoreForm.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 878,
+      "hash": "866d6f1e8a07aac5356553cb5c9fb603af7b8e50faf6ef50bbc2cf9b8e3cad50",
+      "purpose": "Renders user interface or page behavior. Located at `app/stores/StoreForm.tsx`.",
+      "symbols": [
+        "StoreForm",
+        "initialState"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 8,
+      "incoming": 2,
+      "outgoing": 2,
+      "architecture_hash": "3e80f4a28c85fb664b261f42f291aaebf4a3288b538b319be0a16d15d917de12"
+    },
+    {
+      "path": "app/stores/page.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 3822,
+      "hash": "11c7a3ac1064ebfd6a937f4a4857923163235c370ebcdb8d4abed33e983bdadb",
+      "purpose": "Renders user interface or page behavior. Located at `app/stores/page.tsx`.",
+      "symbols": [
+        "StoresPage",
+        "key",
+        "supabase"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 8,
+      "incoming": 0,
+      "outgoing": 8,
+      "architecture_hash": "62eeb7be45c78b13d57721eaa32682529a7242b72d2c496782d1b56fc3493431"
+    },
+    {
+      "path": "app/login/page.tsx",
+      "language": "TypeScript",
+      "role": "Authentication",
+      "size": 2674,
+      "hash": "b60425eee873a3528e09a8c5c54bb182a668eff3386b77d656dfee637e4d58c8",
+      "purpose": "Establishes or enforces identity and access. Located at `app/login/page.tsx`.",
+      "symbols": [
+        "LoginPage",
+        "handleSubmit",
+        "router"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 7,
+      "incoming": 0,
+      "outgoing": 7,
+      "architecture_hash": "2b883e56699579f6ebf4ed30baada0ecfd50881c4fcc364c3112167d20ff3740"
+    },
+    {
+      "path": "app/prices/new/ChainExtras.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 1677,
+      "hash": "541b8a4ee9680b9135b11481053ab52a5fe40aca5ee0b1e1b1c39762b34e0c3a",
+      "purpose": "Renders user interface or page behavior. Located at `app/prices/new/ChainExtras.tsx`.",
+      "symbols": [
+        "ChainExtras"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 7,
+      "incoming": 2,
+      "outgoing": 1,
+      "architecture_hash": "bc21f3bdca2374781782dfc13ad5251492b42beb92f4ba52b2fa74e6d7e71311"
+    },
+    {
+      "path": "app/stores/couponActions.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 2151,
+      "hash": "71f4ccc00c52b5a452e718a7bbc87591647782e8fbdf49a5ecf0608c411a785a",
+      "purpose": "Contains source code or project material. Located at `app/stores/couponActions.ts`.",
+      "symbols": [
+        "hasBonusPoints",
+        "n",
+        "parsed",
+        "percents",
+        "schema",
+        "supabase",
+        "updateChainCoupons"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 7,
+      "incoming": 1,
+      "outgoing": 4,
+      "architecture_hash": "4ef33320014e8406390c021ef76b8659dc9c96cfb494be09897593a3cb42eeae"
+    },
+    {
+      "path": "app/check/[packageId]/actions.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 1110,
+      "hash": "593c0de8b4316fe3c9145538cceafdb52dc9bfe1308c6d8795a9fb9ef8c7b6be",
+      "purpose": "Contains source code or project material. Located at `app/check/[packageId]/actions.ts`.",
+      "symbols": [
+        "deletePriceObservation",
+        "idRaw",
+        "idResult",
+        "packageIdRaw",
+        "packageIdResult",
+        "supabase",
+        "uuidSchema"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 6,
+      "incoming": 1,
+      "outgoing": 3,
+      "architecture_hash": "1b01dba6a3bf15e360fcf97abc9606bead4cfb1c3e28ea57612822bc5a04d2e7"
+    },
+    {
+      "path": "tsconfig.json",
+      "language": "JSON",
+      "role": "Configuration",
+      "size": 666,
+      "hash": "be18523b23b78b6e1a876ddd107d330f0168bddf09d751b57e0b5edce69c66f3",
+      "purpose": "Controls build, runtime, or tool behavior. Located at `tsconfig.json`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 6,
+      "incoming": 0,
+      "outgoing": 1,
+      "architecture_hash": "4ffe420ceb84727bb423e87a6aad0efe1eed52786d018bdcc449da2121156a71"
+    },
+    {
+      "path": "app/prices/new/NewPackageFields.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 4415,
+      "hash": "047ee6056a8b1da1620c8de9bc5e9e31630688e8c8e6f8fb7d4f6bc3c7601a44",
+      "purpose": "Renders user interface or page behavior. Located at `app/prices/new/NewPackageFields.tsx`.",
+      "symbols": [
+        "NewPackageFields",
+        "UNITS",
+        "needsVariation",
+        "product"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 5,
+      "incoming": 0,
+      "outgoing": 5,
+      "architecture_hash": "882826cd3c6b3ac0b91eb2eac85ce32d8d453073dcd8c24527fd06fd8ee33067"
+    },
+    {
+      "path": "app/prices/new/page.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 3387,
+      "hash": "a21c067fee746f90c0857733fd43d16670528312086ba3c9cf7bef6fc34032e2",
+      "purpose": "Renders user interface or page behavior. Located at `app/prices/new/page.tsx`.",
+      "symbols": [
+        "NewPricePage",
+        "branchOptions",
+        "chainOptions",
+        "productName",
+        "supabase",
+        "title",
+        "variation",
+        "variations"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 5,
+      "incoming": 0,
+      "outgoing": 5,
+      "architecture_hash": "67d23a62b621884fb1cd4c5eb108f282e8a1cf3d06bbc241520ae11c08e3db62"
+    },
+    {
+      "path": "app/products/memoActions.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 1643,
+      "hash": "3bcbdcb717a516b59558ee82ba612bff11bcf7bf8eaab4f201bd2dc00e3a8d97",
+      "purpose": "Contains source code or project material. Located at `app/products/memoActions.ts`.",
+      "symbols": [
+        "SAVE_FAILED",
+        "parsed",
+        "schema",
+        "supabase",
+        "updateProductMemo"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 5,
+      "incoming": 0,
+      "outgoing": 5,
+      "architecture_hash": "7b7026ee43e4e01dcd247413cc9bd1330bef68e55794f2c988dd479d1dddf287"
+    },
+    {
+      "path": "next.config.ts",
+      "language": "TypeScript",
+      "role": "Configuration",
+      "size": 129,
+      "hash": "84397354aea3588c3ef7c9011253f3244e4418ee5ab1ff20096b0d20aaef12ab",
+      "purpose": "Controls build, runtime, or tool behavior. Located at `next.config.ts`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 5,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "617e5abe4993bc2050468e81fb42ab3a3d424d6fe97bccdbbf2fbbe9dc1331d7"
+    },
+    {
+      "path": "package.json",
+      "language": "JSON",
+      "role": "Configuration",
+      "size": 945,
+      "hash": "4c0868aa2fda5124fa051908b6409b8ae8b9c35f4a4d029838905022daa585f6",
+      "purpose": "Controls build, runtime, or tool behavior. Located at `package.json`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 5,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "617e5abe4993bc2050468e81fb42ab3a3d424d6fe97bccdbbf2fbbe9dc1331d7"
+    },
+    {
+      "path": "postcss.config.mjs",
+      "language": "JavaScript",
+      "role": "Configuration",
+      "size": 94,
+      "hash": "dfac7ac2d86d326a0e5adb024e7943c181393ed17a5fcb8f0315b24c7da6ddde",
+      "purpose": "Controls build, runtime, or tool behavior. Located at `postcss.config.mjs`.",
+      "symbols": [
+        "config"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 5,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "3c8fd0fe4007e701472eb22deb57fe8a58200f820f54a9a8182397bde291d5d0"
+    },
+    {
+      "path": "app/layout.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 922,
+      "hash": "7dbcb92968fe100ec5d0157a915827e841d2b5decadcc84e39ab01278fc5d86c",
+      "purpose": "Renders user interface or page behavior. Located at `app/layout.tsx`.",
+      "symbols": [
+        "RootLayout",
+        "geistMono",
+        "geistSans"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 4,
+      "incoming": 0,
+      "outgoing": 4,
+      "architecture_hash": "0e130da02625b92cbf2306bcf3ee20f25a078f78d6737dc2e8ee63981a092837"
+    },
+    {
+      "path": "app/prices/actions.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 10309,
+      "hash": "a54dba86aabcf5c6486da0b7a5b8435204ff176eac92a89434d655e746521233",
+      "purpose": "Contains source code or project material. Located at `app/prices/actions.ts`.",
+      "symbols": [
+        "SAVE_FAILED",
+        "UNITS",
+        "addPriceObservation",
+        "asciiPoints",
+        "baseSchema",
+        "check",
+        "duplicate",
+        "isMemberPrice",
+        "isNewPackage",
+        "isSale",
+        "n",
+        "newPackageSchema",
+        "norm",
+        "observedAt",
+        "parseSize",
+        "parsed",
+        "price",
+        "rawPoints",
+        "resolveNewPackage",
+        "resolved",
+        "size",
+        "supabase",
+        "text",
+        "trimmed",
+        "value"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 4,
+      "incoming": 0,
+      "outgoing": 4,
+      "architecture_hash": "6f7e93308c4b9ec3abbddc36912632cae58d330ee5f5cf4208ebd1afa5e3900e"
+    },
+    {
+      "path": "app/products/variationActions.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 2922,
+      "hash": "b1d62bdc4d98b817c40034803e35e4a435f4eb66ffbca199dfc1c970fbadc3c7",
+      "purpose": "Contains source code or project material. Located at `app/products/variationActions.ts`.",
+      "symbols": [
+        "addVariation",
+        "attributesKey",
+        "duplicate",
+        "limit",
+        "name",
+        "normalized",
+        "productId",
+        "productIdParse",
+        "rawNames",
+        "rawProductId",
+        "rawValues",
+        "supabase",
+        "value"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 4,
+      "incoming": 0,
+      "outgoing": 4,
+      "architecture_hash": "4e27121aac033e727bf2368d46f10c753ad4c6054ef4616a88ff8eb435ce551e"
+    },
+    {
+      "path": "lib/prices/schema.ts",
+      "language": "TypeScript",
+      "role": "Schema / validation",
+      "size": 2636,
+      "hash": "a92762647f8b4efea6c87c41d7e68e21f977f7ec1fca573fd2c873d7be32f825",
+      "purpose": "Validates or serializes data crossing a boundary. Located at `lib/prices/schema.ts`.",
+      "symbols": [
+        "check",
+        "cleaned",
+        "decimalPart",
+        "instant",
+        "match",
+        "parsePriceYen",
+        "priceEntrySchema",
+        "toAscii",
+        "toObservedAt",
+        "value"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 4,
+      "incoming": 1,
+      "outgoing": 1,
+      "architecture_hash": "a9139ab8e90e3c91ade7eb19caf28181ef9282657b962f6ea91c92f20e40ba93"
+    },
+    {
+      "path": "app/globals.css",
+      "language": "CSS",
+      "role": "Other",
+      "size": 4657,
+      "hash": "6792dac9c89afb9cb44ccc4ad8b5707111f3cc9c827e2226ef10a451d1ddc492",
+      "purpose": "Contains other code or project material. Located at `app/globals.css`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 3,
+      "incoming": 1,
+      "outgoing": 0,
+      "architecture_hash": "de0d80ee9927fc203c472d40b974090b24d1cac1a8aa0761310a00ebe1d275a8"
+    },
+    {
+      "path": "app/page.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 2375,
+      "hash": "cc27fc6ff926d8a1ee1c49076f66775a3b6d2e00297a45156b1432d036aa00c6",
+      "purpose": "Renders user interface or page behavior. Located at `app/page.tsx`.",
+      "symbols": [
+        "HomePage",
+        "goTo",
+        "handleLogout",
+        "router"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 3,
+      "incoming": 0,
+      "outgoing": 3,
+      "architecture_hash": "d24acb1664a42190c14c124590a78242486e8517723a3cbd7352c3a99e9717ab"
+    },
+    {
+      "path": "components/AppNav.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 1857,
+      "hash": "0bd3fdcd349867147bbe033b6ebd072b1441cc82ae835e05819b0edd25cec09b",
+      "purpose": "Renders user interface or page behavior. Located at `components/AppNav.tsx`.",
+      "symbols": [
+        "AppNav",
+        "pathname",
+        "tabs"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 3,
+      "incoming": 0,
+      "outgoing": 3,
+      "architecture_hash": "9379627122320a50344dc37637fcec1e991c665201d94bcac5ab9045e4820bd2"
+    },
+    {
+      "path": "lib/prices/coupon.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 2275,
+      "hash": "1b233fc5c493ca8a2e0543332fadb9da17d92637bc0ebb24751c4de83cdbfcb3",
+      "purpose": "Contains source code or project material. Located at `lib/prices/coupon.ts`.",
+      "symbols": [
+        "COUPON_PERCENTS",
+        "bestCouponPercent",
+        "bestDiscount",
+        "chain",
+        "coupon",
+        "couponPercentsFromShop",
+        "couponPrice",
+        "discount",
+        "effectivePrice",
+        "member",
+        "s",
+        "valid"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 3,
+      "incoming": 1,
+      "outgoing": 0,
+      "architecture_hash": "5d1017a31dfe247c1801c5e110d3c449c684bc9828e9762502533e4d459b8987"
+    },
+    {
+      "path": "lib/prices/format.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 2385,
+      "hash": "7cec32b8ceebea0a2028f794c9345e20a3773d3dc313fd514582df76b4bdcef0",
+      "purpose": "Contains source code or project material. Located at `lib/prices/format.ts`.",
+      "symbols": [
+        "date",
+        "day",
+        "formatJst",
+        "formatYen",
+        "formatted",
+        "hour",
+        "minute",
+        "month",
+        "num",
+        "numStr",
+        "packageLabel",
+        "parts",
+        "year"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 3,
+      "incoming": 1,
+      "outgoing": 0,
+      "architecture_hash": "beadbef6b6b18cfc218ee6a71286518d2dc1996d6bece86ed8d70b432a7a313b"
+    },
+    {
+      "path": "lib/products/variation.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 2075,
+      "hash": "c6f71c7c3080fc96cf13ec3395c36d216d776705f7cfebb8092db1ce5bdff954",
+      "purpose": "Contains source code or project material. Located at `lib/products/variation.ts`.",
+      "symbols": [
+        "clean",
+        "duplicateAttributeName",
+        "key",
+        "normalizeAttributes",
+        "pairs",
+        "parseAttributes",
+        "row",
+        "seen",
+        "variationKey",
+        "variationLabel"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 3,
+      "incoming": 1,
+      "outgoing": 0,
+      "architecture_hash": "aa369e8bc1d61a221e9c7e5aa2aaf3fa2a1790ae9cd69c206f025f047a6ca918"
+    },
+    {
+      "path": "components/PriceDisplay.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 2086,
+      "hash": "9c6f28a08b8d3e836d3fd24140299d64e6615730dd38e81cb10837f614ae3ed3",
+      "purpose": "Renders user interface or page behavior. Located at `components/PriceDisplay.tsx`.",
+      "symbols": [
+        "PriceDisplay",
+        "badgeCls",
+        "big",
+        "discount",
+        "isCoupon",
+        "normal",
+        "priceCls",
+        "wrap"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 2,
+      "incoming": 0,
+      "outgoing": 2,
+      "architecture_hash": "533ed4b6c379792e4ddc1f8e1faf85c4a3643246b57797662c185cce1df119a6"
+    },
+    {
+      "path": "lib/prices/coupon.test.ts",
+      "language": "TypeScript",
+      "role": "Test",
+      "size": 2786,
+      "hash": "f18deecd8cdf2388c9112a791d193685cd72ccbbcf46fac472307f5d1acbff60",
+      "purpose": "Checks expected behavior. Located at `lib/prices/coupon.test.ts`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 2,
+      "incoming": 0,
+      "outgoing": 2,
+      "architecture_hash": "34863e57ad0da4b00996a6a6325f9e69221e8670464638457e4d3f16f4dd7951"
+    },
+    {
+      "path": "lib/prices/format.test.ts",
+      "language": "TypeScript",
+      "role": "Test",
+      "size": 348,
+      "hash": "b201d051716b7ccea352c2c29a93a134cfc2a3d6d16d03252bbfac9f2b2af642",
+      "purpose": "Checks expected behavior. Located at `lib/prices/format.test.ts`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 2,
+      "incoming": 0,
+      "outgoing": 2,
+      "architecture_hash": "2c436dc44f14aeeb9b7f196e213e6b21e67eb5e7e9533af4bacc3a863e9f7d1b"
+    },
+    {
+      "path": "lib/prices/schema.test.ts",
+      "language": "TypeScript",
+      "role": "Test",
+      "size": 1197,
+      "hash": "715b38bc760e6b67fad5b738baec0d5e47f716a153670bc4792c7f56d34f6ecc",
+      "purpose": "Checks expected behavior. Located at `lib/prices/schema.test.ts`.",
+      "symbols": [
+        "invalidDates",
+        "invalidInputs"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 2,
+      "incoming": 0,
+      "outgoing": 2,
+      "architecture_hash": "65ab2fc39352b58178cc9ce184fa2597b1169f4d8134d117148fdd84e99b79d5"
+    },
+    {
+      "path": "lib/products/variation.test.ts",
+      "language": "TypeScript",
+      "role": "Test",
+      "size": 2484,
+      "hash": "f39594073c47280e7c6589aeeb280866539b01489348ad13f44558720ff408fc",
+      "purpose": "Checks expected behavior. Located at `lib/products/variation.test.ts`.",
+      "symbols": [
+        "a"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 2,
+      "incoming": 0,
+      "outgoing": 2,
+      "architecture_hash": "fbbbddf17f9c40f7376f9c8ef0d2edbd9adae28faac447ba058f60c20b49f3b6"
+    },
+    {
+      "path": "proxy.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 1457,
+      "hash": "575d5dff05cb760d850e2c27651f2aeebadd4fc6f91ce38d3f96b080c1a08ae7",
+      "purpose": "Contains source code or project material. Located at `proxy.ts`.",
+      "symbols": [
+        "config",
+        "isLoginPage",
+        "proxy",
+        "supabase",
+        "url"
+      ],
+      "routes": [],
+      "env_vars": [
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL"
+      ],
+      "importance": 2,
+      "incoming": 0,
+      "outgoing": 2,
+      "architecture_hash": "4b6c9b2fc27c0de5992e3256e408932af44666ce06e68b8d98e76663a19b6a55"
+    },
+    {
+      "path": "app/error.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 796,
+      "hash": "a700e9ab1f4d21875d704941b9e6b0285cdfc9763e4abe277b25938a2518b371",
+      "purpose": "Renders user interface or page behavior. Located at `app/error.tsx`.",
+      "symbols": [
+        "Error"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 1,
+      "incoming": 0,
+      "outgoing": 1,
+      "architecture_hash": "53417800c061e114f3dd9d3dd1361a5171fd93ad81535050d5cc921f45b4d56b"
+    },
+    {
+      "path": "app/not-found.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 524,
+      "hash": "b00bdde0f73e074ab37304cab9a8bf1b5da9df7572031e3a275689de49322185",
+      "purpose": "Renders user interface or page behavior. Located at `app/not-found.tsx`.",
+      "symbols": [
+        "NotFound"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 1,
+      "incoming": 0,
+      "outgoing": 1,
+      "architecture_hash": "e6a099e8ea7a434ff66717bf02839b9e61984ddb39b2564dbdc5857a2244b319"
+    },
+    {
+      "path": "components.json",
+      "language": "JSON",
+      "role": "Other",
+      "size": 517,
+      "hash": "a39384a64384ceca47944248c992f4ab4d2ff565cfea3ff8daa89b2fc7b125e2",
+      "purpose": "Contains other code or project material. Located at `components.json`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 1,
+      "incoming": 0,
+      "outgoing": 1,
+      "architecture_hash": "2f40877a5c36b5812338da504d1e9ad2e6103ef531106dd58c21b0a1c927f256"
+    },
+    {
+      "path": "components/DeleteObservationButton.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 1002,
+      "hash": "ad03aaee8569d53ddce9f42ae50e4c523fda03e1b2fdcc644110eee158f577ab",
+      "purpose": "Renders user interface or page behavior. Located at `components/DeleteObservationButton.tsx`.",
+      "symbols": [
+        "DeleteObservationButton",
+        "handleSubmit"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 1,
+      "incoming": 0,
+      "outgoing": 1,
+      "architecture_hash": "028d586e7081d553a7405b0ed86f9aeb8ed1386060d67b248e8ca2484672ff43"
+    },
+    {
+      "path": "lib/utils.ts",
+      "language": "TypeScript",
+      "role": "Utility",
+      "size": 25,
+      "hash": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08",
+      "purpose": "Contains utility code or project material. Located at `lib/utils.ts`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 1,
+      "incoming": 0,
+      "outgoing": 1,
+      "architecture_hash": "001d87159087a37921073e0f6daace3c938a08b4158141e99f2f4f3c021db921"
+    },
+    {
+      "path": ".env.example",
+      "language": "Other",
+      "role": "Other",
+      "size": 59,
+      "hash": "redacted",
+      "purpose": "Contains other code or project material. Located at `.env.example`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "de0d80ee9927fc203c472d40b974090b24d1cac1a8aa0761310a00ebe1d275a8"
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "Markdown",
+      "role": "Documentation",
+      "size": 678,
+      "hash": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "purpose": "Explains project usage or architecture. Located at `AGENTS.md`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "4aa8b58b24cad71390912362ef331f1c8b475580dc7297f566e08f556d12236a"
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "Markdown",
+      "role": "Documentation",
+      "size": 11,
+      "hash": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "purpose": "Explains project usage or architecture. Located at `CLAUDE.md`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "4aa8b58b24cad71390912362ef331f1c8b475580dc7297f566e08f556d12236a"
+    },
+    {
+      "path": "README.md",
+      "language": "Markdown",
+      "role": "Documentation",
+      "size": 1450,
+      "hash": "60b55ff7df79af72590f9524208e46642bc32bdc175cdad41349681c0e2f958f",
+      "purpose": "Explains project usage or architecture. Located at `README.md`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "4aa8b58b24cad71390912362ef331f1c8b475580dc7297f566e08f556d12236a"
+    },
+    {
+      "path": "app/check/loading.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 329,
+      "hash": "94e7612aed4ca705d9e8a063a096f21dd3a980f7c87dd70a75cac123635e52ce",
+      "purpose": "Renders user interface or page behavior. Located at `app/check/loading.tsx`.",
+      "symbols": [
+        "Loading"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "4503f90094a18926fb4bb656d9a799e4680047aaabc6cc415732a87acb34d755"
+    },
+    {
+      "path": "app/manifest.ts",
+      "language": "TypeScript",
+      "role": "Source",
+      "size": 702,
+      "hash": "25c3a0599674d50a85c91b118dc2509c4714fdb759e6360c2a2d95845cd17001",
+      "purpose": "Contains source code or project material. Located at `app/manifest.ts`.",
+      "symbols": [
+        "manifest"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "665dbdcd08c593a52e1b548ae4ff9511f560506dff6b951fe2e65ae7300bcec9"
+    },
+    {
+      "path": "app/prices/new/loading.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 334,
+      "hash": "8904a7494c8f55ef44fb677ec57cdd333e16e6692c7068467938ae70b9aa9b26",
+      "purpose": "Renders user interface or page behavior. Located at `app/prices/new/loading.tsx`.",
+      "symbols": [
+        "Loading"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "4503f90094a18926fb4bb656d9a799e4680047aaabc6cc415732a87acb34d755"
+    },
+    {
+      "path": "app/products/action.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 0,
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "purpose": "Renders user interface or page behavior. Located at `app/products/action.tsx`.",
+      "symbols": [],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "c44ce9e57d2825865396300169a5f1d3bf8382c5fc6c98332ca69d1c7c164c08"
+    },
+    {
+      "path": "app/products/loading.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 329,
+      "hash": "f37cf17c31b5c5ac25e2b757770b0576bb401dbf62cc885b64ec8695c801938a",
+      "purpose": "Renders user interface or page behavior. Located at `app/products/loading.tsx`.",
+      "symbols": [
+        "Loading"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "4503f90094a18926fb4bb656d9a799e4680047aaabc6cc415732a87acb34d755"
+    },
+    {
+      "path": "app/stores/loading.tsx",
+      "language": "TypeScript",
+      "role": "Frontend component / page",
+      "size": 329,
+      "hash": "d7353e6436325a60f59182460f150b327352cb4a7bbabb7c1c2c4ace045be31d",
+      "purpose": "Renders user interface or page behavior. Located at `app/stores/loading.tsx`.",
+      "symbols": [
+        "Loading"
+      ],
+      "routes": [],
+      "env_vars": [],
+      "importance": 0,
+      "incoming": 0,
+      "outgoing": 0,
+      "architecture_hash": "4503f90094a18926fb4bb656d9a799e4680047aaabc6cc415732a87acb34d755"
+    }
+  ],
+  "relationships": [
+    {
+      "source": "app/check/[packageId]/actions.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/cache",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/actions.ts:3"
+    },
+    {
+      "source": "app/check/[packageId]/actions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/actions.ts:4"
+    },
+    {
+      "source": "app/check/[packageId]/actions.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/actions.ts:5"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/link",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:1"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/navigation",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:2"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:3"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:4"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/prices/format",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:5"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/PriceDisplay",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:6"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/DeleteObservationButton",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:7"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "app/check/[packageId]/actions.ts",
+      "type": "imports",
+      "symbol": "./actions",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:8"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/products/variation",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:9"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:@",
+      "type": "renders",
+      "symbol": "PriceDisplay",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:6"
+    },
+    {
+      "source": "app/check/[packageId]/page.tsx",
+      "target": "package:@",
+      "type": "renders",
+      "symbol": "DeleteObservationButton",
+      "confidence": "Confirmed",
+      "evidence": "app/check/[packageId]/page.tsx:7"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/link",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:1"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:lucide-react",
+      "type": "imports",
+      "symbol": "lucide-react",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:2"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:3"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/prices/format",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:4"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/prices/coupon",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:5"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/PriceDisplay",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:6"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/products/variation",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:7"
+    },
+    {
+      "source": "app/check/page.tsx",
+      "target": "package:@",
+      "type": "renders",
+      "symbol": "PriceDisplay",
+      "confidence": "Confirmed",
+      "evidence": "app/check/page.tsx:6"
+    },
+    {
+      "source": "app/error.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/error.tsx:3"
+    },
+    {
+      "source": "app/layout.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/font/google",
+      "confidence": "Confirmed",
+      "evidence": "app/layout.tsx:2"
+    },
+    {
+      "source": "app/layout.tsx",
+      "target": "app/globals.css",
+      "type": "imports",
+      "symbol": "./globals.css",
+      "confidence": "Confirmed",
+      "evidence": "app/layout.tsx:3"
+    },
+    {
+      "source": "app/layout.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/AppNav",
+      "confidence": "Confirmed",
+      "evidence": "app/layout.tsx:4"
+    },
+    {
+      "source": "app/layout.tsx",
+      "target": "package:@",
+      "type": "renders",
+      "symbol": "AppNav",
+      "confidence": "Confirmed",
+      "evidence": "app/layout.tsx:4"
+    },
+    {
+      "source": "app/login/page.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/login/page.tsx:3"
+    },
+    {
+      "source": "app/login/page.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/navigation",
+      "confidence": "Confirmed",
+      "evidence": "app/login/page.tsx:4"
+    },
+    {
+      "source": "app/login/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/client",
+      "confidence": "Confirmed",
+      "evidence": "app/login/page.tsx:5"
+    },
+    {
+      "source": "app/login/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/card",
+      "confidence": "Confirmed",
+      "evidence": "app/login/page.tsx:6"
+    },
+    {
+      "source": "app/login/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/input",
+      "confidence": "Confirmed",
+      "evidence": "app/login/page.tsx:7"
+    },
+    {
+      "source": "app/login/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/label",
+      "confidence": "Confirmed",
+      "evidence": "app/login/page.tsx:8"
+    },
+    {
+      "source": "app/login/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/button",
+      "confidence": "Confirmed",
+      "evidence": "app/login/page.tsx:9"
+    },
+    {
+      "source": "app/not-found.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/link",
+      "confidence": "Confirmed",
+      "evidence": "app/not-found.tsx:1"
+    },
+    {
+      "source": "app/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/client",
+      "confidence": "Confirmed",
+      "evidence": "app/page.tsx:3"
+    },
+    {
+      "source": "app/page.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/navigation",
+      "confidence": "Confirmed",
+      "evidence": "app/page.tsx:4"
+    },
+    {
+      "source": "app/page.tsx",
+      "target": "package:lucide-react",
+      "type": "imports",
+      "symbol": "lucide-react",
+      "confidence": "Confirmed",
+      "evidence": "app/page.tsx:5"
+    },
+    {
+      "source": "app/prices/actions.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/cache",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/actions.ts:3"
+    },
+    {
+      "source": "app/prices/actions.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/actions.ts:4"
+    },
+    {
+      "source": "app/prices/actions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/actions.ts:5"
+    },
+    {
+      "source": "app/prices/actions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/prices/schema",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/actions.ts:6"
+    },
+    {
+      "source": "app/prices/new/ChainExtras.tsx",
+      "target": "app/prices/new/FormParts.tsx",
+      "type": "imports",
+      "symbol": "./FormParts",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/ChainExtras.tsx:1"
+    },
+    {
+      "source": "app/prices/new/FormParts.tsx",
+      "target": "package:lucide-react",
+      "type": "imports",
+      "symbol": "lucide-react",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/FormParts.tsx:2"
+    },
+    {
+      "source": "app/prices/new/NewPackageFields.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/NewPackageFields.tsx:3"
+    },
+    {
+      "source": "app/prices/new/NewPackageFields.tsx",
+      "target": "app/prices/new/FormParts.tsx",
+      "type": "imports",
+      "symbol": "./FormParts",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/NewPackageFields.tsx:4"
+    },
+    {
+      "source": "app/prices/new/NewPackageFields.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/NewPackageFields.tsx:39"
+    },
+    {
+      "source": "app/prices/new/NewPackageFields.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/NewPackageFields.tsx:98"
+    },
+    {
+      "source": "app/prices/new/NewPackageFields.tsx",
+      "target": "database:name",
+      "type": "queries",
+      "symbol": "name",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/NewPackageFields.tsx:127"
+    },
+    {
+      "source": "app/prices/new/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/page.tsx:1"
+    },
+    {
+      "source": "app/prices/new/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/prices/format",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/page.tsx:2"
+    },
+    {
+      "source": "app/prices/new/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/products/variation",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/page.tsx:3"
+    },
+    {
+      "source": "app/prices/new/page.tsx",
+      "target": "app/prices/new/PriceForm.tsx",
+      "type": "imports",
+      "symbol": "./PriceForm",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/page.tsx:4"
+    },
+    {
+      "source": "app/prices/new/page.tsx",
+      "target": "app/prices/new/PriceForm.tsx",
+      "type": "renders",
+      "symbol": "PriceForm",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/page.tsx:4"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:3"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/button",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:4"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/app/prices/actions",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:5"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "app/prices/new/ChainExtras.tsx",
+      "type": "imports",
+      "symbol": "./ChainExtras",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:6"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "app/prices/new/FormParts.tsx",
+      "type": "imports",
+      "symbol": "./FormParts",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:8"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "app/prices/new/ChainExtras.tsx",
+      "type": "renders",
+      "symbol": "ChainExtras",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:6"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:131"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:153"
+    },
+    {
+      "source": "app/prices/new/PriceForm.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/prices/new/PriceForm.tsx:191"
+    },
+    {
+      "source": "app/products/actions.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/products/actions.ts:3"
+    },
+    {
+      "source": "app/products/actions.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/cache",
+      "confidence": "Confirmed",
+      "evidence": "app/products/actions.ts:4"
+    },
+    {
+      "source": "app/products/actions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/products/actions.ts:5"
+    },
+    {
+      "source": "app/products/memoActions.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/cache",
+      "confidence": "Confirmed",
+      "evidence": "app/products/memoActions.ts:3"
+    },
+    {
+      "source": "app/products/memoActions.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/products/memoActions.ts:4"
+    },
+    {
+      "source": "app/products/memoActions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/products/memoActions.ts:5"
+    },
+    {
+      "source": "app/products/memoActions.ts",
+      "target": "database:error",
+      "type": "queries",
+      "symbol": "error",
+      "confidence": "Confirmed",
+      "evidence": "app/products/memoActions.ts:37"
+    },
+    {
+      "source": "app/products/memoActions.ts",
+      "target": "database:failed",
+      "type": "queries",
+      "symbol": "failed",
+      "confidence": "Confirmed",
+      "evidence": "app/products/memoActions.ts:44"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:3"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:4"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "app/products/actions.ts",
+      "type": "imports",
+      "symbol": "./actions",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:5"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/card",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:6"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/input",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:7"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/label",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:8"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/button",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:9"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:60"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:81"
+    },
+    {
+      "source": "app/products/PackageForm.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/products/PackageForm.tsx:116"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:1"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/ProductForm.tsx",
+      "type": "imports",
+      "symbol": "./ProductForm",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:2"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/PackageForm.tsx",
+      "type": "imports",
+      "symbol": "./PackageForm",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:3"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/VariationForm.tsx",
+      "type": "imports",
+      "symbol": "./VariationForm",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:4"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/ProductMemoEditor.tsx",
+      "type": "imports",
+      "symbol": "./ProductMemoEditor",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:5"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/card",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:6"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/badge",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:7"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/products/variation",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:8"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/ProductForm.tsx",
+      "type": "renders",
+      "symbol": "ProductForm",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:2"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/PackageForm.tsx",
+      "type": "renders",
+      "symbol": "PackageForm",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:3"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/VariationForm.tsx",
+      "type": "renders",
+      "symbol": "VariationForm",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:4"
+    },
+    {
+      "source": "app/products/page.tsx",
+      "target": "app/products/ProductMemoEditor.tsx",
+      "type": "renders",
+      "symbol": "ProductMemoEditor",
+      "confidence": "Confirmed",
+      "evidence": "app/products/page.tsx:5"
+    },
+    {
+      "source": "app/products/ProductForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductForm.tsx:3"
+    },
+    {
+      "source": "app/products/ProductForm.tsx",
+      "target": "app/products/actions.ts",
+      "type": "imports",
+      "symbol": "./actions",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductForm.tsx:4"
+    },
+    {
+      "source": "app/products/ProductForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/card",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductForm.tsx:5"
+    },
+    {
+      "source": "app/products/ProductForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/input",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductForm.tsx:6"
+    },
+    {
+      "source": "app/products/ProductForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/label",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductForm.tsx:7"
+    },
+    {
+      "source": "app/products/ProductForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/button",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductForm.tsx:8"
+    },
+    {
+      "source": "app/products/ProductForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/textarea",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductForm.tsx:9"
+    },
+    {
+      "source": "app/products/ProductMemoEditor.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductMemoEditor.tsx:3"
+    },
+    {
+      "source": "app/products/ProductMemoEditor.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/app/products/memoActions",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductMemoEditor.tsx:4"
+    },
+    {
+      "source": "app/products/ProductMemoEditor.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/button",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductMemoEditor.tsx:5"
+    },
+    {
+      "source": "app/products/ProductMemoEditor.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/textarea",
+      "confidence": "Confirmed",
+      "evidence": "app/products/ProductMemoEditor.tsx:6"
+    },
+    {
+      "source": "app/products/variationActions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/products/variationActions.ts:3"
+    },
+    {
+      "source": "app/products/variationActions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/products/variation",
+      "confidence": "Confirmed",
+      "evidence": "app/products/variationActions.ts:4"
+    },
+    {
+      "source": "app/products/variationActions.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/products/variationActions.ts:9"
+    },
+    {
+      "source": "app/products/variationActions.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/cache",
+      "confidence": "Confirmed",
+      "evidence": "app/products/variationActions.ts:10"
+    },
+    {
+      "source": "app/products/VariationForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/products/VariationForm.tsx:4"
+    },
+    {
+      "source": "app/products/VariationForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/app/products/variationActions",
+      "confidence": "Confirmed",
+      "evidence": "app/products/VariationForm.tsx:5"
+    },
+    {
+      "source": "app/products/VariationForm.tsx",
+      "target": "database:name",
+      "type": "queries",
+      "symbol": "name",
+      "confidence": "Confirmed",
+      "evidence": "app/products/VariationForm.tsx:101"
+    },
+    {
+      "source": "app/stores/actions.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/actions.ts:3"
+    },
+    {
+      "source": "app/stores/actions.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/cache",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/actions.ts:4"
+    },
+    {
+      "source": "app/stores/actions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/actions.ts:5"
+    },
+    {
+      "source": "app/stores/ChainOptionsForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ChainOptionsForm.tsx:3"
+    },
+    {
+      "source": "app/stores/ChainOptionsForm.tsx",
+      "target": "app/stores/couponActions.ts",
+      "type": "imports",
+      "symbol": "./couponActions",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ChainOptionsForm.tsx:4"
+    },
+    {
+      "source": "app/stores/ChainOptionsForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/button",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ChainOptionsForm.tsx:5"
+    },
+    {
+      "source": "app/stores/couponActions.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/cache",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/couponActions.ts:3"
+    },
+    {
+      "source": "app/stores/couponActions.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/couponActions.ts:4"
+    },
+    {
+      "source": "app/stores/couponActions.ts",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/couponActions.ts:5"
+    },
+    {
+      "source": "app/stores/couponActions.ts",
+      "target": "database:error",
+      "type": "queries",
+      "symbol": "error",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/couponActions.ts:59"
+    },
+    {
+      "source": "app/stores/CouponForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/CouponForm.tsx:1"
+    },
+    {
+      "source": "app/stores/CouponForm.tsx",
+      "target": "app/stores/ChainOptionsForm.tsx",
+      "type": "imports",
+      "symbol": "./ChainOptionsForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/CouponForm.tsx:2"
+    },
+    {
+      "source": "app/stores/CouponForm.tsx",
+      "target": "app/stores/ChainOptionsForm.tsx",
+      "type": "renders",
+      "symbol": "ChainOptionsForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/CouponForm.tsx:2"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/supabase/server",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:1"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "app/stores/StoreForm.tsx",
+      "type": "imports",
+      "symbol": "./StoreForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:2"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "app/stores/ShopForm.tsx",
+      "type": "imports",
+      "symbol": "./ShopForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:3"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "app/stores/CouponForm.tsx",
+      "type": "imports",
+      "symbol": "./CouponForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:4"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/card",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:5"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "app/stores/StoreForm.tsx",
+      "type": "renders",
+      "symbol": "StoreForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:2"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "app/stores/ShopForm.tsx",
+      "type": "renders",
+      "symbol": "ShopForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:3"
+    },
+    {
+      "source": "app/stores/page.tsx",
+      "target": "app/stores/CouponForm.tsx",
+      "type": "renders",
+      "symbol": "CouponForm",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/page.tsx:4"
+    },
+    {
+      "source": "app/stores/ShopForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ShopForm.tsx:3"
+    },
+    {
+      "source": "app/stores/ShopForm.tsx",
+      "target": "app/stores/actions.ts",
+      "type": "imports",
+      "symbol": "./actions",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ShopForm.tsx:4"
+    },
+    {
+      "source": "app/stores/ShopForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/card",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ShopForm.tsx:5"
+    },
+    {
+      "source": "app/stores/ShopForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/input",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ShopForm.tsx:6"
+    },
+    {
+      "source": "app/stores/ShopForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/label",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ShopForm.tsx:7"
+    },
+    {
+      "source": "app/stores/ShopForm.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/components/ui/button",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ShopForm.tsx:8"
+    },
+    {
+      "source": "app/stores/ShopForm.tsx",
+      "target": "database:id",
+      "type": "queries",
+      "symbol": "id",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/ShopForm.tsx:32"
+    },
+    {
+      "source": "app/stores/StoreForm.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/StoreForm.tsx:3"
+    },
+    {
+      "source": "app/stores/StoreForm.tsx",
+      "target": "app/stores/actions.ts",
+      "type": "imports",
+      "symbol": "./actions",
+      "confidence": "Confirmed",
+      "evidence": "app/stores/StoreForm.tsx:4"
+    },
+    {
+      "source": "components/AppNav.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/link",
+      "confidence": "Confirmed",
+      "evidence": "components/AppNav.tsx:3"
+    },
+    {
+      "source": "components/AppNav.tsx",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/navigation",
+      "confidence": "Confirmed",
+      "evidence": "components/AppNav.tsx:4"
+    },
+    {
+      "source": "components/AppNav.tsx",
+      "target": "package:lucide-react",
+      "type": "imports",
+      "symbol": "lucide-react",
+      "confidence": "Confirmed",
+      "evidence": "components/AppNav.tsx:5"
+    },
+    {
+      "source": "components/DeleteObservationButton.tsx",
+      "target": "package:react",
+      "type": "imports",
+      "symbol": "react",
+      "confidence": "Confirmed",
+      "evidence": "components/DeleteObservationButton.tsx:3"
+    },
+    {
+      "source": "components/PriceDisplay.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/prices/coupon",
+      "confidence": "Confirmed",
+      "evidence": "components/PriceDisplay.tsx:1"
+    },
+    {
+      "source": "components/PriceDisplay.tsx",
+      "target": "package:@",
+      "type": "imports",
+      "symbol": "@/lib/prices/format",
+      "confidence": "Confirmed",
+      "evidence": "components/PriceDisplay.tsx:2"
+    },
+    {
+      "source": "components.json",
+      "target": "external:ui.shadcn.com",
+      "type": "uses external service",
+      "symbol": "ui.shadcn.com",
+      "confidence": "Confirmed",
+      "evidence": "components.json:2"
+    },
+    {
+      "source": "eslint.config.mjs",
+      "target": "package:eslint",
+      "type": "imports",
+      "symbol": "eslint/config",
+      "confidence": "Confirmed",
+      "evidence": "eslint.config.mjs:1"
+    },
+    {
+      "source": "eslint.config.mjs",
+      "target": "package:eslint-config-next",
+      "type": "imports",
+      "symbol": "eslint-config-next/core-web-vitals",
+      "confidence": "Confirmed",
+      "evidence": "eslint.config.mjs:2"
+    },
+    {
+      "source": "eslint.config.mjs",
+      "target": "package:eslint-config-next",
+      "type": "imports",
+      "symbol": "eslint-config-next/typescript",
+      "confidence": "Confirmed",
+      "evidence": "eslint.config.mjs:3"
+    },
+    {
+      "source": "eslint.config.mjs",
+      "target": "next-env.d.ts",
+      "type": "configures",
+      "symbol": "next-env.d.ts",
+      "confidence": "Strongly inferred",
+      "evidence": "eslint.config.mjs:1"
+    },
+    {
+      "source": "lib/prices/coupon.test.ts",
+      "target": "package:vitest",
+      "type": "imports",
+      "symbol": "vitest",
+      "confidence": "Confirmed",
+      "evidence": "lib/prices/coupon.test.ts:1"
+    },
+    {
+      "source": "lib/prices/coupon.test.ts",
+      "target": "lib/prices/coupon.ts",
+      "type": "imports",
+      "symbol": "./coupon",
+      "confidence": "Confirmed",
+      "evidence": "lib/prices/coupon.test.ts:2"
+    },
+    {
+      "source": "lib/prices/format.test.ts",
+      "target": "package:vitest",
+      "type": "imports",
+      "symbol": "vitest",
+      "confidence": "Confirmed",
+      "evidence": "lib/prices/format.test.ts:1"
+    },
+    {
+      "source": "lib/prices/format.test.ts",
+      "target": "lib/prices/format.ts",
+      "type": "imports",
+      "symbol": "./format",
+      "confidence": "Confirmed",
+      "evidence": "lib/prices/format.test.ts:2"
+    },
+    {
+      "source": "lib/prices/schema.test.ts",
+      "target": "package:vitest",
+      "type": "imports",
+      "symbol": "vitest",
+      "confidence": "Confirmed",
+      "evidence": "lib/prices/schema.test.ts:1"
+    },
+    {
+      "source": "lib/prices/schema.test.ts",
+      "target": "lib/prices/schema.ts",
+      "type": "imports",
+      "symbol": "./schema",
+      "confidence": "Confirmed",
+      "evidence": "lib/prices/schema.test.ts:2"
+    },
+    {
+      "source": "lib/prices/schema.ts",
+      "target": "package:zod",
+      "type": "imports",
+      "symbol": "zod",
+      "confidence": "Confirmed",
+      "evidence": "lib/prices/schema.ts:1"
+    },
+    {
+      "source": "lib/products/variation.test.ts",
+      "target": "package:vitest",
+      "type": "imports",
+      "symbol": "vitest",
+      "confidence": "Confirmed",
+      "evidence": "lib/products/variation.test.ts:1"
+    },
+    {
+      "source": "lib/products/variation.test.ts",
+      "target": "lib/products/variation.ts",
+      "type": "imports",
+      "symbol": "./variation",
+      "confidence": "Confirmed",
+      "evidence": "lib/products/variation.test.ts:2"
+    },
+    {
+      "source": "lib/utils.ts",
+      "target": "package:cn",
+      "type": "imports",
+      "symbol": "cn",
+      "confidence": "Confirmed",
+      "evidence": "lib/utils.ts:1"
+    },
+    {
+      "source": "next-env.d.ts",
+      "target": "package:",
+      "type": "imports",
+      "symbol": "./.next/dev/types/routes.d.ts",
+      "confidence": "Unresolved",
+      "evidence": "next-env.d.ts:3"
+    },
+    {
+      "source": "next-env.d.ts",
+      "target": "package:",
+      "type": "imports",
+      "symbol": "./.next/dev/types/root-params.d.ts",
+      "confidence": "Unresolved",
+      "evidence": "next-env.d.ts:4"
+    },
+    {
+      "source": "next-env.d.ts",
+      "target": "external:nextjs.org",
+      "type": "uses external service",
+      "symbol": "nextjs.org",
+      "confidence": "Confirmed",
+      "evidence": "next-env.d.ts:7"
+    },
+    {
+      "source": "proxy.ts",
+      "target": "package:@supabase",
+      "type": "imports",
+      "symbol": "@supabase/ssr",
+      "confidence": "Confirmed",
+      "evidence": "proxy.ts:1"
+    },
+    {
+      "source": "proxy.ts",
+      "target": "package:next",
+      "type": "imports",
+      "symbol": "next/server",
+      "confidence": "Confirmed",
+      "evidence": "proxy.ts:2"
+    },
+    {
+      "source": "tsconfig.json",
+      "target": "next-env.d.ts",
+      "type": "configures",
+      "symbol": "next-env.d.ts",
+      "confidence": "Strongly inferred",
+      "evidence": "tsconfig.json:1"
+    }
+  ],
+  "routes": [],
+  "external_systems": [
+    "nextjs.org",
+    "ui.shadcn.com"
+  ],
+  "environment_variables": [
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_SUPABASE_URL"
+  ],
+  "secret_files": [
+    ".env.example"
+  ],
+  "excluded": [
+    {
+      "path": ".aider.chat.history.md",
+      "reason": "ignore rule: .aider*"
+    },
+    {
+      "path": ".aider.conf.yml",
+      "reason": "ignore rule: .aider*"
+    },
+    {
+      "path": ".aider.input.history",
+      "reason": "ignore rule: .aider*"
+    },
+    {
+      "path": ".aider.tags.cache.v4/",
+      "reason": "ignore rule: .aider*"
+    },
+    {
+      "path": ".codebase-map/",
+      "reason": "default generated/cache exclusion: .codebase-map"
+    },
+    {
+      "path": ".env.local",
+      "reason": "ignore rule: .env.local"
+    },
+    {
+      "path": ".git/",
+      "reason": "default generated/cache exclusion: .git"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": ".md/",
+      "reason": "ignore rule: .md"
+    },
+    {
+      "path": ".next/",
+      "reason": "default generated/cache exclusion: .next"
+    },
+    {
+      "path": ".prettierignore",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "_archived/",
+      "reason": "ignore rule: _archived"
+    },
+    {
+      "path": "app/apple-icon.png",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "app/icon.png",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "components/ui/",
+      "reason": "ignore rule: components/ui"
+    },
+    {
+      "path": "lib/supabase/",
+      "reason": "ignore rule: supabase"
+    },
+    {
+      "path": "node_modules/",
+      "reason": "default generated/cache exclusion: node_modules"
+    },
+    {
+      "path": "package-lock.json",
+      "reason": "ignore rule: package-lock.json"
+    },
+    {
+      "path": "public/file.svg",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/globe.svg",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/icons/icon-192.png",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/icons/icon-512.png",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/icons/icon-maskable-512.png",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/icons/priceTrackr-logo.png",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/next.svg",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/vercel.svg",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "public/window.svg",
+      "reason": "binary/media/non-text file"
+    },
+    {
+      "path": "supabase/",
+      "reason": "ignore rule: supabase"
+    },
+    {
+      "path": "tsconfig.tsbuildinfo",
+      "reason": "binary/media/non-text file"
+    }
+  ],
+  "flows": [],
+  "risks": [
+    {
+      "status": "Confirmed",
+      "kind": "static-analysis-limit",
+      "message": "2 relationship(s) could not be resolved statically."
+    },
+    {
+      "status": "Confirmed",
+      "kind": "secrets",
+      "message": "1 possible secret-bearing file(s) were identified and not read into reports."
+    }
+  ],
+  "changes": {
+    "baseline": false,
+    "message": "No previous snapshot was available.",
+    "added_files": [],
+    "removed_files": [],
+    "changed_files": [],
+    "architecturally_changed_files": [],
+    "content_only_changes": [],
+    "new_dependencies": [],
+    "removed_dependencies": [],
+    "new_routes": [],
+    "removed_routes": [],
+    "changed_flows": [],
+    "changed_infrastructure": [],
+    "new_risks": [],
+    "centrality_changes": []
+  }
+}
