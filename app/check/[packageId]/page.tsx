@@ -5,6 +5,9 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import PriceDisplay from "@/components/PriceDisplay";
 import { parseTaxBasis } from "@/lib/prices/tax";
+import { effectivePrice } from "@/lib/prices/coupon";
+import { unitPriceText } from "@/lib/prices/unit";
+import UnitPriceLine from "@/components/UnitPriceLine";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
 import { deletePriceObservation } from "./actions";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
@@ -70,6 +73,15 @@ export default async function PackageDetailPage({
       isMemberPrice: !!obs.is_member_price,
       bonusPoints: (obs.bonus_points as number | null) ?? null,
       taxBasis: parseTaxBasis(obs.tax_basis),
+      unitText: unitPriceText(
+        effectivePrice(Number(obs.price), {
+          couponPercents: chain?.coupon_percents ?? [],
+          memberPercent: chain?.member_discount_percent ?? null,
+          isMemberPrice: !!obs.is_member_price,
+        }),
+        Number(pkg.package_size),
+        pkg.package_unit
+      ),
       memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
       chainName: (chain?.name as string | undefined) ?? "",
       branchName: (branch?.name as string | undefined) ?? "",
@@ -107,6 +119,7 @@ export default async function PackageDetailPage({
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
             <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} taxBasis={latest.taxBasis} size="lg" />
+            <UnitPriceLine text={latest.unitText} taxBasis={latest.taxBasis} />
           </div>
           <p className="mt-2 text-sm text-stone-500">
             {latest.chainName}
@@ -143,6 +156,7 @@ export default async function PackageDetailPage({
                   <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} taxBasis={r.taxBasis} size="md" />
                 </div>
                 <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
+                <UnitPriceLine text={r.unitText} taxBasis={r.taxBasis} />
                 {r.notes && <p className="mt-2 text-sm text-stone-700">{r.notes}</p>}
                 <div className="mt-2">
                   <DeleteObservationButton

@@ -35,6 +35,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14l (tax basis on prices: 税抜き/税込み/不明 radio on price entry, tax badge on every price, price check lists by most recent date, 最安 only among prices from the last 6 months that share the same known basis) done
 - Step 14m (UI polish: price form with tax radio icons, collapsible 支店 and 会員価格・ポイント, floating save button; same column width on every page; simpler home page) done
 - Step 14n (member-price box checked by default on chains with a membership price; 店舗 page shows one chain at a time from a dropdown, with the add forms collapsed) done
+- Step 14o (unit price on the product detail page: per 100 ml / 100 g, or per 個 / 枚 / 袋, with tax label) done
 
 
 ## In Progress
@@ -74,3 +75,4 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-15: product names are typed in one field and saved in `name_ja` when the text contains Japanese characters, otherwise in `name_en`, with an optional second name stored in the other column (handled by `lib/products/name.ts`); products and variations can be edited from the products page (name, optional second name, brand, category; variation attribute rows); editing into an exact duplicate (same normalized name and brand, or same variation attributes on the same product) is refused; form parts moved to `components/FormParts.tsx`.
 
 - 2026-10-15: price_observations.tax_basis ('excl', 'incl', 'unknown', default 'unknown') records whether the entered price excludes or includes tax; no tax rate is assumed or calculated; the price entry form requires choosing it with 不明 preselected; every price shows a tax badge; the price check page lists chains by most recent observation and shows the 最安 badge only among prices from the last 6 months that share the same known basis.
+- 2026-10-16: unit price is computed at display time (never stored) from the discounted price and the package size and unit; ml and L are shown per 100 ml, g and kg per 100 g, count, sheet and bag per piece; it is shown only on the product detail page, with the tax label of the price it comes from; multi-packs are entered as a total size.
