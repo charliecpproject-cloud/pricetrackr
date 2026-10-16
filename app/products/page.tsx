@@ -1,15 +1,14 @@
+import { Search } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { packageLabel } from "@/lib/prices/format";
+import { parseAttributes, variationLabel } from "@/lib/products/variation";
 import ProductForm from "./ProductForm";
 import PackageForm from "./PackageForm";
 import VariationForm from "./VariationForm";
 import ProductMemoEditor from "./ProductMemoEditor";
 import ProductCardTools from "./ProductCardTools";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  parseAttributes,
-  variationLabel,
-} from "@/lib/products/variation";
+
+const PAGE_SIZE = 20;
 
 type Package = {
   id: string;
@@ -34,188 +33,202 @@ type Product = {
   product_packages: Package[] | null;
 };
 
-/** パッケージを「サイズ 単位」の文字列に変換 */
-const packageLabel = (pkg: { package_size: number; package_unit: string }) =>
-  `${pkg.package_size} ${pkg.package_unit}`;
+const chipCls =
+  "rounded-full bg-stone-100 px-2.5 py-1 text-sm font-medium text-stone-700";
+const sectionCls = "rounded-2xl border border-stone-200 bg-white p-4";
+const summaryCls = "cursor-pointer text-base font-semibold text-stone-900";
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  // Keep the search term short and free of characters that break the filter.
+  const term = (q ?? "").trim().slice(0, 50).replace(/[,()%_*\\]/g, "");
+
   const supabase = await createSupabaseServerClient();
 
-  const { data: products, error } = await supabase
+  let listQuery = supabase
     .from("products")
     .select(
-      "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)",
+      "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)"
     )
-    .order("name_ja", { ascending: true });
-
-  if (error) {
-    console.error("Failed to fetch products:", error);
+    .order("name_ja", { ascending: true })
+    .limit(PAGE_SIZE);
+  if (term) {
+    listQuery = listQuery.or(
+      `name_en.ilike.%${term}%,name_ja.ilike.%${term}%,brand.ilike.%${term}%`
+    );
   }
 
-  const productList: Product[] = (products as any) ?? [];
+  // The list and the (light) dropdown data are fetched at the same time.
+  const [listResult, optionsResult, variationsResult] = await Promise.all([
+    listQuery,
+    supabase
+      .from("products")
+      .select("id, name_ja, name_en")
+      .order("name_ja", { ascending: true }),
+    supabase.from("product_variations").select("id, product_id, attributes"),
+  ]);
 
-  /** Variation の一覧（PackageForm 用） */
-  const variationList = productList.flatMap((p) =>
-    (p.product_variations ?? []).map((v) => ({
-      id: v.id,
-      productId: p.id,
-      label: variationLabel(parseAttributes(v.attributes)),
-    }))
-  );
+  if (listResult.error) console.error("Products fetch error:", listResult.error);
+  if (optionsResult.error) console.error("Options fetch error:", optionsResult.error);
+  if (variationsResult.error)
+    console.error("Variations fetch error:", variationsResult.error);
+
+  const productList: Product[] = (listResult.data as any) ?? [];
+  const productRows = optionsResult.data ?? [];
+  const variationRows = variationsResult.data ?? [];
 
   /** 商品一覧（VariationForm 用） */
-  const productOptions = productList.map((p) => ({
+  const productOptions = productRows.map((p) => ({
     id: p.id,
     label: p.name_ja || p.name_en || "商品名なし",
   }));
 
+  /** Variation の一覧（PackageForm 用） */
+  const variationList = variationRows.map((v) => ({
+    id: v.id,
+    productId: v.product_id,
+    label: variationLabel(parseAttributes(v.attributes)),
+  }));
+
   /** 全バリエーションで使用されている属性名の集合 */
   const attributeNameSet = new Set<string>();
-  productList.forEach((p) => {
-    (p.product_variations ?? []).forEach((v) => {
-      const attrs = parseAttributes(v.attributes);
-      attrs.forEach((a) => attributeNameSet.add(a.name));
-    });
+  variationRows.forEach((v) => {
+    parseAttributes(v.attributes).forEach((a) => attributeNameSet.add(a.name));
   });
   const attributeNames = Array.from(attributeNameSet).sort();
 
   return (
-    <div>
-      <div className="min-w-0">
-        {/* ページ見出し */}
-        <h1 className="text-2xl font-bold mb-6">商品</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-stone-900">商品</h1>
 
-        {/* 商品追加セクション */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">商品を追加</h2>
-          <ProductForm />
-        </section>
+      <form action="/products" className="relative">
+        <input
+          name="q"
+          type="search"
+          defaultValue={term}
+          placeholder="商品名・ブランドで検索"
+          className="h-12 w-full rounded-xl border border-stone-200 bg-white pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+        />
+        <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-stone-400" />
+        <button
+          type="submit"
+          className="absolute right-1.5 top-1.5 h-9 rounded-lg bg-teal-600 px-4 text-sm font-medium text-white"
+        >
+          検索
+        </button>
+      </form>
 
-        {/* バリエーション追加セクション */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">バリエーションを追加</h2>
-          <VariationForm
-            products={productOptions}
-            attributeNames={attributeNames}
-          />
-        </section>
+      {productList.length === 0 ? (
+        <p className="text-stone-500">
+          {term ? "見つかりませんでした" : "まだ商品がありません。"}
+        </p>
+      ) : (
+        <div className="space-y-4">
+          {productList.map((product) => {
+            const variations = product.product_variations ?? [];
+            const packages = product.product_packages ?? [];
+            const loosePackages = packages.filter((pkg) => !pkg.variation_id);
 
-        {/* 容量追加セクション */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">容量を追加</h2>
-          <PackageForm products={productList} variations={variationList} />
-        </section>
+            return (
+              <div
+                key={product.id}
+                className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"
+              >
+                <p className="text-lg font-bold text-stone-900">
+                  {product.name_ja || product.name_en || "商品名なし"}
+                </p>
+                {product.name_ja && product.name_en && (
+                  <p className="text-sm text-stone-500">{product.name_en}</p>
+                )}
+                <p className="text-sm text-stone-500">
+                  {product.brand ?? "ブランドなし"} ・ {product.category ?? "カテゴリなし"}
+                </p>
 
-        {/* 商品一覧 */}
-        <section>
-          {productList.length === 0 ? (
-            <p className="text-center text-gray-500">まだ商品がありません。</p>
-          ) : (
-            <div className="space-y-4">
-              {productList.map((product) => (
-                <Card
-                  key={product.id}
-                  className="border rounded-2xl shadow-sm bg-white"
-                >
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold">
-                      {/* 商品名（日本語が優先、英語はサブテキスト） */}
-                      <div>
-                        {product.name_ja ||
-                          product.name_en ||
-                          "商品名なし"}
-                      </div>
-                      {product.name_ja && product.name_en && (
-                        <p className="text-sm text-gray-500">
-                          {product.name_en}
-                        </p>
-                      )}
-                    </CardTitle>
-                    <p className="text-sm text-gray-600">
-                      {product.brand ?? "ブランドなし"} -{" "}
-                      {product.category ?? "カテゴリなし"}
-                    </p>
-                  </CardHeader>
+                {product.memo && (
+                  <p className="mt-3 whitespace-pre-wrap text-sm text-stone-600">
+                    {product.memo}
+                  </p>
+                )}
 
-                  {/* メモ表示とエディタ */}
-                  {product.memo && (
-                    <CardContent className="pt-2">
-                      <p className="text-sm text-gray-500 whitespace-pre-wrap">
-                        {product.memo}
-                      </p>
-                    </CardContent>
-                  )}
-                  <CardContent className="pt-2">
-                    <ProductMemoEditor
-                      productId={product.id}
-                      memo={product.memo ?? null}
-                    />
-                    <ProductCardTools product={product} />
-                  </CardContent>
-
-                  {/* バリエーションとそのパッケージ */}
-                  {product.product_variations &&
-                    product.product_variations.length > 0 && (
-                      <CardContent className="pt-2">
-                        <div className="space-y-2">
-                          {product.product_variations.map((variation) => {
-                            const attrs = parseAttributes(
-                              variation.attributes
-                            );
-                            const label = variationLabel(attrs);
-                            const packagesForVariation =
-                              product.product_packages?.filter(
-                                (pkg) => pkg.variation_id === variation.id
-                              ) ?? [];
-
-                            return (
-                              <div key={variation.id} className="space-y-1">
-                                <p className="font-medium">{label}</p>
-                                {packagesForVariation.length > 0 && (
-                                  <div className="flex flex-wrap">
-                                    {packagesForVariation.map((pkg) => (
-                                      <Badge
-                                        key={pkg.id}
-                                        className="mr-2 mb-2"
-                                      >
-                                        {packageLabel(pkg)}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
+                {variations.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {variations.map((variation) => {
+                      const label = variationLabel(parseAttributes(variation.attributes));
+                      const pkgs = packages.filter(
+                        (pkg) => pkg.variation_id === variation.id
+                      );
+                      return (
+                        <div key={variation.id} className="space-y-1">
+                          <p className="text-sm font-medium text-stone-800">{label}</p>
+                          {pkgs.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {pkgs.map((pkg) => (
+                                <span key={pkg.id} className={chipCls}>
+                                  {packageLabel(pkg.package_size, pkg.package_unit)}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </CardContent>
-                    )}
+                      );
+                    })}
+                  </div>
+                )}
 
-                  {/* バリエーションなしパッケージ */}
-                  {product.product_packages &&
-                    product.product_packages.some(
-                      (pkg) => !pkg.variation_id
-                    ) && (
-                      <CardContent className="pt-2">
-                        <p className="font-medium mb-1">バリエーションなし</p>
-                        <div className="flex flex-wrap">
-                          {product.product_packages
-                            .filter((pkg) => !pkg.variation_id)
-                            .map((pkg) => (
-                              <Badge
-                                key={pkg.id}
-                                className="mr-2 mb-2"
-                              >
-                                {packageLabel(pkg)}
-                              </Badge>
-                            ))}
-                        </div>
-                      </CardContent>
+                {loosePackages.length > 0 && (
+                  <div className="mt-3 space-y-1">
+                    {variations.length > 0 && (
+                      <p className="text-sm font-medium text-stone-800">バリエーションなし</p>
                     )}
-                </Card>
-              ))}
-            </div>
-          )}
-        </section>
+                    <div className="flex flex-wrap gap-2">
+                      {loosePackages.map((pkg) => (
+                        <span key={pkg.id} className={chipCls}>
+                          {packageLabel(pkg.package_size, pkg.package_unit)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <ProductMemoEditor productId={product.id} memo={product.memo ?? null} />
+                <ProductCardTools product={product} />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {productList.length === PAGE_SIZE && (
+        <p className="text-center text-xs text-stone-500">
+          先頭の{PAGE_SIZE}件を表示しています。検索で絞り込めます。
+        </p>
+      )}
+
+      <div className="space-y-3">
+        <details className={sectionCls}>
+          <summary className={summaryCls}>商品を追加</summary>
+          <div className="mt-4">
+            <ProductForm />
+          </div>
+        </details>
+
+        <details className={sectionCls}>
+          <summary className={summaryCls}>バリエーションを追加</summary>
+          <div className="mt-4">
+            <VariationForm products={productOptions} attributeNames={attributeNames} />
+          </div>
+        </details>
+
+        <details className={sectionCls}>
+          <summary className={summaryCls}>容量を追加</summary>
+          <div className="mt-4">
+            <PackageForm products={productRows} variations={variationList} />
+          </div>
+        </details>
       </div>
     </div>
   );

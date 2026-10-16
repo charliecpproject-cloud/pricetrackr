@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge, Field, controlCls, labelCls } from "@/components/FormParts";
 import { addVariation } from "@/app/products/variationActions";
 
 type Product = {
@@ -21,11 +22,10 @@ type Row = {
 };
 
 export default function VariationForm({ products, attributeNames }: Props) {
-  // Action state for server action
-  const [actionState, formAction] = useActionState(
-    addVariation,
-    { error: null, message: null }
-  );
+  const [actionState, formAction, pending] = useActionState(addVariation, {
+    error: null,
+    message: null,
+  });
 
   // Row management (controlled)
   const idCounter = useRef(0);
@@ -50,15 +50,11 @@ export default function VariationForm({ products, attributeNames }: Props) {
   }, [actionState.message]);
 
   const handleNameChange = (id: string, value: string) => {
-    setRows((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, name: value } : r))
-    );
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, name: value } : r)));
   };
 
   const handleValueChange = (id: string, value: string) => {
-    setRows((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, value: value } : r))
-    );
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, value: value } : r)));
   };
 
   const addRow = () => {
@@ -72,113 +68,90 @@ export default function VariationForm({ products, attributeNames }: Props) {
   };
 
   return (
-    <section className="p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-2">バリエーションを追加</h2>
-
-      <p className="text-sm mb-1">
-        「サイズや種類など、価格を別々に管理したい違いがある場合に入力してください。」
-      </p>
-      <p className="text-sm mb-1">
-        「バリエーションを登録すると、それぞれを別の商品として価格履歴を管理します。」
-      </p>
-      <p className="text-sm mb-4">
-        「バリエーションを登録しない場合は、商品名単位で価格を管理します。」
+    <form action={formAction} className="space-y-4">
+      <p className="text-sm text-stone-500">
+        サイズや種類など、価格履歴を別々に管理したい違いがある場合に入力します。登録しない場合は、商品単位で価格を管理します。
       </p>
 
-      {actionState.error && (
-        <p className="text-red-600 mb-2">{actionState.error}</p>
-      )}
-      {actionState.message && (
-        <p className="text-green-600 mb-2">{actionState.message}</p>
-      )}
+      <Field label="商品" kind="required" htmlFor="variation_product_id">
+        <select
+          name="product_id"
+          id="variation_product_id"
+          required
+          className={controlCls}
+        >
+          <option value="">商品を選択</option>
+          {products.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+      </Field>
 
-      <form action={formAction} className="space-y-4">
-        {/* 商品選択 */}
-        <div>
-          <label htmlFor="product_id" className="block mb-1 font-medium">
-            商品
-          </label>
-          <select
-            name="product_id"
-            id="product_id"
-            required
-            className="w-full border rounded p-2"
-          >
-            <option value="">商品を選択</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* 属性行 */}
-        <div>
-          {rows.map((row, index) => (
-            <div
-              key={row.id}
-              className="flex items-center gap-2 mb-2"
+      <div>
+        <p className={labelCls}>
+          属性（名前と値）
+          <Badge kind="required" />
+        </p>
+        {rows.map((row) => (
+          <div key={row.id} className="mb-2 flex gap-2">
+            <input
+              type="text"
+              name="attr_name"
+              aria-label="名前"
+              placeholder="例：サイズ"
+              list="attribute-names"
+              maxLength={30}
+              value={row.name}
+              onChange={(e) => handleNameChange(row.id, e.target.value)}
+              className={controlCls}
+              required
+            />
+            <input
+              type="text"
+              name="attr_value"
+              aria-label="値"
+              placeholder="例：M"
+              maxLength={30}
+              value={row.value}
+              onChange={(e) => handleValueChange(row.id, e.target.value)}
+              className={controlCls}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => removeRow(row.id)}
+              aria-label="この行を削除"
+              disabled={rows.length <= 1}
+              className="h-12 w-12 shrink-0 rounded-xl border border-stone-200 text-stone-500 disabled:opacity-40"
             >
-              <input
-                type="text"
-                name="attr_name"
-                placeholder="例：サイズ"
-                list="attribute-names"
-                maxLength={30}
-                value={row.name}
-                onChange={(e) => handleNameChange(row.id, e.target.value)}
-                className="flex-1 border rounded p-2"
-                required
-              />
-              <input
-                type="text"
-                name="attr_value"
-                placeholder="例：M"
-                maxLength={30}
-                value={row.value}
-                onChange={(e) => handleValueChange(row.id, e.target.value)}
-                className="flex-1 border rounded p-2"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => removeRow(row.id)}
-                className="text-red-600 hover:text-red-800"
-                aria-label="行を削除"
-                disabled={rows.length <= 1}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addRow}
-            className="mt-2 text-blue-600 hover:underline"
-            disabled={rows.length >= 8}
-          >
-            行を追加
-          </button>
-        </div>
+              ×
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addRow}
+          disabled={rows.length >= 8}
+          className="h-10 rounded-xl border border-stone-200 px-4 text-sm font-medium text-stone-600 disabled:opacity-40"
+        >
+          行を追加
+        </button>
+      </div>
 
-        {/* データリスト */}
-        <datalist id="attribute-names">
-          {attributeNames.map((name) => (
-            <option key={name} value={name} />
-          ))}
-        </datalist>
+      <datalist id="attribute-names">
+        {attributeNames.map((name) => (
+          <option key={name} value={name} />
+        ))}
+      </datalist>
 
-        {/* 送信ボタン */}
-        <div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            追加
-          </button>
-        </div>
-      </form>
-    </section>
+      {actionState.error && <p className="text-sm text-red-600">{actionState.error}</p>}
+      {actionState.message && <p className="text-sm text-teal-700">{actionState.message}</p>}
+
+      <Button type="submit" disabled={pending} className="h-12 w-full">
+        {pending ? "追加中…" : "追加"}
+      </Button>
+    </form>
   );
 }

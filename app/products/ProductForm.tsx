@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge, Field, controlCls } from "@/components/FormParts";
+import { Field, controlCls } from "@/components/FormParts";
 import { createProduct } from "@/app/products/productActions";
 
 const initialState: { error: string | null; message?: string | null } = {
@@ -16,10 +16,6 @@ export default function ProductForm() {
 
   return (
     <form action={formAction} className="space-y-4">
-      <p className="flex items-center text-sm text-stone-500">
-        <Badge kind="required" />
-        <span className="ml-1">は必ず入力してください。</span>
-      </p>
 
       <Field label="商品名" kind="required" htmlFor="name">
         <input

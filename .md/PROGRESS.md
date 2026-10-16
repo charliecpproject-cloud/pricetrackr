@@ -36,6 +36,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14m (UI polish: price form with tax radio icons, collapsible 支店 and 会員価格・ポイント, floating save button; same column width on every page; simpler home page) done
 - Step 14n (member-price box checked by default on chains with a membership price; 店舗 page shows one chain at a time from a dropdown, with the add forms collapsed) done
 - Step 14o (unit price on the product detail page: per 100 ml / 100 g, or per 個 / 枚 / 袋, with tax label) done
+- Step 14p (appearance: 商品 page is search-first with 20 products at a time and collapsed add forms, add forms restyled, clearer active tab in the bottom bar, one grey palette, unused Geist fonts removed) done
 
 
 ## In Progress

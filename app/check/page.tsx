@@ -184,7 +184,7 @@ export default async function CheckPage({
                     <p className="text-sm text-stone-500">{card.sub}</p>
                   )}
                   {card.variationLabel && (
-                    <p className="text-sm text-gray-500">{card.variationLabel}</p>
+                    <p className="text-sm text-stone-500">{card.variationLabel}</p>
                   )}
                 </div>
                 <span className="shrink-0 rounded-full bg-stone-100 px-2.5 py-1 text-sm font-medium text-stone-700">

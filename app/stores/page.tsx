@@ -42,14 +42,14 @@ export default async function StoresPage({
       <h1 className="mb-6 text-2xl font-bold">店舗</h1>
 
       {chainsError && (
-        <p className="mb-4 text-red-500">チェーンの取得エラー: {chainsError.message}</p>
+        <p className="mb-4 text-red-600">チェーンの取得エラー: {chainsError.message}</p>
       )}
       {shopsError && (
-        <p className="mb-4 text-red-500">ショップの取得エラー: {shopsError.message}</p>
+        <p className="mb-4 text-red-600">ショップの取得エラー: {shopsError.message}</p>
       )}
 
       {!chains || chains.length === 0 ? (
-        <p className="my-8 text-center text-gray-500">まだ店舗がありません。</p>
+        <p className="my-8 text-center text-stone-500">まだ店舗がありません。</p>
       ) : (
         <div className="space-y-4">
           <ChainPicker
@@ -77,7 +77,7 @@ export default async function StoresPage({
                       <li key={shop.id} className="text-sm">
                         {shop.name}
                         {shop.region ? (
-                          <span className="text-xs text-gray-500"> ({shop.region})</span>
+                          <span className="text-xs text-stone-500"> ({shop.region})</span>
                         ) : null}
                       </li>
                     ))}

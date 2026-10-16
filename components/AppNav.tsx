@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  PlusCircle,
-  Search,
-  Store,
-  Package,
-} from "lucide-react";
+import { Home, PlusCircle, Search, Store, Package } from "lucide-react";
 
 export default function AppNav() {
   const pathname = usePathname();
@@ -52,18 +46,24 @@ export default function AppNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-stone-200 bg-white/90 backdrop-blur pb-[env(safe-area-inset-bottom)]">
-      <div className="mx-auto max-w-xl flex h-14 items-center justify-around">
+      <div className="mx-auto flex h-14 max-w-xl items-center">
         {tabs.map(({ href, label, Icon, isActive }) => (
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center text-xs"
+            aria-current={isActive ? "page" : undefined}
+            className="flex flex-1 flex-col items-center gap-0.5 py-1 text-xs"
           >
-            <Icon
-              size={20}
-              className={isActive ? "text-teal-600" : "text-stone-500"}
-            />
-            <span className={isActive ? "text-teal-600" : "text-stone-500"}>
+            <span
+              className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors ${
+                isActive ? "bg-teal-100 text-teal-700" : "text-stone-500"
+              }`}
+            >
+              <Icon size={20} />
+            </span>
+            <span
+              className={isActive ? "font-bold text-teal-700" : "font-medium text-stone-500"}
+            >
               {label}
             </span>
           </Link>
