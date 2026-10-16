@@ -1,31 +1,46 @@
 "use client";
 
 import { useActionState } from "react";
+import { Button } from "@/components/ui/button";
+import { Field, controlCls } from "@/components/FormParts";
+import { CATEGORY_LABEL, STORE_CATEGORIES } from "@/lib/stores/category";
 import { addStoreChain } from "./actions";
 
 export default function StoreForm() {
-  // 初期状態: エラーメッセージなし
   const initialState = { error: null as string | null };
-  const [state, formAction] = useActionState(addStoreChain, initialState);
+  const [state, formAction, pending] = useActionState(addStoreChain, initialState);
 
   return (
-    <div>
-      {state.error && <p className="text-red-500 mb-2">{state.error}</p>}
-      <form action={formAction} className="flex flex-col max-w-sm">
+    <form action={formAction} className="space-y-4">
+      <Field label="チェーン名" kind="required" htmlFor="new_chain_name">
         <input
-          type="text"
+          id="new_chain_name"
           name="name"
-          placeholder="例：ライフ"
-          className="border rounded p-2 mb-2"
           required
+          maxLength={100}
+          placeholder="例：ライフ"
+          className={controlCls}
         />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700"
+      </Field>
+      <Field label="カテゴリ" kind="optional" htmlFor="new_chain_category">
+        <select
+          id="new_chain_category"
+          name="category"
+          defaultValue=""
+          className={controlCls}
         >
-          Add
-        </button>
-      </form>
-    </div>
+          <option value="">未分類</option>
+          {STORE_CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {CATEGORY_LABEL[c]}
+            </option>
+          ))}
+        </select>
+      </Field>
+      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      <Button type="submit" disabled={pending} className="h-12 w-full">
+        {pending ? "追加中…" : "追加"}
+      </Button>
+    </form>
   );
 }

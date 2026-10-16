@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { parseCategory } from "@/lib/stores/category";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /* ---------- 既存の StoreChain 追加アクション ---------- */
@@ -28,7 +29,7 @@ export async function addStoreChain(
 
   const { error } = await supabase
     .from("store_chains")
-    .insert({ name: parseResult.data });
+    .insert({ name: parseResult.data, category: parseCategory(formData.get("category")) });
 
   if (error) {
     console.error("Supabase insert error:", error);

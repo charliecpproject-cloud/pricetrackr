@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import {
   HelpCircle,
+  List,
   Percent,
   Receipt,
   Save,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Collapsible from "@/components/Collapsible";
+import { CATEGORY_LABEL, parseCategory } from "@/lib/stores/category";
 import { addPriceObservation } from "@/app/prices/actions";
 import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
@@ -23,6 +25,8 @@ type Chain = {
   name: string;
   memberPercent: number | null;
   hasBonusPoints: boolean;
+  category: string | null;
+  isTop: boolean;
 };
 type Branch = { id: string; chainId: string; name: string };
 
@@ -74,6 +78,7 @@ export default function PriceForm({
   const [newBranch, setNewBranch] = useState("");
   const [price, setPrice] = useState("");
   const [isSale, setIsSale] = useState(false);
+  const [showAllChains, setShowAllChains] = useState(false);
   const [observedAt, setObservedAt] = useState("");
   const [saveVisible, setSaveVisible] = useState(true);
   const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
@@ -130,6 +135,23 @@ export default function PriceForm({
   const branchOptions = branches.filter((b) => b.chainId === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
   const selectedChain = chains.find((c) => c.id === chainId);
+
+  // Dropdown content: the short list (or everything), grouped by category.
+  // The chains arrive already sorted, so groups appear in the right order.
+  const visibleChains = chains.filter(
+    (c) => showAllChains || c.isTop || c.id === chainId
+  );
+  const chainGroups: { key: string; label: string; items: Chain[] }[] = [];
+  for (const c of visibleChains) {
+    const category = parseCategory(c.category);
+    const key = category ?? "none";
+    let group = chainGroups.find((g) => g.key === key);
+    if (!group) {
+      group = { key, label: category ? CATEGORY_LABEL[category] : "未分類", items: [] };
+      chainGroups.push(group);
+    }
+    group.items.push(c);
+  }
   const branchSummary = isNewBranch
     ? newBranch.trim()
     : (branchOptions.find((b) => b.id === selectedBranch)?.name ?? "");
@@ -193,24 +215,46 @@ export default function PriceForm({
 
       <div className="space-y-1">
         <Field label="チェーン" kind="required" htmlFor="store_chain_id">
-          <select
-            id="store_chain_id"
-            name="store_chain_id"
-            required
-            value={chainId}
-            onChange={(e) => {
-              setChainId(e.target.value);
-              setBranchId("");
-            }}
-            className={controlCls}
-          >
-            <option value="">チェーンを選択</option>
-            {chains.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            <select
+              id="store_chain_id"
+              name="store_chain_id"
+              required
+              value={chainId}
+              onChange={(e) => {
+                setChainId(e.target.value);
+                setBranchId("");
+              }}
+              className={controlCls}
+            >
+              <option value="">チェーンを選択</option>
+              {chainGroups.map((g) => (
+                <optgroup key={g.key} label={g.label}>
+                  {g.items.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <label
+              className={`flex h-12 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-sm font-medium ${
+                showAllChains
+                  ? "border-teal-600 bg-teal-50 text-teal-700"
+                  : "border-stone-200 bg-white text-stone-600"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={showAllChains}
+                onChange={(e) => setShowAllChains(e.target.checked)}
+                className="sr-only"
+              />
+              <List className="h-4 w-4" />
+              すべて
+            </label>
+          </div>
         </Field>
 
         <Collapsible title="支店" badge={<Badge kind="optional" />} summary={branchSummary}>

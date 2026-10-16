@@ -38,6 +38,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14o (unit price on the product detail page: per 100 ml / 100 g, or per 個 / 枚 / 袋, with tax label) done
 - Step 14p (appearance: 商品 page is search-first with 20 products at a time and collapsed add forms, add forms restyled, clearer active tab in the bottom bar, one grey palette, unused Geist fonts removed) done
 - Step 14q (PART1_FOUNDATION.md and PART2_GROWTH_FEATURES.md rewritten to match the app: tax rules, unit price, UI rules, page specifics) done
+- Step 14r (chain categories, edit and delete of chains and branches, grouped chain dropdown on price entry with a top-10 short list from weekly usage counts) done
 
 
 ## In Progress
@@ -78,3 +79,4 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 
 - 2026-10-15: price_observations.tax_basis ('excl', 'incl', 'unknown', default 'unknown') records whether the entered price excludes or includes tax; no tax rate is assumed or calculated; the price entry form requires choosing it with 不明 preselected; every price shows a tax badge; the price check page lists chains by most recent observation and shows the 最安 badge only among prices from the last 6 months that share the same known basis.
 - 2026-10-16: unit price is computed at display time (never stored) from the discounted price and the package size and unit; ml and L are shown per 100 ml, g and kg per 100 g, count, sheet and bag per piece; it is shown only on the product detail page, with the tax label of the price it comes from; multi-packs are entered as a total size.
+- 2026-10-16: store_chains.category holds a key from lib/stores/category.ts (null = uncategorized); store_chain_usage(store_chain_id, entries_last_month, updated_at) is a lookup table of price entries per chain over the last 30 days (by observed_at), recounted by the database function refresh_store_chain_usage() when the price entry page finds the table empty or older than 7 days; the price entry chain dropdown is grouped by category (busiest category first, 未分類 last), chains ordered by usage, and shows only the top 10 (filled with the newest chains) unless すべて is ticked; chains and branches that have price entries cannot be deleted, a chain without prices is deleted together with its branches.

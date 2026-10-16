@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { CATEGORY_LABEL, parseCategory } from "@/lib/stores/category";
 import StoreForm from "./StoreForm";
 import ShopForm from "./ShopForm";
 import CouponForm from "./CouponForm";
 import ChainPicker from "./ChainPicker";
+import { ChainDeleteButton, ChainEditor, ShopRow } from "./ManageForms";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default async function StoresPage({
@@ -13,13 +15,12 @@ export default async function StoresPage({
 }) {
   const { chain: chainParam } = await searchParams;
 
-  // Supabase client (server side) – reads session from cookies
   const supabase = await createSupabaseServerClient();
 
   // All chains (small list), used for the dropdown and the add-branch form
   const { data: chains, error: chainsError } = await supabase
     .from("store_chains")
-    .select("id, name, coupon_percents")
+    .select("id, name, category, coupon_percents")
     .order("name", { ascending: true });
 
   // The chain chosen in the dropdown (the id must be a valid UUID and exist)
@@ -27,12 +28,13 @@ export default async function StoresPage({
   const selected = parsedId.success
     ? (chains ?? []).find((c) => c.id === parsedId.data)
     : undefined;
+  const category = selected ? parseCategory(selected.category) : null;
 
   // Branches are loaded only for the chosen chain
   const { data: shops, error: shopsError } = selected
     ? await supabase
         .from("shops")
-        .select("id, name, region")
+        .select("id, name, region, address")
         .eq("store_chain_id", selected.id)
         .order("name", { ascending: true })
     : { data: null, error: null };
@@ -58,12 +60,20 @@ export default async function StoresPage({
           />
 
           {selected ? (
-            <Card className="rounded-2xl border border-stone-200 bg-white shadow-sm">
+            <Card
+              key={selected.id}
+              className="rounded-2xl border border-stone-200 bg-white shadow-sm"
+            >
               <CardHeader className="pb-2">
-                <CardTitle className="flex items-center text-lg font-semibold">
+                <CardTitle className="flex flex-wrap items-center gap-2 text-lg font-semibold">
                   {selected.name}
+                  {category && (
+                    <span className="rounded bg-stone-100 px-2 py-0.5 text-sm font-medium text-stone-600">
+                      {CATEGORY_LABEL[category]}
+                    </span>
+                  )}
                   {selected.coupon_percents && selected.coupon_percents.length > 0 && (
-                    <span className="ml-2 rounded bg-rose-100 px-2 py-0.5 text-sm font-medium text-rose-600">
+                    <span className="rounded bg-rose-100 px-2 py-0.5 text-sm font-medium text-rose-600">
                       クーポン{" "}
                       {selected.coupon_percents.map((p: number) => `${p}%`).join(" / ")}
                     </span>
@@ -72,26 +82,37 @@ export default async function StoresPage({
               </CardHeader>
               <CardContent>
                 {shops && shops.length > 0 ? (
-                  <ul className="list-inside list-disc space-y-1">
+                  <ul className="space-y-2">
                     {shops.map((shop) => (
-                      <li key={shop.id} className="text-sm">
-                        {shop.name}
-                        {shop.region ? (
-                          <span className="text-xs text-stone-500"> ({shop.region})</span>
-                        ) : null}
-                      </li>
+                      <ShopRow
+                        key={shop.id}
+                        shop={{
+                          id: shop.id,
+                          name: shop.name,
+                          region: shop.region,
+                          address: shop.address,
+                        }}
+                      />
                     ))}
                   </ul>
                 ) : (
                   <p className="text-sm text-stone-500">支店はまだありません。</p>
                 )}
 
-                {/* クーポン編集フォーム */}
+                {/* クーポン・会員価格・ポイントの設定 */}
                 <div className="mt-4">
                   <CouponForm
                     chainId={selected.id}
                     current={selected.coupon_percents ?? []}
                   />
+                </div>
+
+                <div className="mt-4 space-y-2 border-t border-stone-100 pt-4">
+                  <ChainEditor
+                    key={selected.id}
+                    chain={{ id: selected.id, name: selected.name, category }}
+                  />
+                  <ChainDeleteButton id={selected.id} shopCount={shops?.length ?? 0} />
                 </div>
               </CardContent>
             </Card>
@@ -117,7 +138,7 @@ export default async function StoresPage({
           支店を追加
         </summary>
         <div className="mt-4">
-          <ShopForm chains={chains ?? []} />
+          <ShopForm chains={chains ?? []} selectedChainId={selected?.id} />
         </div>
       </details>
     </div>

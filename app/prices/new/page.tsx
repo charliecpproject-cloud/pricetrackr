@@ -2,6 +2,9 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { packageLabel } from "@/lib/prices/format";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
 import PriceForm from "./PriceForm";
+import { getChainUsage } from "@/lib/stores/usage";
+import { arrangeChains } from "@/lib/stores/arrange";
+import { parseCategory } from "@/lib/stores/category";
 
 export default async function NewPricePage() {
   const supabase = await createSupabaseServerClient();
@@ -15,7 +18,7 @@ export default async function NewPricePage() {
 
   const { data: chains, error: chainsError } = await supabase
     .from("store_chains")
-    .select("id, name, member_discount_percent, has_bonus_points")
+    .select("id, name, category, created_at, member_discount_percent, has_bonus_points")
     .order("name", { ascending: true });
 
   const { data: shops, error: shopsError } = await supabase
@@ -57,11 +60,26 @@ export default async function NewPricePage() {
     }
   }
 
-  const chainOptions = (chains ?? []).map((chain: any) => ({
-    id: chain.id as string,
-    name: chain.name as string,
-    memberPercent: (chain.member_discount_percent ?? null) as number | null,
-    hasBonusPoints: !!chain.has_bonus_points,
+  const usage = await getChainUsage(supabase);
+  const { sorted, topIds } = arrangeChains(
+    (chains ?? []).map((chain: any) => ({
+      id: chain.id as string,
+      name: chain.name as string,
+      category: parseCategory(chain.category),
+      entries: usage.get(chain.id) ?? 0,
+      createdAt: chain.created_at as string,
+      memberPercent: (chain.member_discount_percent ?? null) as number | null,
+      hasBonusPoints: !!chain.has_bonus_points,
+    }))
+  );
+  const topSet = new Set(topIds);
+  const chainOptions = sorted.map((c) => ({
+    id: c.id,
+    name: c.name,
+    category: c.category,
+    isTop: topSet.has(c.id),
+    memberPercent: c.memberPercent,
+    hasBonusPoints: c.hasBonusPoints,
   }));
 
   const branchOptions = (shops ?? []).map((shop: any) => ({
