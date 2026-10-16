@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import PriceDisplay from "@/components/PriceDisplay";
 import { parseTaxBasis } from "@/lib/prices/tax";
+import { parseCategory, saleLabel } from "@/lib/stores/category";
 import { effectivePrice } from "@/lib/prices/coupon";
 import { unitPriceText } from "@/lib/prices/unit";
 import UnitPriceLine from "@/components/UnitPriceLine";
@@ -51,7 +52,7 @@ export default async function PackageDetailPage({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, notes, store_chains (name, coupon_percents, member_discount_percent), shops (name)"
+      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, notes, store_chains (name, category, coupon_percents, member_discount_percent), shops (name)"
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -84,6 +85,7 @@ export default async function PackageDetailPage({
       ),
       memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
       chainName: (chain?.name as string | undefined) ?? "",
+      category: parseCategory(chain?.category),
       branchName: (branch?.name as string | undefined) ?? "",
       couponPercents: (chain?.coupon_percents as number[] | undefined) ?? [],
     };
@@ -148,9 +150,7 @@ export default async function PackageDetailPage({
                       </span>
                     )}
                     {r.isSale && (
-                      <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
-                        特売
-                      </span>
+                      <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">{saleLabel(r.category)}</span>
                     )}
                   </p>
                   <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} taxBasis={r.taxBasis} size="md" />

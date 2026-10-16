@@ -2,15 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { controlCls } from "@/components/FormParts";
+import { groupByCategory, parseCategory } from "@/lib/stores/category";
 
 export default function ChainPicker({
   chains,
   selectedId,
 }: {
-  chains: { id: string; name: string }[];
+  chains: { id: string; name: string; category: string | null }[];
   selectedId: string;
 }) {
   const router = useRouter();
+  const groups = groupByCategory(
+    chains.map((c) => ({ ...c, category: parseCategory(c.category) }))
+  );
 
   return (
     <select
@@ -22,10 +26,14 @@ export default function ChainPicker({
       className={controlCls}
     >
       <option value="">チェーンを選択</option>
-      {chains.map((c) => (
-        <option key={c.id} value={c.id}>
-          {c.name}
-        </option>
+      {groups.map((g) => (
+        <optgroup key={g.key} label={g.label}>
+          {g.items.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </optgroup>
       ))}
     </select>
   );

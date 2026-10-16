@@ -26,3 +26,26 @@ export const CATEGORY_LABEL: Record<StoreCategory, string> = {
 export function parseCategory(value: unknown): StoreCategory | null {
   return STORE_CATEGORIES.find((c) => c === value) ?? null;
 }
+
+// "特売" at supermarkets and drugstores, "セール" everywhere else. Same meaning.
+export function saleLabel(category: StoreCategory | null | undefined): string {
+  return category === "supermarket" || category === "drugstore" ? "特売" : "セール";
+}
+
+// Groups items by category, in the list order above; uncategorized last.
+export function groupByCategory<T extends { category: StoreCategory | null }>(
+  items: T[]
+): { key: string; label: string; items: T[] }[] {
+  const groups: { key: string; label: string; items: T[] }[] = [];
+  for (const category of [...STORE_CATEGORIES, null]) {
+    const members = items.filter((i) => i.category === category);
+    if (members.length > 0) {
+      groups.push({
+        key: category ?? "none",
+        label: category ? CATEGORY_LABEL[category] : "未分類",
+        items: members,
+      });
+    }
+  }
+  return groups;
+}

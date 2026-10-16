@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Collapsible from "@/components/Collapsible";
-import { CATEGORY_LABEL, parseCategory } from "@/lib/stores/category";
+import { CATEGORY_LABEL, parseCategory, saleLabel } from "@/lib/stores/category";
 import { addPriceObservation } from "@/app/prices/actions";
 import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
@@ -155,6 +155,8 @@ export default function PriceForm({
   const branchSummary = isNewBranch
     ? newBranch.trim()
     : (branchOptions.find((b) => b.id === selectedBranch)?.name ?? "");
+
+  const saleText = selectedChain ? saleLabel(parseCategory(selectedChain.category)) : "特売";
 
   const saveDisabled = pending || (!isNewPackage && filtered.length === 0);
 
@@ -331,7 +333,7 @@ export default function PriceForm({
                 className="h-4 w-4 accent-amber-500"
               />
               <Percent className="h-4 w-4" />
-              特売
+              {saleText}
             </label>
           </div>
         </Field>

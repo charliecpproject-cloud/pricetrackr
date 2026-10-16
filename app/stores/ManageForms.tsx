@@ -31,10 +31,8 @@ export function ChainEditor({
   const [state, formAction, pending] = useActionState(updateStoreChain, initial);
 
   return (
-    <details className="rounded-xl bg-stone-50 p-3">
-      <summary className="cursor-pointer text-sm font-medium text-teal-700">
-        チェーンの名前・カテゴリを編集
-      </summary>
+    <div className="rounded-xl bg-stone-50 p-3">
+      <p className="text-sm font-bold text-stone-800">チェーンの名前・カテゴリ</p>
       <form action={formAction} className="mt-3 space-y-4">
         <input type="hidden" name="id" value={chain.id} />
         <Field label="チェーン名" kind="required" htmlFor={`chain-name-${chain.id}`}>
@@ -67,7 +65,7 @@ export function ChainEditor({
           {pending ? "保存中…" : "保存"}
         </Button>
       </form>
-    </details>
+    </div>
   );
 }
 
@@ -109,69 +107,61 @@ export function ShopRow({
 
   return (
     <li className="rounded-xl border border-stone-200 p-3">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-stone-900">{shop.name}</p>
-          {shop.region && <p className="text-xs text-stone-500">{shop.region}</p>}
-        </div>
-        <form
-          action={deleteAction}
-          onSubmit={(e) => {
-            if (!window.confirm("この支店を削除しますか？この操作は元に戻せません。")) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <input type="hidden" name="id" value={shop.id} />
-          <button
-            type="submit"
-            disabled={deleting}
-            className="h-11 px-2 text-sm font-medium text-red-600 disabled:opacity-50"
-          >
-            削除
-          </button>
-        </form>
-      </div>
-      <Messages state={deleteState} />
+      <form action={saveAction} className="space-y-4">
+        <input type="hidden" name="id" value={shop.id} />
+        <Field label="支店名" kind="required" htmlFor={`shop-name-${shop.id}`}>
+          <input
+            id={`shop-name-${shop.id}`}
+            name="name"
+            required
+            maxLength={100}
+            defaultValue={shop.name}
+            className={controlCls}
+          />
+        </Field>
+        <Field label="住所" kind="optional" htmlFor={`shop-address-${shop.id}`}>
+          <input
+            id={`shop-address-${shop.id}`}
+            name="address"
+            maxLength={200}
+            defaultValue={shop.address ?? ""}
+            className={controlCls}
+          />
+        </Field>
+        <Field label="地域" kind="optional" htmlFor={`shop-region-${shop.id}`}>
+          <input
+            id={`shop-region-${shop.id}`}
+            name="region"
+            maxLength={200}
+            defaultValue={shop.region ?? ""}
+            className={controlCls}
+          />
+        </Field>
+        <Messages state={saveState} />
+        <Button type="submit" disabled={saving} className="h-12 w-full">
+          {saving ? "保存中…" : "保存"}
+        </Button>
+      </form>
 
-      <details className="mt-1">
-        <summary className="cursor-pointer text-sm font-medium text-teal-700">編集</summary>
-        <form action={saveAction} className="mt-3 space-y-4">
-          <input type="hidden" name="id" value={shop.id} />
-          <Field label="支店名" kind="required" htmlFor={`shop-name-${shop.id}`}>
-            <input
-              id={`shop-name-${shop.id}`}
-              name="name"
-              required
-              maxLength={100}
-              defaultValue={shop.name}
-              className={controlCls}
-            />
-          </Field>
-          <Field label="住所" kind="optional" htmlFor={`shop-address-${shop.id}`}>
-            <input
-              id={`shop-address-${shop.id}`}
-              name="address"
-              maxLength={200}
-              defaultValue={shop.address ?? ""}
-              className={controlCls}
-            />
-          </Field>
-          <Field label="地域" kind="optional" htmlFor={`shop-region-${shop.id}`}>
-            <input
-              id={`shop-region-${shop.id}`}
-              name="region"
-              maxLength={200}
-              defaultValue={shop.region ?? ""}
-              className={controlCls}
-            />
-          </Field>
-          <Messages state={saveState} />
-          <Button type="submit" disabled={saving} className="h-12 w-full">
-            {saving ? "保存中…" : "保存"}
-          </Button>
-        </form>
-      </details>
+      <form
+        action={deleteAction}
+        onSubmit={(e) => {
+          if (!window.confirm("この支店を削除しますか？この操作は元に戻せません。")) {
+            e.preventDefault();
+          }
+        }}
+        className="mt-1"
+      >
+        <input type="hidden" name="id" value={shop.id} />
+        <button
+          type="submit"
+          disabled={deleting}
+          className="h-11 text-sm font-medium text-red-600 disabled:opacity-50"
+        >
+          この支店を削除
+        </button>
+      </form>
+      <Messages state={deleteState} />
     </li>
   );
 }

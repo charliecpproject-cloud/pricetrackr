@@ -55,7 +55,7 @@ export default async function StoresPage({
       ) : (
         <div className="space-y-4">
           <ChainPicker
-            chains={chains.map((c) => ({ id: c.id, name: c.name }))}
+            chains={chains.map((c) => ({ id: c.id, name: c.name, category: c.category }))}
             selectedId={selected?.id ?? ""}
           />
 
