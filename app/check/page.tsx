@@ -54,7 +54,7 @@ function Chip({
   checked: boolean;
 }) {
   return (
-    <label className="flex h-10 cursor-pointer items-center justify-center rounded-xl border border-stone-200 bg-white px-3 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600">
+    <label className="flex h-10 cursor-pointer items-center justify-center rounded-xl border border-line bg-panel px-3 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600">
       <input
         type="radio"
         name={name}
@@ -284,7 +284,7 @@ export default async function CheckPage({
             type="search"
             defaultValue={term}
             placeholder="商品名・ブランドで検索"
-            className="h-12 w-full rounded-xl border border-stone-200 bg-white pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+            className="h-12 w-full rounded-xl border border-line bg-panel pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
           />
           <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-stone-400" />
           <button
@@ -297,7 +297,7 @@ export default async function CheckPage({
 
         <details
           open={activeCount > 0}
-          className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"
+          className="rounded-2xl border border-line bg-panel p-4 shadow-sm"
         >
           <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-medium text-stone-700 [&::-webkit-details-marker]:hidden">
             <SlidersHorizontal className="h-4 w-4" />
@@ -460,7 +460,7 @@ export default async function CheckPage({
             <Link
               key={card.id}
               href={`/check/${card.id}`}
-              className="block rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+              className="block rounded-2xl border border-line bg-panel p-4 shadow-sm transition hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -470,7 +470,7 @@ export default async function CheckPage({
                     <p className="text-sm text-stone-500">{card.variationLabel}</p>
                   )}
                 </div>
-                <span className="shrink-0 rounded-full bg-stone-100 px-2.5 py-1 text-sm font-medium text-stone-700">
+                <span className="shrink-0 rounded-full bg-chip px-2.5 py-1 text-sm font-medium text-stone-700">
                   {card.size}
                 </span>
               </div>

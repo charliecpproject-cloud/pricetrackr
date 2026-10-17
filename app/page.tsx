@@ -36,7 +36,7 @@ export default function HomePage() {
           <Link
             key={href}
             href={href}
-            className="flex min-h-12 items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:bg-stone-50 active:scale-[0.99]"
+            className="flex min-h-12 items-center gap-4 rounded-2xl border border-line bg-panel p-5 shadow-sm transition hover:bg-panel-soft active:scale-[0.99]"
           >
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
               <Icon className="h-6 w-6" />

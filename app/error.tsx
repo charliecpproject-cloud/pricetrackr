@@ -16,7 +16,7 @@ export default function Error({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 max-w-xl w-full mx-auto">
+      <div className="bg-panel rounded-2xl border border-line shadow-sm p-6 max-w-xl w-full mx-auto">
         <h2 className="text-xl font-semibold mb-4">問題が発生しました</h2>
         <button
           onClick={() => reset()}

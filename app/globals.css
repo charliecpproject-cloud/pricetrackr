@@ -140,3 +140,17 @@
 }
 html { color-scheme: light; }
 body { font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif; }
+
+/* Theme-able panel colours. Defaults equal the old stone/white values. */
+@theme inline {
+  --color-panel: var(--panel);
+  --color-panel-soft: var(--panel-soft);
+  --color-chip: var(--chip);
+  --color-line: var(--line);
+}
+:root {
+  --panel: #ffffff;
+  --panel-soft: #fafaf9;
+  --chip: #f5f5f4;
+  --line: #e7e5e4;
+}

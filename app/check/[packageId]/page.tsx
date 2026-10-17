@@ -111,7 +111,7 @@ export default async function PackageDetailPage({
             .join(" ・ ")}
         </p>
         {product.memo && (
-          <div className="mt-4 rounded-md border border-stone-200 bg-white p-3 shadow-sm">
+          <div className="mt-4 rounded-md border border-line bg-panel p-3 shadow-sm">
             <h3 className="text-sm font-medium text-stone-900 mb-1">メモ</h3>
             <p className="whitespace-pre-wrap text-sm text-stone-700">{product.memo}</p>
           </div>
@@ -119,7 +119,7 @@ export default async function PackageDetailPage({
       </div>
 
       {latest ? (
-        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-line bg-panel p-5 shadow-sm">
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
             <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} taxBasis={latest.taxBasis} size="lg" />
@@ -141,7 +141,7 @@ export default async function PackageDetailPage({
             {rows.map((r) => (
               <li
                 key={r.id}
-                className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"
+                className="rounded-2xl border border-line bg-panel p-4 shadow-sm"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="flex flex-wrap items-center gap-2 font-medium text-stone-900">

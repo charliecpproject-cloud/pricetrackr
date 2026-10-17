@@ -45,7 +45,7 @@ export default function AppNav() {
   ];
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-stone-200 bg-white/90 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-panel/90 backdrop-blur pb-[env(safe-area-inset-bottom)]">
       <div className="mx-auto flex h-14 max-w-xl items-center">
         {tabs.map(({ href, label, Icon, isActive }) => (
           <Link

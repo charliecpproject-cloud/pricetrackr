@@ -36,8 +36,8 @@ type Product = {
 };
 
 const chipCls =
-  "rounded-full bg-stone-100 px-2.5 py-1 text-sm font-medium text-stone-700";
-const sectionCls = "rounded-2xl border border-stone-200 bg-white p-4";
+  "rounded-full bg-chip px-2.5 py-1 text-sm font-medium text-stone-700";
+const sectionCls = "rounded-2xl border border-line bg-panel p-4";
 const summaryCls = "cursor-pointer text-base font-semibold text-stone-900";
 
 export default async function ProductsPage({
@@ -114,7 +114,7 @@ export default async function ProductsPage({
           type="search"
           defaultValue={term}
           placeholder="商品名・ブランドで検索"
-          className="h-12 w-full rounded-xl border border-stone-200 bg-white pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+          className="h-12 w-full rounded-xl border border-line bg-panel pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
         />
         <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-stone-400" />
         <button
@@ -139,7 +139,7 @@ export default async function ProductsPage({
             return (
               <div
                 key={product.id}
-                className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"
+                className="rounded-2xl border border-line bg-panel p-4 shadow-sm"
               >
                 <p className="text-lg font-bold text-stone-900">
                   {product.name_ja || product.name_en || "商品名なし"}

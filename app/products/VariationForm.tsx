@@ -124,7 +124,7 @@ export default function VariationForm({ products, attributeNames }: Props) {
               onClick={() => removeRow(row.id)}
               aria-label="この行を削除"
               disabled={rows.length <= 1}
-              className="h-12 w-12 shrink-0 rounded-xl border border-stone-200 text-stone-500 disabled:opacity-40"
+              className="h-12 w-12 shrink-0 rounded-xl border border-line text-stone-500 disabled:opacity-40"
             >
               ×
             </button>
@@ -134,7 +134,7 @@ export default function VariationForm({ products, attributeNames }: Props) {
           type="button"
           onClick={addRow}
           disabled={rows.length >= 8}
-          className="h-10 rounded-xl border border-stone-200 px-4 text-sm font-medium text-stone-600 disabled:opacity-40"
+          className="h-10 rounded-xl border border-line px-4 text-sm font-medium text-stone-600 disabled:opacity-40"
         >
           行を追加
         </button>

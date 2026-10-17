@@ -97,7 +97,7 @@ function VariationEditForm({ id, attributes }: { id: string; attributes: Attribu
   return (
     <form
       action={formAction}
-      className="space-y-3 rounded-xl border border-stone-200 bg-white p-3"
+      className="space-y-3 rounded-xl border border-line bg-panel p-3"
     >
       <input type="hidden" name="variation_id" value={id} />
       <p className="text-sm font-medium text-stone-700">{variationLabel(attributes)}</p>
@@ -126,7 +126,7 @@ function VariationEditForm({ id, attributes }: { id: string; attributes: Attribu
             aria-label="この行を削除"
             disabled={rows.length <= 1}
             onClick={() => setRows((cur) => cur.filter((r) => r.id !== row.id))}
-            className="h-12 w-12 shrink-0 rounded-xl border border-stone-200 text-stone-500 disabled:opacity-40"
+            className="h-12 w-12 shrink-0 rounded-xl border border-line text-stone-500 disabled:opacity-40"
           >
             ×
           </button>
@@ -139,7 +139,7 @@ function VariationEditForm({ id, attributes }: { id: string; attributes: Attribu
           setRows((cur) => [...cur, { id: nextId, name: "", value: "" }]);
           setNextId((n) => n + 1);
         }}
-        className="h-10 rounded-xl border border-stone-200 px-4 text-sm font-medium text-stone-600 disabled:opacity-40"
+        className="h-10 rounded-xl border border-line px-4 text-sm font-medium text-stone-600 disabled:opacity-40"
       >
         行を追加
       </button>
@@ -157,7 +157,7 @@ export default function ProductCardTools({ product }: { product: Product }) {
   ).map((v) => ({ id: v.id, attributes: parseAttributes(v.attributes) }));
 
   return (
-    <details className="mt-3 rounded-xl bg-stone-50 p-3">
+    <details className="mt-3 rounded-xl bg-panel-soft p-3">
       <summary className="cursor-pointer text-sm font-medium text-teal-700">商品を編集</summary>
       <div className="mt-3 space-y-6">
         <ProductEditForm product={product} />

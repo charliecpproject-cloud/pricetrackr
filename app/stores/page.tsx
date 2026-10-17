@@ -65,13 +65,13 @@ export default async function StoresPage({
           {selected ? (
             <Card
               key={selected.id}
-              className="rounded-2xl border border-stone-200 bg-white shadow-sm"
+              className="rounded-2xl border border-line bg-panel shadow-sm"
             >
               <CardHeader className="pb-2">
                 <CardTitle className="flex flex-wrap items-center gap-2 text-lg font-semibold">
                   {selected.name}
                   {category && (
-                    <span className="rounded bg-stone-100 px-2 py-0.5 text-sm font-medium text-stone-600">
+                    <span className="rounded bg-chip px-2 py-0.5 text-sm font-medium text-stone-600">
                       {CATEGORY_LABEL[category]}
                     </span>
                   )}
@@ -129,7 +129,7 @@ export default async function StoresPage({
         </div>
       )}
 
-      <details className="mt-8 rounded-2xl border border-stone-200 bg-white p-4">
+      <details className="mt-8 rounded-2xl border border-line bg-panel p-4">
         <summary className="cursor-pointer text-base font-semibold text-stone-900">
           チェーンを追加
         </summary>
@@ -140,7 +140,7 @@ export default async function StoresPage({
         </div>
       </details>
 
-      <details className="mt-4 rounded-2xl border border-stone-200 bg-white p-4">
+      <details className="mt-4 rounded-2xl border border-line bg-panel p-4">
         <summary className="cursor-pointer text-base font-semibold text-stone-900">
           支店を追加
         </summary>

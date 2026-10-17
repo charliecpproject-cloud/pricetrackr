@@ -247,7 +247,7 @@ export default function PriceForm({
               className={`flex h-12 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-sm font-medium ${
                 showAllChains
                   ? "border-teal-600 bg-teal-50 text-teal-700"
-                  : "border-stone-200 bg-white text-stone-600"
+                  : "border-line bg-panel text-stone-600"
               }`}
             >
               <input
@@ -325,7 +325,7 @@ export default function PriceForm({
               className={`flex h-12 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-sm font-medium ${
                 isSale
                   ? "border-amber-500 bg-amber-50 text-amber-700"
-                  : "border-stone-200 bg-white text-stone-600"
+                  : "border-line bg-panel text-stone-600"
               }`}
             >
               <input
@@ -353,7 +353,7 @@ export default function PriceForm({
             return (
               <label
                 key={b}
-                className="flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white px-2 text-sm text-stone-600 transition has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600"
+                className="flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-line bg-panel px-2 text-sm text-stone-600 transition has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600"
               >
                 <input
                   type="radio"
@@ -395,7 +395,7 @@ export default function PriceForm({
       </Field>
 
       {readOnly && (
-        <p className="rounded-xl bg-stone-100 px-4 py-3 text-sm text-stone-600">
+        <p className="rounded-xl bg-chip px-4 py-3 text-sm text-stone-600">
           デモモード（閲覧のみ）のため、保存できません。ログインすると価格を記録できます。
         </p>
       )}

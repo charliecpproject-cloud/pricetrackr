@@ -31,7 +31,7 @@ export function ChainEditor({
   const [state, formAction, pending] = useActionState(updateStoreChain, initial);
 
   return (
-    <div className="rounded-xl bg-stone-50 p-3">
+    <div className="rounded-xl bg-panel-soft p-3">
       <p className="text-sm font-bold text-stone-800">チェーンの名前・カテゴリ</p>
       <form action={formAction} className="mt-3 space-y-4">
         <input type="hidden" name="id" value={chain.id} />
@@ -106,7 +106,7 @@ export function ShopRow({
   const [deleteState, deleteAction, deleting] = useActionState(deleteShop, initial);
 
   return (
-    <li className="rounded-xl border border-stone-200 p-3">
+    <li className="rounded-xl border border-line p-3">
       <form action={saveAction} className="space-y-4">
         <input type="hidden" name="id" value={shop.id} />
         <Field label="支店名" kind="required" htmlFor={`shop-name-${shop.id}`}>

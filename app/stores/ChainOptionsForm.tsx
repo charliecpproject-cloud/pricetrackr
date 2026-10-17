@@ -11,7 +11,7 @@ const initial: { error: string | null; message: string | null } = {
 };
 
 const boxCls =
-  "flex h-12 items-center gap-2 rounded-lg border border-stone-200 bg-white px-3 text-base";
+  "flex h-12 items-center gap-2 rounded-lg border border-line bg-panel px-3 text-base";
 const legendCls = "mb-2 text-sm font-medium text-stone-700";
 
 export default function ChainOptionsForm({
@@ -29,7 +29,7 @@ export default function ChainOptionsForm({
   const [memberOn, setMemberOn] = useState(memberPercent !== null);
 
   return (
-    <form action={formAction} className="mt-3 space-y-4 rounded-xl bg-stone-50 p-3">
+    <form action={formAction} className="mt-3 space-y-4 rounded-xl bg-panel-soft p-3">
       <input type="hidden" name="chainId" value={chainId} />
 
       <fieldset>
@@ -72,7 +72,7 @@ export default function ChainOptionsForm({
               max={30}
               defaultValue={memberPercent ?? 3}
               disabled={!memberOn}
-              className="h-12 w-20 rounded-lg border border-stone-200 bg-white px-3 text-base disabled:opacity-40"
+              className="h-12 w-20 rounded-lg border border-line bg-panel px-3 text-base disabled:opacity-40"
             />
             %
           </label>

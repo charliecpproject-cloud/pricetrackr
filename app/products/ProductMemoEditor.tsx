@@ -20,7 +20,7 @@ export default function ProductMemoEditor({
   const [state, formAction, pending] = useActionState(updateProductMemo, initialState);
 
   return (
-    <details className="mt-3 rounded-xl bg-stone-50 p-3">
+    <details className="mt-3 rounded-xl bg-panel-soft p-3">
       <summary className="cursor-pointer text-sm font-medium text-teal-700">
         メモを編集
       </summary>

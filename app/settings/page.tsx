@@ -23,7 +23,7 @@ export default async function SettingsPage() {
     .maybeSingle();
   const demoMode = !!settings?.demo_mode;
 
-  const cardCls = "rounded-2xl border border-stone-200 bg-white p-5 shadow-sm";
+  const cardCls = "rounded-2xl border border-line bg-panel p-5 shadow-sm";
 
   return (
     <div className="space-y-6">
@@ -44,7 +44,7 @@ export default async function SettingsPage() {
             <h2 className="text-lg font-bold text-stone-900">デモモード</h2>
             <span
               className={`rounded-full px-3 py-1 text-sm font-bold ${
-                demoMode ? "bg-amber-100 text-amber-700" : "bg-stone-100 text-stone-600"
+                demoMode ? "bg-amber-100 text-amber-700" : "bg-chip text-stone-600"
               }`}
             >
               {demoMode ? "オン" : "オフ"}

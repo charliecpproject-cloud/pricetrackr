@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 
 export const labelCls = "mb-1.5 flex items-center text-sm font-medium text-stone-700";
 export const controlCls =
-  "h-12 w-full rounded-xl border border-stone-200 bg-white px-3 text-base focus:outline-none focus:ring-2 focus:ring-teal-600";
+  "h-12 w-full rounded-xl border border-line bg-panel px-3 text-base focus:outline-none focus:ring-2 focus:ring-teal-600";
 
 type Kind = "required" | "optional" | "either";
 const badgeBase = "ml-2 rounded px-1.5 py-0.5 text-xs";
@@ -11,7 +11,7 @@ const badgeBase = "ml-2 rounded px-1.5 py-0.5 text-xs";
 export function Badge({ kind }: { kind: Kind }) {
   if (kind === "optional") {
     return (
-      <span className={`${badgeBase} bg-stone-100 font-medium text-stone-500`}>任意</span>
+      <span className={`${badgeBase} bg-chip font-medium text-stone-500`}>任意</span>
     );
   }
   return (
@@ -59,7 +59,7 @@ export function NewToggle({
       className={`flex h-12 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-sm font-medium ${
         checked
           ? "border-teal-600 bg-teal-50 text-teal-700"
-          : "border-stone-200 bg-white text-stone-600"
+          : "border-line bg-panel text-stone-600"
       }`}
     >
       <input

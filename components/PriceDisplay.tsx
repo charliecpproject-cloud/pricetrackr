@@ -23,7 +23,7 @@ export default function PriceDisplay({ taxBasis, ...rest }: Props) {
 function TaxBadge({ basis }: { basis: TaxBasis }) {
   const cls =
     basis === "unknown"
-      ? "bg-stone-100 text-stone-600"
+      ? "bg-chip text-stone-600"
       : "bg-sky-100 text-sky-700";
   return (
     <span
