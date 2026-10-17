@@ -59,6 +59,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 20a (themes: profiles.theme column; users can update only their own theme column, role stays protected) done
 
 
+- Step 20b (themes: lib/themes/themes.ts theme list with parseTheme, getViewer() returns the theme, layout sets data-theme on html) done
+
+
 ## In Progress
 
 - (none)
