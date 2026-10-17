@@ -33,6 +33,9 @@ const newPackageSchema = z.object({
   name: z.string().trim().max(100, "商品名は100文字以内で入力してください").nullable(),
   
   brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください").nullable(),
+  other_name: z.string().trim().max(100, "英語名・別名は100文字以内で入力してください").nullable(),
+  category: z.string().trim().max(100, "カテゴリは100文字以内で入力してください").nullable(),
+  memo: z.string().trim().max(1000, "メモは1000文字以内で入力してください").nullable(),
   unit: z.enum(UNITS, { error: "単位を選んでください" }),
 });
 
@@ -64,6 +67,9 @@ async function resolveNewPackage(
     name: text(formData, "np_name"),
     
     brand: text(formData, "np_brand"),
+    other_name: text(formData, "np_other_name"),
+    category: text(formData, "np_category"),
+    memo: text(formData, "np_memo"),
     unit: text(formData, "np_unit") ?? "",
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -71,7 +77,9 @@ async function resolveNewPackage(
   const size = parseSize(text(formData, "np_size"));
   if (size === null) return { error: "容量は0より大きい数値で入力してください" };
 
-  const { name, brand, unit } = parsed.data; const name_ja = name; const name_en: string | null = null;
+  const { name, brand, unit, other_name, category, memo } = parsed.data;
+  const name_ja = name;
+  const name_en: string | null = other_name;
   let productId = parsed.data.product_id;
   let variationId = parsed.data.variation_id;
 
@@ -91,7 +99,7 @@ async function resolveNewPackage(
       return { error: "バリエーションを選んでください" };
     }
   } else {
-    if (!name_ja && !name_en) {
+    if (!name_ja) {
       return { error: "商品名を入力してください" };
     }
 
@@ -108,7 +116,7 @@ async function resolveNewPackage(
       (p) =>
         norm(p.brand) === norm(brand) &&
         ((name_ja && norm(p.name_ja) === norm(name_ja)) ||
-          (name_en && norm(p.name_en) === norm(name_en)))
+          false)
     );
     if (duplicate) {
       return {
@@ -118,7 +126,7 @@ async function resolveNewPackage(
 
     const { data: created, error: productError } = await supabase
       .from("products")
-      .insert({ name_ja, name_en, brand })
+      .insert({ name_ja, name_en, brand, category, memo })
       .select("id")
       .single();
     if (productError || !created) {

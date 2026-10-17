@@ -2,8 +2,7 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Field, controlCls } from "@/components/FormParts";
+import ProductFields from "@/components/ProductFields";
 import { createProduct } from "@/app/products/productActions";
 
 const initialState: { error: string | null; message?: string | null } = {
@@ -16,63 +15,7 @@ export default function ProductForm() {
 
   return (
     <form action={formAction} className="space-y-4">
-
-      <Field label="商品名" kind="required" htmlFor="name">
-        <input
-          id="name"
-          name="name"
-          required
-          maxLength={100}
-          placeholder="例：超熟 食パン"
-          className={controlCls}
-        />
-      </Field>
-
-      <Field
-        label="英語名・別名"
-        kind="optional"
-        htmlFor="other_name"
-        hint="英語名やニックネームなど、検索に使える別の呼び方を入力できます。"
-      >
-        <input
-          id="other_name"
-          name="other_name"
-          maxLength={100}
-          placeholder="例：Choujuku bread"
-          className={controlCls}
-        />
-      </Field>
-
-      <Field label="ブランド" kind="optional" htmlFor="brand">
-        <input
-          id="brand"
-          name="brand"
-          maxLength={100}
-          placeholder="例：パスコ"
-          className={controlCls}
-        />
-      </Field>
-
-      <Field label="カテゴリ" kind="optional" htmlFor="category">
-        <input
-          id="category"
-          name="category"
-          maxLength={100}
-          placeholder="例：パン"
-          className={controlCls}
-        />
-      </Field>
-
-      <Field label="メモ" kind="optional" htmlFor="memo">
-        <Textarea
-          id="memo"
-          name="memo"
-          rows={3}
-          maxLength={1000}
-          placeholder="例：月曜は特売になりやすい"
-          className="text-base"
-        />
-      </Field>
+      <ProductFields />
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state.message && <p className="text-sm text-teal-700">{state.message}</p>}

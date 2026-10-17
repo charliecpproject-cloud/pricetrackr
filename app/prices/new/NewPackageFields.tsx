@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Field, controlCls } from "@/components/FormParts";
+import ProductFields from "@/components/ProductFields";
 
 export type ProductOption = {
   id: string;
@@ -18,6 +19,9 @@ const UNITS = [
   { value: "sheet", label: "枚" },
   { value: "bag", label: "袋" },
 ];
+
+// controlCls is full width; the unit dropdown must stay small.
+const unitCls = controlCls.replace("w-full", "w-24 shrink-0");
 
 export default function NewPackageFields({ products }: { products: ProductOption[] }) {
   const [productId, setProductId] = useState("");
@@ -56,33 +60,7 @@ export default function NewPackageFields({ products }: { products: ProductOption
       </Field>
 
       {productId === "" ? (
-        <>
-          <Field
-            label="商品名"
-            kind="required"
-            htmlFor="np_name"
-            hint="日本語でも英語でも入力できます。"
-          >
-            <input
-              id="np_name"
-              name="np_name"
-              type="text"
-              maxLength={100}
-              placeholder="例：超熟 食パン"
-              className={controlCls}
-            />
-          </Field>
-          <Field label="ブランド" kind="optional" htmlFor="np_brand">
-            <input
-              id="np_brand"
-              name="np_brand"
-              type="text"
-              maxLength={100}
-              placeholder="例：パスコ"
-              className={controlCls}
-            />
-          </Field>
-        </>
+        <ProductFields prefix="np_" />
       ) : needsVariation ? (
         <Field label="バリエーション" kind="required" htmlFor="np_variation_id">
           <select
@@ -105,21 +83,23 @@ export default function NewPackageFields({ products }: { products: ProductOption
 
       <Field label="容量" kind="required" htmlFor="np_size">
         <div className="flex gap-2">
-          <input
-            id="np_size"
-            name="np_size"
-            type="text"
-            inputMode="decimal"
-            required
-            placeholder="例：500"
-            className={controlCls}
-          />
+          <div className="min-w-0 flex-1">
+            <input
+              id="np_size"
+              name="np_size"
+              type="text"
+              inputMode="decimal"
+              required
+              placeholder="例：500"
+              className={controlCls}
+            />
+          </div>
           <select
             name="np_unit"
             required
             defaultValue=""
             aria-label="単位"
-            className={`${controlCls} w-28 shrink-0`}
+            className={unitCls}
           >
             <option value="">単位</option>
             {UNITS.map((u) => (

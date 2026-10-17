@@ -65,6 +65,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 22b (price entry: 連続入力 continuous entry mode toggle at the bottom left keeps chain, branch, tax, sale and member price between saves; tax, member price, bonus points and memo are now controlled by state; form submitted by hand; indigo remapped in the sky, midnight and calm themes) done
 
 
+- Step 23a (products: category suggestions up to 10 via lib/products/category.ts, categoryActions.ts and components/CategoryField.tsx; shared components/ProductFields.tsx used by 商品を追加 and 新しい商品として登録 (which now saves alias, category and memo too); 容量/単位 layout fixed on price entry) done
+
+
 ## In Progress
 
 - (none)
