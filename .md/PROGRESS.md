@@ -39,6 +39,15 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 14p (appearance: 商品 page is search-first with 20 products at a time and collapsed add forms, add forms restyled, clearer active tab in the bottom bar, one grey palette, unused Geist fonts removed) done
 - Step 14q (PART1_FOUNDATION.md and PART2_GROWTH_FEATURES.md rewritten to match the app: tax rules, unit price, UI rules, page specifics) done
 - Step 14r (chain categories, edit and delete of chains and branches, grouped chain dropdown on price entry with a top-10 short list from weekly usage counts) done
+- Step 19a (demo mode, part 1: profiles table with role admin/user, auto-created per account, is_admin() helper; roles changed only in the SQL Editor)
+- Step 19b (demo mode, part 2: app_settings table with demo_mode flag, only admins can change it; demo_mode_on() helper; read-only select policies for visitors on chains, shops, products, variations, packages and price observations while demo mode is on)
+- Step 19c (demo mode, part 3: proxy.ts lets visitors without an account in while app_settings.demo_mode is on, otherwise redirects to /login; visitors can also read store_chain_usage)
+- Step 19d (demo mode, part 4: profile button and side menu on every page except /login; logged-in users see email, 設定 and ログアウト, visitors see デモモード（閲覧のみ） and a ログイン button; lib/auth/viewer.ts getViewer() gives one cached login check per request; logout button removed from the home page)
+- Step 19e (demo mode, part 5: /settings page showing account email and role; admins get a デモモード card with an on/off button, server action in app/settings/actions.ts, change enforced by RLS)
+- Step 19f (demo mode, part 6: price entry page is visible to visitors; both Save buttons are disabled with a note when not logged in)
+
+
+- Step 19g (demo mode: chain usage is not recounted when nobody is logged in) done
 
 
 ## In Progress
@@ -80,3 +89,6 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-15: price_observations.tax_basis ('excl', 'incl', 'unknown', default 'unknown') records whether the entered price excludes or includes tax; no tax rate is assumed or calculated; the price entry form requires choosing it with 不明 preselected; every price shows a tax badge; the price check page lists chains by most recent observation and shows the 最安 badge only among prices from the last 6 months that share the same known basis.
 - 2026-10-16: unit price is computed at display time (never stored) from the discounted price and the package size and unit; ml and L are shown per 100 ml, g and kg per 100 g, count, sheet and bag per piece; it is shown only on the product detail page, with the tax label of the price it comes from; multi-packs are entered as a total size.
 - 2026-10-16: store_chains.category holds a key from lib/stores/category.ts (null = uncategorized); store_chain_usage(store_chain_id, entries_last_month, updated_at) is a lookup table of price entries per chain over the last 30 days (by observed_at), recounted by the database function refresh_store_chain_usage() when the price entry page finds the table empty or older than 7 days; the price entry chain dropdown is grouped by category (busiest category first, 未分類 last), chains ordered by usage, and shows only the top 10 (filled with the newest chains) unless すべて is ticked; chains and branches that have price entries cannot be deleted, a chain without prices is deleted together with its branches.
+- 2026-10-17: account types are stored in public.profiles.role ('admin' or 'user'); users can read only their own profile and cannot change roles from the app; demo mode will use a flag in a separate app_settings table, added in the next step.
+- 2026-10-17: demo mode is a flag in app_settings (one row). While on, the anon role can only read store_chains, shops, products, product_variations, product_packages and price_observations; all write policies stay authenticated-only. The flag is off by default.
+- 2026-10-17: in demo mode all pages are visible to visitors; write controls will be shown but disabled. If the demo flag cannot be read, the login guard treats demo mode as off.

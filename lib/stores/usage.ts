@@ -14,7 +14,10 @@ function readUsage(supabase: Supabase) {
  * Entries per chain over the last month, from the lookup table.
  * When the table is empty or older than 7 days, it is recounted first.
  */
-export async function getChainUsage(supabase: Supabase): Promise<Map<string, number>> {
+export async function getChainUsage(
+  supabase: Supabase,
+  canRefresh = true
+): Promise<Map<string, number>> {
   const first = await readUsage(supabase);
   if (first.error) {
     console.error("Usage fetch error:", first.error.message, first.error.code);
@@ -24,7 +27,7 @@ export async function getChainUsage(supabase: Supabase): Promise<Map<string, num
   let rows: any[] = first.data ?? [];
   const newest = Math.max(0, ...rows.map((r) => new Date(r.updated_at).getTime()));
 
-  if (rows.length === 0 || Date.now() - newest > MAX_AGE_MS) {
+  if (canRefresh && (rows.length === 0 || Date.now() - newest > MAX_AGE_MS)) {
     const { error } = await supabase.rpc("refresh_store_chain_usage");
     if (error) {
       console.error("Usage refresh error:", error.message, error.code);

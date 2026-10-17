@@ -1,10 +1,6 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ChevronRight, LogOut, PlusCircle, Search } from "lucide-react";
-import { supabase } from "@/lib/supabase/client";
+import { ChevronRight, PlusCircle, Search } from "lucide-react";
 
 const actions = [
   {
@@ -22,13 +18,6 @@ const actions = [
 ];
 
 export default function HomePage() {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
-
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-4 rounded-3xl bg-gradient-to-br from-teal-600 to-teal-500 p-5 text-white shadow-sm">
@@ -60,15 +49,6 @@ export default function HomePage() {
           </Link>
         ))}
       </div>
-
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="mx-auto flex items-center gap-1.5 text-sm text-stone-500 hover:underline"
-      >
-        <LogOut className="h-4 w-4" />
-        ログアウト
-      </button>
     </div>
   );
 }

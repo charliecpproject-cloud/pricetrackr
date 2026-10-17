@@ -62,7 +62,7 @@ export default async function NewPricePage() {
   }
 
   const readOnly = !(await getViewer()).loggedIn;
-  const usage = await getChainUsage(supabase);
+  const usage = await getChainUsage(supabase, !readOnly);
   const { sorted, topIds } = arrangeChains(
     (chains ?? []).map((chain: any) => ({
       id: chain.id as string,
