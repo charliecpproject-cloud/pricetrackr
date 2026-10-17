@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import {
   HelpCircle,
   List,
   Megaphone,
+  Repeat,
   Receipt,
   Save,
   Tag,
@@ -82,9 +83,20 @@ export default function PriceForm({
   const [isSale, setIsSale] = useState(false);
   const [showAllChains, setShowAllChains] = useState(false);
   const [observedAt, setObservedAt] = useState("");
+  const [taxBasis, setTaxBasis] = useState<TaxBasis>("unknown");
+  const [isMember, setIsMember] = useState(true);
+  const [bonusPoints, setBonusPoints] = useState("");
+  const [notes, setNotes] = useState("");
+  const [focusMode, setFocusMode] = useState(false);
+  const focusRef = useRef(false);
+  const searchRef = useRef<HTMLInputElement>(null);
   const [saveVisible, setSaveVisible] = useState(true);
   const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
   const saveRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    focusRef.current = focusMode;
+  }, [focusMode]);
 
   // Default time is set after mount, so server and browser output match.
   useEffect(() => {
@@ -96,9 +108,24 @@ export default function PriceForm({
   useEffect(() => {
     if (state.message) {
       setPrice("");
+      setNotes("");
+      if (focusRef.current) {
+        // 連続入力: keep chain, branch, tax, sale and member price; start the next item
+        setBonusPoints("");
+        setObservedAt(nowInJapan());
+        setPackageId("");
+        setIsNewPackage(false);
+        setSearch("");
+        setTimeout(() => searchRef.current?.focus(), 0);
+      } else {
+        // normal mode: same as before (tax, member price and points go back to defaults)
+        setTaxBasis("unknown");
+        setIsMember(true);
+        setBonusPoints("");
+      }
       setIsNewBranch(false);
       setNewBranch("");
-      if (state.packageId) {
+      if (state.packageId && !focusRef.current) {
         setPackageId(state.packageId);
         setIsNewPackage(false);
         setSearch("");
@@ -160,11 +187,25 @@ export default function PriceForm({
 
   const saleText = selectedChain ? saleLabel(parseCategory(selectedChain.category)) : "特売";
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (readOnly || pending) return;
+    const formData = new FormData(e.currentTarget);
+    startTransition(() => {
+      formAction(formData);
+    });
+  };
+
   const saveDisabled =
     readOnly || pending || (!isNewPackage && filtered.length === 0);
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {focusMode && (
+        <p className="rounded-xl bg-teal-50 px-3 py-2 text-sm text-teal-700">
+          連続入力モード：保存後も、チェーン・税・特売などの選択を残します。
+        </p>
+      )}
       {isNewPackage ? (
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-3">
@@ -178,6 +219,7 @@ export default function PriceForm({
           <Field label="商品を検索" kind="optional" htmlFor="search">
             <input
               id="search"
+              ref={searchRef}
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -228,6 +270,7 @@ export default function PriceForm({
               value={chainId}
               onChange={(e) => {
                 setChainId(e.target.value);
+                setIsMember(true);
                 setBranchId("");
               }}
               className={controlCls}
@@ -340,7 +383,7 @@ export default function PriceForm({
             </label>
           </div>
         </Field>
-        <MemberPriceCheck chain={selectedChain} />
+        <MemberPriceCheck chain={selectedChain} checked={isMember} onChange={setIsMember} />
       </div>
 
       <fieldset className="min-w-0">
@@ -359,7 +402,8 @@ export default function PriceForm({
                   type="radio"
                   name="tax_basis"
                   value={b}
-                  defaultChecked={b === "unknown"}
+                  checked={taxBasis === b}
+                  onChange={() => setTaxBasis(b)}
                   className="sr-only"
                 />
                 <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -370,7 +414,7 @@ export default function PriceForm({
         </div>
       </fieldset>
 
-      <BonusPointsField chain={selectedChain} />
+      <BonusPointsField chain={selectedChain} value={bonusPoints} onChange={setBonusPoints} />
 
       <Field label="日時" kind="required" htmlFor="observed_at">
         <input
@@ -390,6 +434,8 @@ export default function PriceForm({
           name="notes"
           type="text"
           maxLength={200}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
           className={controlCls}
         />
       </Field>
@@ -407,6 +453,21 @@ export default function PriceForm({
           {pending ? "保存中…" : "保存"}
         </Button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setFocusMode((v) => !v)}
+        disabled={readOnly}
+        aria-pressed={focusMode}
+        className={`fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] left-4 z-40 flex h-12 items-center gap-1.5 rounded-full border px-4 text-sm font-bold shadow-lg transition active:scale-95 disabled:opacity-50 ${
+          focusMode
+            ? "border-teal-600 bg-teal-600 text-white"
+            : "border-line bg-panel text-stone-600"
+        }`}
+      >
+        <Repeat className="h-4 w-4" />
+        {focusMode ? "連続入力 ON" : "連続入力"}
+      </button>
 
       {!saveVisible && (
         <>

@@ -214,6 +214,8 @@ html[data-theme="sky"] {
   --color-teal-700: #153c7c;
 
   --color-gray-50: #eef4fb;
+  --color-indigo-50: #eaf2fd;
+  --color-indigo-600: #1d4f9f;
   --color-gray-200: #d5e1f2;
 }
 html[data-theme="sky"] body {
@@ -259,6 +261,8 @@ html[data-theme="calm"] {
   --color-rose-700: #fda4af;
   --color-red-600: #f87171;
   --color-gray-50: transparent;
+  --color-indigo-50: var(--ac-tint-1);
+  --color-indigo-600: var(--ac-600);
   --color-gray-200: rgb(255 255 255 / 0.1);
 }
 /* Text that used the accent colour must be light on dark panels */

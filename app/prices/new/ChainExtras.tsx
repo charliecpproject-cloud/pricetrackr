@@ -9,7 +9,15 @@ type Chain = {
 
 // "The entered price is already the membership price" checkbox.
 // Shown only when the chosen chain has a membership price.
-export function MemberPriceCheck({ chain }: { chain: Chain | undefined }) {
+export function MemberPriceCheck({
+  chain,
+  checked,
+  onChange,
+}: {
+  chain: Chain | undefined;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
   if (!chain || chain.memberPercent === null) return null;
 
   return (
@@ -17,7 +25,8 @@ export function MemberPriceCheck({ chain }: { chain: Chain | undefined }) {
       <input
         type="checkbox"
         name="is_member_price"
-        defaultChecked
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
         className="mt-0.5 h-5 w-5 shrink-0 accent-indigo-600"
       />
       <span>
@@ -32,7 +41,15 @@ export function MemberPriceCheck({ chain }: { chain: Chain | undefined }) {
 }
 
 // Bonus points field. Shown only when the chosen chain gives bonus points.
-export function BonusPointsField({ chain }: { chain: Chain | undefined }) {
+export function BonusPointsField({
+  chain,
+  value,
+  onChange,
+}: {
+  chain: Chain | undefined;
+  value: string;
+  onChange: (value: string) => void;
+}) {
   if (!chain || !chain.hasBonusPoints) return null;
 
   return (
@@ -47,6 +64,8 @@ export function BonusPointsField({ chain }: { chain: Chain | undefined }) {
         type="text"
         inputMode="numeric"
         placeholder="例：50"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         className={controlCls}
       />
     </div>

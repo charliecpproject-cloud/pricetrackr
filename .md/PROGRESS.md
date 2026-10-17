@@ -62,6 +62,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 22a (price entry: the 特売 chip is a yes/no sale flag, icon changed from percent to megaphone) done
 
 
+- Step 22b (price entry: 連続入力 continuous entry mode toggle at the bottom left keeps chain, branch, tax, sale and member price between saves; tax, member price, bonus points and memo are now controlled by state; form submitted by hand; indigo remapped in the sky, midnight and calm themes) done
+
+
 ## In Progress
 
 - (none)
