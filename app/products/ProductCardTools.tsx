@@ -1,11 +1,13 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
 import CategoryField from "@/components/CategoryField";
 import { updateProduct, updateVariation } from "@/app/products/productActions";
 import { deletePackage, deleteProduct, deleteVariation } from "@/app/products/deleteActions";
+import { useProductDialogs } from "@/app/products/ProductDialogs";
 import { packageLabel } from "@/lib/prices/format";
 import { parseAttributes, variationLabel, type Attribute } from "@/lib/products/variation";
 
@@ -28,6 +30,9 @@ type PackageRow = {
 
 type State = { error: string | null; message?: string | null };
 const initial: State = { error: null, message: null };
+
+const adminNote =
+  "\n価格の記録がある場合、記録は残りますが画面には表示されなくなります。";
 
 function Messages({ state }: { state: State }) {
   return (
@@ -94,7 +99,15 @@ function ProductEditForm({ product }: { product: Product }) {
   );
 }
 
-function VariationDeleteForm({ id, packageCount }: { id: string; packageCount: number }) {
+function VariationDeleteForm({
+  id,
+  packageCount,
+  isAdmin,
+}: {
+  id: string;
+  packageCount: number;
+  isAdmin: boolean;
+}) {
   const [state, formAction, pending] = useActionState(deleteVariation, initial);
   const target =
     packageCount > 0 ? `このバリエーションと容量${packageCount}件` : "このバリエーション";
@@ -104,7 +117,8 @@ function VariationDeleteForm({ id, packageCount }: { id: string; packageCount: n
       <form
         action={formAction}
         onSubmit={(e) => {
-          if (!window.confirm(`${target}を削除しますか？この操作は元に戻せません。`)) {
+          const note = isAdmin ? adminNote : "";
+          if (!window.confirm(`${target}を削除しますか？${note}\nこの操作は元に戻せません。`)) {
             e.preventDefault();
           }
         }}
@@ -127,10 +141,12 @@ function VariationEditForm({
   id,
   attributes,
   packageCount,
+  isAdmin,
 }: {
   id: string;
   attributes: Attribute[];
   packageCount: number;
+  isAdmin: boolean;
 }) {
   const [state, formAction, pending] = useActionState(updateVariation, initial);
   const [rows, setRows] = useState(() =>
@@ -193,12 +209,20 @@ function VariationEditForm({
           {pending ? "保存中…" : "保存"}
         </Button>
       </form>
-      <VariationDeleteForm id={id} packageCount={packageCount} />
+      <VariationDeleteForm id={id} packageCount={packageCount} isAdmin={isAdmin} />
     </div>
   );
 }
 
-function PackageRowItem({ id, label }: { id: string; label: string }) {
+function PackageRowItem({
+  id,
+  label,
+  isAdmin,
+}: {
+  id: string;
+  label: string;
+  isAdmin: boolean;
+}) {
   const [state, formAction, pending] = useActionState(deletePackage, initial);
 
   return (
@@ -208,7 +232,12 @@ function PackageRowItem({ id, label }: { id: string; label: string }) {
         <form
           action={formAction}
           onSubmit={(e) => {
-            if (!window.confirm(`この容量（${label}）を削除しますか？この操作は元に戻せません。`)) {
+            const note = isAdmin ? adminNote : "";
+            if (
+              !window.confirm(
+                `この容量（${label}）を削除しますか？${note}\nこの操作は元に戻せません。`
+              )
+            ) {
               e.preventDefault();
             }
           }}
@@ -240,15 +269,13 @@ function ProductDeleteForm({ id, name }: { id: string; name: string }) {
       <form
         action={formAction}
         onSubmit={(e) => {
-          const first = window.confirm(
-            `「${name}」を削除しますか？\n容量とバリエーションも一覧から消えます。`
-          );
-          const second =
-            first &&
-            window.confirm(
-              `本当に「${name}」を削除しますか？\n価格の記録も画面に表示されなくなります。`
-            );
-          if (!second) e.preventDefault();
+          if (
+            !window.confirm(
+              `「${name}」を削除しますか？\n容量・バリエーションと価格の記録は画面に表示されなくなります。`
+            )
+          ) {
+            e.preventDefault();
+          }
         }}
       >
         <input type="hidden" name="id" value={id} />
@@ -265,6 +292,9 @@ function ProductDeleteForm({ id, name }: { id: string; name: string }) {
   );
 }
 
+const addBtnCls =
+  "flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-line bg-panel px-3 text-sm font-medium text-stone-700 hover:bg-panel-soft active:scale-[0.99]";
+
 export default function ProductCardTools({
   product,
   isAdmin = false,
@@ -272,6 +302,8 @@ export default function ProductCardTools({
   product: Product;
   isAdmin?: boolean;
 }) {
+  const { openAddVariation, openAddPackage } = useProductDialogs();
+
   const variations = (
     [product.product_variations].flat().filter(Boolean) as { id: string; attributes: unknown }[]
   ).map((v) => ({ id: v.id, attributes: parseAttributes(v.attributes) }));
@@ -279,52 +311,79 @@ export default function ProductCardTools({
   const variationLabels = new Map(variations.map((v) => [v.id, variationLabel(v.attributes)]));
   const productName = product.name_ja || product.name_en || "この商品";
 
+  const dialogProduct = {
+    id: product.id,
+    name: productName,
+    variations: variations.map((v) => ({ id: v.id, label: variationLabel(v.attributes) })),
+  };
+
   return (
-    <details className="mt-3 rounded-xl bg-panel-soft p-3">
-      <summary className="cursor-pointer text-sm font-medium text-teal-700">商品を編集</summary>
-      <div className="mt-3 space-y-6">
-        <ProductEditForm product={product} />
+    <>
+      <details className="mt-3 rounded-xl bg-panel-soft p-3">
+        <summary className="cursor-pointer text-sm font-medium text-teal-700">商品を編集</summary>
+        <div className="mt-3 space-y-6">
+          <ProductEditForm product={product} />
 
-        {variations.length > 0 && (
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-stone-800">バリエーションを編集</h4>
-            {variations.map((v) => (
-              <VariationEditForm
-                key={v.id}
-                id={v.id}
-                attributes={v.attributes}
-                packageCount={packages.filter((p) => p.variation_id === v.id).length}
-              />
-            ))}
-            <p className="text-xs text-stone-500">
-              価格の記録があるバリエーションは削除できません。
-            </p>
-          </div>
-        )}
-
-        {packages.length > 0 && (
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-stone-800">容量を編集</h4>
-            <ul className="space-y-2">
-              {packages.map((p) => (
-                <PackageRowItem
-                  key={p.id}
-                  id={p.id}
-                  label={[
-                    p.variation_id ? variationLabels.get(p.variation_id) : null,
-                    packageLabel(p.package_size, p.package_unit),
-                  ]
-                    .filter(Boolean)
-                    .join(" ・ ")}
+          {variations.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-stone-800">バリエーションを編集</h4>
+              {variations.map((v) => (
+                <VariationEditForm
+                  key={v.id}
+                  id={v.id}
+                  attributes={v.attributes}
+                  packageCount={packages.filter((p) => p.variation_id === v.id).length}
+                  isAdmin={isAdmin}
                 />
               ))}
-            </ul>
-            <p className="text-xs text-stone-500">価格の記録がある容量は削除できません。</p>
-          </div>
-        )}
+              <p className="text-xs text-stone-500">
+                {isAdmin
+                  ? "価格の記録があるバリエーションは、記録を残したまま非表示になります。"
+                  : "価格の記録があるバリエーションは削除できません。"}
+              </p>
+            </div>
+          )}
 
-        {isAdmin && <ProductDeleteForm id={product.id} name={productName} />}
+          {packages.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-stone-800">容量を編集</h4>
+              <ul className="space-y-2">
+                {packages.map((p) => (
+                  <PackageRowItem
+                    key={p.id}
+                    id={p.id}
+                    isAdmin={isAdmin}
+                    label={[
+                      p.variation_id ? variationLabels.get(p.variation_id) : null,
+                      packageLabel(p.package_size, p.package_unit),
+                    ]
+                      .filter(Boolean)
+                      .join(" ・ ")}
+                  />
+                ))}
+              </ul>
+              <p className="text-xs text-stone-500">
+                {isAdmin
+                  ? "価格の記録がある容量は、記録を残したまま非表示になります。"
+                  : "価格の記録がある容量は削除できません。"}
+              </p>
+            </div>
+          )}
+
+          {isAdmin && <ProductDeleteForm id={product.id} name={productName} />}
+        </div>
+      </details>
+
+      <div className="mt-3 flex gap-2">
+        <button type="button" onClick={() => openAddVariation(dialogProduct)} className={addBtnCls}>
+          <Plus className="h-4 w-4" />
+          バリエーションを追加
+        </button>
+        <button type="button" onClick={() => openAddPackage(dialogProduct)} className={addBtnCls}>
+          <Plus className="h-4 w-4" />
+          容量を追加
+        </button>
       </div>
-    </details>
+    </>
   );
 }

@@ -19,40 +19,26 @@ function readId(formData: FormData, key: string, message: string) {
   return z.string().uuid(message).safeParse(formData.get(key));
 }
 
-// A package can be deleted only when it has no price entries.
+// Any user: only without price entries. Admin: also with price entries (archived).
 export async function deletePackage(_prev: State, formData: FormData): Promise<State> {
   const id = readId(formData, "package_id", "容量が正しくありません");
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();
-
-  const { count, error: countError } = await supabase
-    .from("price_observations")
-    .select("id", { count: "exact", head: true })
-    .eq("product_package_id", id.data);
-  if (countError) {
-    console.error("Price count error:", countError.message, countError.code);
-    return { error: FAILED };
-  }
-  if ((count ?? 0) > 0) return { error: HAS_PRICES };
-
-  const { data, error } = await supabase
-    .from("product_packages")
-    .delete()
-    .eq("id", id.data)
-    .select("id");
+  const { data, error } = await supabase.rpc("delete_package", { p_id: id.data });
   if (error) {
-    if (error.code === "23503") return { error: HAS_PRICES };
     console.error("Package delete error:", error.message, error.code);
     return { error: FAILED };
   }
-  if (!data || data.length === 0) return { error: "容量が見つかりませんでした" };
+  if (data === "has_prices") return { error: HAS_PRICES };
+  if (data === "not_found") return { error: "容量が見つかりませんでした" };
+  if (data !== "ok" && data !== "archived") return { error: FAILED };
 
   refresh();
   return { error: null, message: "削除しました" };
 }
 
-// A variation (and its packages) can be deleted only when none has price entries.
+// Same rule for a variation (and its packages).
 export async function deleteVariation(_prev: State, formData: FormData): Promise<State> {
   const id = readId(formData, "variation_id", "バリエーションが正しくありません");
   if (!id.success) return { error: id.error.issues[0].message };
@@ -67,7 +53,7 @@ export async function deleteVariation(_prev: State, formData: FormData): Promise
   }
   if (data === "has_prices") return { error: HAS_PRICES };
   if (data === "not_found") return { error: "バリエーションが見つかりませんでした" };
-  if (data !== "ok") return { error: FAILED };
+  if (data !== "ok" && data !== "archived") return { error: FAILED };
 
   refresh();
   return { error: null, message: "削除しました" };

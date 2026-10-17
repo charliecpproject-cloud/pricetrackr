@@ -80,6 +80,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23e (database: deleted_packages and deleted_variations archives; package and variation visibility via package_is_visible() and variation_is_visible(); delete_package() and updated delete_variation(): any user without price entries, only admins with price entries, archived not removed) done
 
 
+- Step 23f (products page: default shows the 3 newest products with a heading and an all-products button; one shared popup (ProductDialogs.tsx) for バリエーションを追加 and 容量を追加 from each card; admin product delete needs one confirmation; delete actions use delete_package/delete_variation/delete_product; old bottom add forms removed) done
+
+
 ## In Progress
 
 - (none)
