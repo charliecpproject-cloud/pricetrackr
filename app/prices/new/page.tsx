@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { packageLabel } from "@/lib/prices/format";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
 import PriceForm from "./PriceForm";
+import { getViewer } from "@/lib/auth/viewer";
 import { getChainUsage } from "@/lib/stores/usage";
 import { arrangeChains } from "@/lib/stores/arrange";
 import { parseCategory } from "@/lib/stores/category";
@@ -60,6 +61,7 @@ export default async function NewPricePage() {
     }
   }
 
+  const readOnly = !(await getViewer()).loggedIn;
   const usage = await getChainUsage(supabase);
   const { sorted, topIds } = arrangeChains(
     (chains ?? []).map((chain: any) => ({
@@ -99,6 +101,7 @@ export default async function NewPricePage() {
         products={productOptions}
         chains={chainOptions}
         branches={branchOptions}
+        readOnly={readOnly}
       />
     </div>
   );

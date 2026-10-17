@@ -62,11 +62,13 @@ export default function PriceForm({
   products,
   chains,
   branches,
+  readOnly = false,
 }: {
   packages: Pkg[];
   products: ProductOption[];
   chains: Chain[];
   branches: Branch[];
+  readOnly?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(addPriceObservation, initialState);
   const [search, setSearch] = useState("");
@@ -158,7 +160,8 @@ export default function PriceForm({
 
   const saleText = selectedChain ? saleLabel(parseCategory(selectedChain.category)) : "特売";
 
-  const saveDisabled = pending || (!isNewPackage && filtered.length === 0);
+  const saveDisabled =
+    readOnly || pending || (!isNewPackage && filtered.length === 0);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -391,6 +394,11 @@ export default function PriceForm({
         />
       </Field>
 
+      {readOnly && (
+        <p className="rounded-xl bg-stone-100 px-4 py-3 text-sm text-stone-600">
+          デモモード（閲覧のみ）のため、保存できません。ログインすると価格を記録できます。
+        </p>
+      )}
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
 
