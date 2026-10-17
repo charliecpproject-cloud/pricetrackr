@@ -32,16 +32,26 @@ export async function proxy(request: NextRequest) {
 
   const isLoginPage = request.nextUrl.pathname === "/login";
 
-  if (!user && !isLoginPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
-
   if (user && isLoginPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
+  }
+
+  if (!user && !isLoginPage) {
+    // Demo mode: visitors without an account may browse. Only checked when
+    // there is no login. If the flag cannot be read, treat demo mode as off.
+    const { data: settings } = await supabase
+      .from("app_settings")
+      .select("demo_mode")
+      .eq("id", true)
+      .maybeSingle();
+
+    if (!settings?.demo_mode) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
