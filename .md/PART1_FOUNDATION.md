@@ -45,6 +45,7 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - Themes are listed in `lib/themes/themes.ts` (id, label, preview colours). The user's choice is saved in `profiles.theme` (users can update only that column) and applied as `data-theme` on `<html>` in `app/layout.tsx`. Visitors and unknown values get the `default` theme.
 - The default theme is the original design. Each other theme is an `html[data-theme="<id>"]` block at the end of `app/globals.css` that redefines the panel tokens `--panel`, `--panel-soft`, `--chip`, `--line` (and may restyle the body background).
 - UI rule: never hard-code `bg-white`, `border-stone-200`, `bg-stone-50` or `bg-stone-100` for panels, inputs, chips or borders. Use `bg-panel`, `border-line`, `bg-panel-soft`, `bg-chip`. Text greys and accent colours stay `stone-*` and `teal-*`.
+- Themes so far: default, glass, sky (light blue/white), midnight (dark navy/lavender), calm (dark sea-green). Colour themes work by remapping Tailwind colour variables on html[data-theme]: the teal accent scale, the stone text greys, and for dark themes the amber/rose/red tints; panels use the --panel, --panel-soft, --chip, --line tokens. A NEW colour class used anywhere in the app (for example blue or green) must also be remapped in each theme block in globals.css, or it will look wrong there.
 - Planned: animated backgrounds or moving characters per theme, as a fixed decoration layer behind the content that ignores taps (`pointer-events-none`), added in the layout and chosen by theme id.
 
 ## Security

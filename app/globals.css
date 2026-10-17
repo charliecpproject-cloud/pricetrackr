@@ -180,3 +180,168 @@ html[data-theme="glass"] .bg-panel\/90 {
 html[data-theme="glass"] .bg-gray-50 {
   background: transparent;
 }
+
+/* ===== Theme: sky (light, blue and white) ===== */
+html[data-theme="sky"] {
+  --background: #eef4fb;
+  --foreground: #0f2347;
+  --panel: #ffffff;
+  --panel-soft: #f3f7fd;
+  --chip: #e8eff9;
+  --line: #d5e1f2;
+  --card: #ffffff;
+  --card-foreground: #0f2347;
+  --muted-foreground: #5d7194;
+  --primary: #1d4f9f;
+  --primary-foreground: #ffffff;
+  --border: #d5e1f2;
+  --input: #d5e1f2;
+  --ring: #1d4f9f;
+
+  --color-stone-900: #0f2347;
+  --color-stone-800: #1b3359;
+  --color-stone-700: #2f4670;
+  --color-stone-600: #4a5f85;
+  --color-stone-500: #5d7194;
+  --color-stone-400: #8d9bb5;
+  --color-stone-100: #e3ebf6;
+
+  --color-teal-50: #eaf2fd;
+  --color-teal-100: #d6e5fb;
+  --color-teal-200: #b3cdf5;
+  --color-teal-500: #3f8be0;
+  --color-teal-600: #1d4f9f;
+  --color-teal-700: #153c7c;
+
+  --color-gray-50: #eef4fb;
+  --color-gray-200: #d5e1f2;
+}
+html[data-theme="sky"] body {
+  background: linear-gradient(180deg, #dce9fa 0, #eef4fb 300px);
+  background-attachment: fixed;
+}
+
+/* ===== Shared by the dark themes (midnight, calm) ===== */
+html[data-theme="midnight"],
+html[data-theme="calm"] {
+  color-scheme: dark;
+
+  --foreground: var(--tx-2);
+  --card: var(--panel);
+  --card-foreground: var(--tx-2);
+  --muted-foreground: var(--tx-5);
+  --primary: var(--ac-600);
+  --primary-foreground: #ffffff;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--ac-500);
+
+  --color-stone-900: var(--tx-1);
+  --color-stone-800: var(--tx-2);
+  --color-stone-700: var(--tx-3);
+  --color-stone-600: var(--tx-4);
+  --color-stone-500: var(--tx-5);
+  --color-stone-400: var(--tx-6);
+  --color-stone-100: rgb(255 255 255 / 0.08);
+
+  --color-teal-50: var(--ac-tint-1);
+  --color-teal-100: var(--ac-tint-2);
+  --color-teal-200: var(--ac-tint-3);
+  --color-teal-500: var(--ac-500);
+  --color-teal-600: var(--ac-600);
+  --color-teal-700: var(--ac-text);
+
+  --color-amber-50: rgb(245 158 11 / 0.14);
+  --color-amber-100: rgb(245 158 11 / 0.22);
+  --color-amber-700: #fcd34d;
+  --color-rose-100: rgb(244 63 94 / 0.22);
+  --color-rose-600: #fb7185;
+  --color-rose-700: #fda4af;
+  --color-red-600: #f87171;
+  --color-gray-50: transparent;
+  --color-gray-200: rgb(255 255 255 / 0.1);
+}
+/* Text that used the accent colour must be light on dark panels */
+html[data-theme="midnight"] .text-teal-600,
+html[data-theme="calm"] .text-teal-600 {
+  color: var(--ac-text);
+}
+/* Solid accent backgrounds that carry white text stay dark enough */
+html[data-theme="midnight"] .bg-teal-700,
+html[data-theme="midnight"] .hover\:bg-teal-700:hover,
+html[data-theme="calm"] .bg-teal-700,
+html[data-theme="calm"] .hover\:bg-teal-700:hover {
+  background-color: var(--ac-strong);
+}
+html[data-theme="midnight"] .bg-red-600,
+html[data-theme="calm"] .bg-red-600 {
+  background-color: #c62828;
+}
+
+/* ===== Theme: midnight (dark, night sky) ===== */
+html[data-theme="midnight"] {
+  --background: #0a0e24;
+  --panel: rgb(26 32 74 / 0.72);
+  --panel-soft: rgb(255 255 255 / 0.05);
+  --chip: rgb(255 255 255 / 0.09);
+  --line: rgb(160 170 255 / 0.2);
+
+  --tx-1: #f3f4ff;
+  --tx-2: #e4e7fb;
+  --tx-3: #d0d5f0;
+  --tx-4: #b8bfe3;
+  --tx-5: #9aa3cc;
+  --tx-6: #7a84b0;
+
+  --ac-tint-1: rgb(139 140 246 / 0.14);
+  --ac-tint-2: rgb(139 140 246 / 0.24);
+  --ac-tint-3: rgb(139 140 246 / 0.4);
+  --ac-500: #7476f0;
+  --ac-600: #5b5ce0;
+  --ac-strong: #4a4bc8;
+  --ac-text: #c4c6ff;
+}
+html[data-theme="midnight"] body {
+  background:
+    radial-gradient(1.5px 1.5px at 14% 12%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(1px 1px at 82% 8%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 66% 34%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(1px 1px at 28% 52%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 90% 66%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1px 1px at 8% 80%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(ellipse at 15% -10%, rgb(94 80 210 / 0.45) 0, transparent 55%),
+    radial-gradient(ellipse at 100% 35%, rgb(40 80 190 / 0.3) 0, transparent 50%),
+    linear-gradient(180deg, #0c1230, #0a0e24 60%, #070a1a);
+  background-attachment: fixed;
+}
+
+/* ===== Theme: calm (dark, deep sea) ===== */
+html[data-theme="calm"] {
+  --background: #0a202a;
+  --panel: rgb(14 52 60 / 0.68);
+  --panel-soft: rgb(255 255 255 / 0.05);
+  --chip: rgb(255 255 255 / 0.09);
+  --line: rgb(150 220 205 / 0.2);
+
+  --tx-1: #f1faf7;
+  --tx-2: #e0f0eb;
+  --tx-3: #cbe3dc;
+  --tx-4: #afcfc7;
+  --tx-5: #8fb5ad;
+  --tx-6: #6c9790;
+
+  --ac-tint-1: rgb(110 214 186 / 0.13);
+  --ac-tint-2: rgb(110 214 186 / 0.22);
+  --ac-tint-3: rgb(110 214 186 / 0.4);
+  --ac-500: #2fa58f;
+  --ac-600: #16806d;
+  --ac-strong: #0f6b5b;
+  --ac-text: #a8ecd9;
+}
+html[data-theme="calm"] body {
+  background:
+    radial-gradient(ellipse at 85% -5%, rgb(64 160 150 / 0.35) 0, transparent 55%),
+    radial-gradient(ellipse at 5% 100%, rgb(214 170 120 / 0.16) 0, transparent 50%),
+    linear-gradient(180deg, #0f3038, #0b2430 55%, #09202a);
+  background-attachment: fixed;
+}

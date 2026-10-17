@@ -53,6 +53,7 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 - `profiles.theme` holds the account's theme; list and parsing in `lib/themes/themes.ts`; `getViewer()` returns it; `app/layout.tsx` sets `data-theme` on html. Picker on `/settings` (`app/settings/ThemePicker.tsx`, `themeActions.ts`).
 - Panels use the tokens `bg-panel`, `border-line`, `bg-panel-soft`, `bg-chip` (never `bg-white` or `stone` panel colours). Each theme is an `html[data-theme="..."]` block at the end of `app/globals.css`. Themes are cosmetic only.
 - Users can update only their own `theme` column (column-level grant); the role column stays protected.
+- Themes: default, glass, sky, midnight, calm. Colour themes remap Tailwind colour variables (teal accent, stone greys, amber/rose/red tints) under html[data-theme="..."] in app/globals.css; dark themes share one block and set per-theme --tx-*, --ac-* and panel tokens. When a new colour class is introduced, add it to every theme block.
 
 ## Display rules
 - Coupons are per chain; the best of coupon and membership percent is shown (never stacked) as the discounted price with the normal price in brackets (`components/PriceDisplay.tsx`, helpers in `lib/prices/coupon.ts`). Membership checkbox on entry means "the entered price is already the membership price". Bonus points never change prices; small "+Nポイント" text only.

@@ -45,33 +45,18 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 19d (demo mode, part 4: profile button and side menu on every page except /login; logged-in users see email, 設定 and ログアウト, visitors see デモモード（閲覧のみ） and a ログイン button; lib/auth/viewer.ts getViewer() gives one cached login check per request; logout button removed from the home page)
 - Step 19e (demo mode, part 5: /settings page showing account email and role; admins get a デモモード card with an on/off button, server action in app/settings/actions.ts, change enforced by RLS)
 - Step 19f (demo mode, part 6: price entry page is visible to visitors; both Save buttons are disabled with a note when not logged in)
-
-
 - Step 19g (demo mode: chain usage is not recounted when nobody is logged in) done
-
-
 - Step 19h (demo mode: add, edit and delete controls on stores, products and the detail page are disabled for visitors via components/ReadOnlyFieldset.tsx and a disabled prop on the delete button) done
-
-
 - Step 19i (demo mode wrap-up: PART1_FOUNDATION.md and the handoff updated, tag demo-mode-complete) done
-
-
 - Step 20a (themes: profiles.theme column; users can update only their own theme column, role stays protected) done
-
-
 - Step 20b (themes: lib/themes/themes.ts theme list with parseTheme, getViewer() returns the theme, layout sets data-theme on html) done
-
-
 - Step 20c (themes: panel colours are now named tokens bg-panel, border-line, bg-panel-soft, bg-chip defined in globals.css; all pages renamed from bg-white, border-stone-200, bg-stone-50, bg-stone-100; default look unchanged) done
-
-
 - Step 20d (themes: glass theme in globals.css; translucent panel colours, blur, gradient background) done
-
-
 - Step 20e (themes: theme picker on /settings with previews, server action saves profiles.theme) done
-
-
 - Step 20f (themes wrap-up: PART1_FOUNDATION.md and handoff updated, tag themes-complete) done
+
+
+- Step 21 (themes: sky, midnight and calm added; colour variables remapped per theme in globals.css; registered in lib/themes/themes.ts) done
 
 
 ## In Progress

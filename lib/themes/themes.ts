@@ -17,6 +17,30 @@ export const THEMES = [
     previewPanel: "rgba(255,255,255,0.5)",
     previewBorder: "rgba(255,255,255,0.7)",
   },
+  {
+    id: "sky",
+    label: "スカイ",
+    description: "青と白のすっきり爽やかな見た目",
+    previewBackground: "linear-gradient(160deg, #dce9fa, #f3f7fc)",
+    previewPanel: "#ffffff",
+    previewBorder: "#d5e1f2",
+  },
+  {
+    id: "midnight",
+    label: "ミッドナイト",
+    description: "夜空のような暗い配色",
+    previewBackground: "linear-gradient(160deg, #2a2f7a, #0b1026)",
+    previewPanel: "rgba(40,48,110,0.7)",
+    previewBorder: "rgba(160,170,255,0.35)",
+  },
+  {
+    id: "calm",
+    label: "しずか",
+    description: "深い海のような落ち着いた配色",
+    previewBackground: "linear-gradient(160deg, #1f6a6a, #0b2430)",
+    previewPanel: "rgba(20,70,80,0.7)",
+    previewBorder: "rgba(150,220,205,0.35)",
+  },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]["id"];
