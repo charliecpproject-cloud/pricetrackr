@@ -68,6 +68,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 20d (themes: glass theme in globals.css; translucent panel colours, blur, gradient background) done
 
 
+- Step 20e (themes: theme picker on /settings with previews, server action saves profiles.theme) done
+
+
 ## In Progress
 
 - (none)

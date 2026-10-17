@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import DemoToggle from "./DemoToggle";
+import ThemePicker from "./ThemePicker";
+import { parseTheme } from "@/lib/themes/themes";
 
 export default async function SettingsPage() {
   const supabase = await createSupabaseServerClient();
@@ -11,7 +13,7 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, theme")
     .eq("id", user.id)
     .maybeSingle();
   const isAdmin = profile?.role === "admin";
@@ -36,6 +38,14 @@ export default async function SettingsPage() {
         <h2 className="text-lg font-bold text-stone-900">アカウント</h2>
         <p className="break-all text-stone-700">{user.email}</p>
         <p className="text-sm text-stone-500">種類：{isAdmin ? "管理者" : "一般"}</p>
+      </div>
+
+      <div className={`${cardCls} space-y-3`}>
+        <h2 className="text-lg font-bold text-stone-900">テーマ</h2>
+        <p className="text-sm text-stone-600">
+          色や見た目だけが変わります。機能と配置は変わりません。
+        </p>
+        <ThemePicker current={parseTheme(profile?.theme)} />
       </div>
 
       {isAdmin && (
