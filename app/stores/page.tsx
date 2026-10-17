@@ -2,6 +2,8 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { CATEGORY_LABEL, parseCategory } from "@/lib/stores/category";
 import StoreForm from "./StoreForm";
+import ReadOnlyFieldset from "@/components/ReadOnlyFieldset";
+import { getViewer } from "@/lib/auth/viewer";
 import ShopForm from "./ShopForm";
 import CouponForm from "./CouponForm";
 import ChainPicker from "./ChainPicker";
@@ -16,6 +18,7 @@ export default async function StoresPage({
   const { chain: chainParam } = await searchParams;
 
   const supabase = await createSupabaseServerClient();
+  const readOnly = !(await getViewer()).loggedIn;
 
   // All chains (small list), used for the dropdown and the add-branch form
   const { data: chains, error: chainsError } = await supabase
@@ -81,6 +84,7 @@ export default async function StoresPage({
                 </CardTitle>
               </CardHeader>
               <CardContent>
+              <ReadOnlyFieldset readOnly={readOnly}>
                 {shops && shops.length > 0 ? (
                   <ul className="space-y-2">
                     {shops.map((shop) => (
@@ -114,6 +118,7 @@ export default async function StoresPage({
                   />
                   <ChainDeleteButton id={selected.id} shopCount={shops?.length ?? 0} />
                 </div>
+              </ReadOnlyFieldset>
               </CardContent>
             </Card>
           ) : (
@@ -129,7 +134,9 @@ export default async function StoresPage({
           チェーンを追加
         </summary>
         <div className="mt-4">
-          <StoreForm />
+          <ReadOnlyFieldset readOnly={readOnly}>
+            <StoreForm />
+          </ReadOnlyFieldset>
         </div>
       </details>
 
@@ -138,7 +145,9 @@ export default async function StoresPage({
           支店を追加
         </summary>
         <div className="mt-4">
-          <ShopForm chains={chains ?? []} selectedChainId={selected?.id} />
+          <ReadOnlyFieldset readOnly={readOnly}>
+            <ShopForm chains={chains ?? []} selectedChainId={selected?.id} />
+          </ReadOnlyFieldset>
         </div>
       </details>
     </div>

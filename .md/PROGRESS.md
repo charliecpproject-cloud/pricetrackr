@@ -50,6 +50,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 19g (demo mode: chain usage is not recounted when nobody is logged in) done
 
 
+- Step 19h (demo mode: add, edit and delete controls on stores, products and the detail page are disabled for visitors via components/ReadOnlyFieldset.tsx and a disabled prop on the delete button) done
+
+
 ## In Progress
 
 - (none)
@@ -89,6 +92,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-15: price_observations.tax_basis ('excl', 'incl', 'unknown', default 'unknown') records whether the entered price excludes or includes tax; no tax rate is assumed or calculated; the price entry form requires choosing it with 不明 preselected; every price shows a tax badge; the price check page lists chains by most recent observation and shows the 最安 badge only among prices from the last 6 months that share the same known basis.
 - 2026-10-16: unit price is computed at display time (never stored) from the discounted price and the package size and unit; ml and L are shown per 100 ml, g and kg per 100 g, count, sheet and bag per piece; it is shown only on the product detail page, with the tax label of the price it comes from; multi-packs are entered as a total size.
 - 2026-10-16: store_chains.category holds a key from lib/stores/category.ts (null = uncategorized); store_chain_usage(store_chain_id, entries_last_month, updated_at) is a lookup table of price entries per chain over the last 30 days (by observed_at), recounted by the database function refresh_store_chain_usage() when the price entry page finds the table empty or older than 7 days; the price entry chain dropdown is grouped by category (busiest category first, 未分類 last), chains ordered by usage, and shows only the top 10 (filled with the newest chains) unless すべて is ticked; chains and branches that have price entries cannot be deleted, a chain without prices is deleted together with its branches.
+- 2026-10-17: demo mode design: roles live in profiles.role (admin or user), changed only in the SQL Editor; the flag is app_settings.demo_mode, changeable only by admins (RLS); while it is on, visitors can only read (anon select policies), every write policy stays authenticated-only; write controls are shown but disabled for visitors (ReadOnlyFieldset); if the flag cannot be read, the login guard treats demo mode as off.
 - 2026-10-17: account types are stored in public.profiles.role ('admin' or 'user'); users can read only their own profile and cannot change roles from the app; demo mode will use a flag in a separate app_settings table, added in the next step.
 - 2026-10-17: demo mode is a flag in app_settings (one row). While on, the anon role can only read store_chains, shops, products, product_variations, product_packages and price_observations; all write policies stay authenticated-only. The flag is off by default.
 - 2026-10-17: in demo mode all pages are visible to visitors; write controls will be shown but disabled. If the demo flag cannot be read, the login guard treats demo mode as off.

@@ -11,6 +11,7 @@ import { unitPriceText } from "@/lib/prices/unit";
 import UnitPriceLine from "@/components/UnitPriceLine";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
 import { deletePriceObservation } from "./actions";
+import { getViewer } from "@/lib/auth/viewer";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
 
 export default async function PackageDetailPage({
@@ -24,6 +25,7 @@ export default async function PackageDetailPage({
   }
 
   const supabase = await createSupabaseServerClient();
+  const readOnly = !(await getViewer()).loggedIn;
 
   const { data: pkg, error: pkgError } = await supabase
     .from("product_packages")
@@ -163,6 +165,7 @@ export default async function PackageDetailPage({
                     id={r.id}
                     packageId={packageId}
                     action={deletePriceObservation}
+                    disabled={readOnly}
                   />
                 </div>
               </li>

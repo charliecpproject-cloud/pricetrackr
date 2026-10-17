@@ -7,6 +7,8 @@ import PackageForm from "./PackageForm";
 import VariationForm from "./VariationForm";
 import ProductMemoEditor from "./ProductMemoEditor";
 import ProductCardTools from "./ProductCardTools";
+import ReadOnlyFieldset from "@/components/ReadOnlyFieldset";
+import { getViewer } from "@/lib/auth/viewer";
 
 const PAGE_SIZE = 20;
 
@@ -48,6 +50,7 @@ export default async function ProductsPage({
   const term = (q ?? "").trim().slice(0, 50).replace(/[,()%_*\\]/g, "");
 
   const supabase = await createSupabaseServerClient();
+  const readOnly = !(await getViewer()).loggedIn;
 
   let listQuery = supabase
     .from("products")
@@ -194,8 +197,12 @@ export default async function ProductsPage({
                   </div>
                 )}
 
-                <ProductMemoEditor productId={product.id} memo={product.memo ?? null} />
-                <ProductCardTools product={product} />
+                <ReadOnlyFieldset readOnly={readOnly}>
+                  <ProductMemoEditor productId={product.id} memo={product.memo ?? null} />
+                </ReadOnlyFieldset>
+                <ReadOnlyFieldset readOnly={readOnly}>
+                  <ProductCardTools product={product} />
+                </ReadOnlyFieldset>
               </div>
             );
           })}
@@ -212,21 +219,27 @@ export default async function ProductsPage({
         <details className={sectionCls}>
           <summary className={summaryCls}>商品を追加</summary>
           <div className="mt-4">
-            <ProductForm />
+            <ReadOnlyFieldset readOnly={readOnly}>
+              <ProductForm />
+            </ReadOnlyFieldset>
           </div>
         </details>
 
         <details className={sectionCls}>
           <summary className={summaryCls}>バリエーションを追加</summary>
           <div className="mt-4">
-            <VariationForm products={productOptions} attributeNames={attributeNames} />
+            <ReadOnlyFieldset readOnly={readOnly}>
+              <VariationForm products={productOptions} attributeNames={attributeNames} />
+            </ReadOnlyFieldset>
           </div>
         </details>
 
         <details className={sectionCls}>
           <summary className={summaryCls}>容量を追加</summary>
           <div className="mt-4">
-            <PackageForm products={productRows} variations={variationList} />
+            <ReadOnlyFieldset readOnly={readOnly}>
+              <PackageForm products={productRows} variations={variationList} />
+            </ReadOnlyFieldset>
           </div>
         </details>
       </div>

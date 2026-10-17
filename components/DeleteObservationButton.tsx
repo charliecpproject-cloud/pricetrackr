@@ -6,12 +6,14 @@ type DeleteObservationButtonProps = {
   id: string;
   packageId: string;
   action: (formData: FormData) => Promise<void>;
+  disabled?: boolean;
 };
 
 export default function DeleteObservationButton({
   id,
   packageId,
   action,
+  disabled = false,
 }: DeleteObservationButtonProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     if (
@@ -34,7 +36,8 @@ export default function DeleteObservationButton({
       <input type="hidden" name="packageId" value={packageId} />
       <button
         type="submit"
-        className="h-11 px-2 bg-transparent border-0 text-red-600 cursor-pointer"
+        disabled={disabled}
+        className="h-11 px-2 bg-transparent border-0 text-red-600 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
       >
         削除
       </button>
