@@ -77,6 +77,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23d (docs for deletes, archive and category suggestions) done
 
 
+- Step 23e (database: deleted_packages and deleted_variations archives; package and variation visibility via package_is_visible() and variation_is_visible(); delete_package() and updated delete_variation(): any user without price entries, only admins with price entries, archived not removed) done
+
+
 ## In Progress
 
 - (none)
