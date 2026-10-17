@@ -5,7 +5,7 @@ Private, single-user price tracker for Japan (JPY), bilingual JA/EN product data
 
 ## Built (Phase 1 and early extras)
 - Next.js on Vercel + Supabase (Auth/DB), owner-only account (sign-ups disabled), RLS on every table.
-- Tables: products, product_variations, product_packages, store_chains, shops, price_observations.
+- Tables: products, product_variations, product_packages, store_chains, shops, price_observations, profiles, app_settings.
 - Pages: home, price entry (with inline new product/package/branch), price check (latest price per chain), product detail (latest price, history, unit price), stores (chains, branches, coupons, membership and points settings), products (add/edit products, variations, packages, memo), delete own price entries.
 - Also built: chain coupons, membership price and bonus points, product variations, product memo, tax basis, unit price on the detail page, app icon and web app manifest.
 
@@ -31,6 +31,15 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - Bonus points (per chain, `has_bonus_points`) never change the price: show a small `+Nポイント` text on the card and detail row only.
 - Unit price (helpers in `lib/prices/unit.ts`, never stored): ml and L per 100 ml, g and kg per 100 g, 個 / 枚 / 袋 per piece. Computed from the discounted price (same estimate as the big price), shown with the tax label, and only on the product detail page (latest price card and each history row). Different kinds (ml vs g) are never compared.
 
+## Demo mode and roles
+- `profiles(id → auth.users, role text: admin or user)`: one row per account, created by a trigger. Users read only their own row; roles change only in the Supabase SQL Editor, never from the app. `is_admin()` is the SQL helper.
+- `app_settings(id boolean, demo_mode boolean default false)`: one row. Anyone can read it; only admins can update it (RLS). `demo_mode_on()` is the SQL helper.
+- While demo mode is on, visitors without an account can only READ (anon select policies on store_chains, shops, products, product_variations, product_packages, price_observations, store_chain_usage). Every write policy stays authenticated-only. New tables that visitors should see need their own "demo read" policy.
+- `proxy.ts` lets visitors in only when the flag is on; if the flag cannot be read, demo mode counts as off.
+- `lib/auth/viewer.ts` `getViewer()` gives one cached login check per request. Pages pass `readOnly = !loggedIn` down. Write controls stay visible but disabled: `components/ReadOnlyFieldset.tsx` (a disabled fieldset, renders children unchanged for logged-in users), the `disabled` prop of `DeleteObservationButton`, and the price entry Save buttons. Never hide pages from visitors.
+- `components/ProfileMenu.tsx` (top right on every page except /login) opens a side menu: email, 設定 and ログアウト when logged in; a ログイン button for visitors. `/settings` shows the account and, for admins only, the デモモード toggle (`app/settings/actions.ts`).
+- `getChainUsage(supabase, canRefresh)` skips the recount for visitors.
+
 ## Security
 Per CONVENTIONS.md: RLS everywhere, secrets in env vars only, parameterized queries only, validate the entry form's input. No exceptions for single-user.
 
@@ -51,7 +60,7 @@ Next.js 16 (App Router), React 19, Tailwind 4, TypeScript strict, npm (not pnpm)
 - Every page has a heading, an empty state, and a visible error message. Import project files with the `@/` alias, never long `../` paths. No new dependencies.
 
 ### Page specifics
-- Home: compact teal gradient bar with the app icon and "PriceTrackr" (no headline text), two large action cards (価格入力, 価格確認), small logout link.
+- Home: compact teal gradient bar with the app icon and "PriceTrackr" (no headline text), two large action cards (価格入力, 価格確認); no logout link (it is in the profile menu).
 - Price entry (order): product search, product and package (the 新規 toggle creates a product and package inline, fields `np_*`; an exact duplicate product is refused, never merged), chain, 支店 (collapsed, optional, with its own 新規 toggle), 価格 in a short box with a 特売 chip beside it, the member-price checkbox directly under the price (only for chains with a membership price, checked by default; it means the entered price is already the membership price), tax radio (Tag icon 税抜き, Receipt icon 税込み, HelpCircle icon 不明; 不明 preselected), bonus points (only for chains with points), 日時, メモ, 保存. A round floating Save button (floppy-disk icon) appears at the bottom right while the main Save button is off screen, with a short message at the top after saving.
 - Price check: search, then one card per package with the latest price per chain (most recent first, tax badge on each price, 最安 only under the tax rules above). No unit price on these cards.
 - Product detail: 最新価格 card and the price history, each with tax badge and unit price line, and delete for own entries.

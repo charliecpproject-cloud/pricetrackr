@@ -42,6 +42,13 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 - RLS: reference tables full access for the authenticated owner; `price_observations` select all, insert and delete own rows, no update. History is never overwritten.
 - Times are entered as Japan time (+09:00) with minutes and shown with `timeZone: "Asia/Tokyo"`.
 
+## Demo mode and roles (built, Steps 19a-19i)
+- Accounts have a role in `public.profiles` (admin or user); roles are changed only in the Supabase SQL Editor. Admins get a デモモード toggle on `/settings`.
+- `app_settings.demo_mode` (one row, default off) lets visitors without an account browse every page read-only. RLS: anon select policies only while the flag is on; all write policies stay authenticated-only. `proxy.ts` treats an unreadable flag as off.
+- Write controls are shown but disabled for visitors: `components/ReadOnlyFieldset.tsx`, the `disabled` prop of `DeleteObservationButton`, price entry Save buttons. `getViewer()` in `lib/auth/viewer.ts` tells pages whether anyone is logged in.
+- Profile button and side menu: `components/ProfileMenu.tsx`, rendered in `app/layout.tsx`. The logout button moved there from the home page.
+- New tables that visitors should see need a "demo read" policy for the anon role using `demo_mode_on()`.
+
 ## Display rules
 - Coupons are per chain; the best of coupon and membership percent is shown (never stacked) as the discounted price with the normal price in brackets (`components/PriceDisplay.tsx`, helpers in `lib/prices/coupon.ts`). Membership checkbox on entry means "the entered price is already the membership price". Bonus points never change prices; small "+Nポイント" text only.
 - Price check shows the latest price per chain, cheapest first (uses the discounted price). Branch is optional detail.

@@ -53,6 +53,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 19h (demo mode: add, edit and delete controls on stores, products and the detail page are disabled for visitors via components/ReadOnlyFieldset.tsx and a disabled prop on the delete button) done
 
 
+- Step 19i (demo mode wrap-up: PART1_FOUNDATION.md and the handoff updated, tag demo-mode-complete) done
+
+
 ## In Progress
 
 - (none)
