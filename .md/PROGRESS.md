@@ -74,6 +74,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23c (products: delete a 容量 or バリエーション from 商品を編集 only when no price entries exist; admin-only 商品を削除 with two confirmations archives the product; getViewer() returns isAdmin; actions in app/products/deleteActions.ts) done
 
 
+- Step 23d (docs for deletes, archive and category suggestions) done
+
+
 ## In Progress
 
 - (none)

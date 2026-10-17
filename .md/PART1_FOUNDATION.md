@@ -48,6 +48,12 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - Themes so far: default, glass, sky (light blue/white), midnight (dark navy/lavender), calm (dark sea-green). Colour themes work by remapping Tailwind colour variables on html[data-theme]: the teal accent scale, the stone text greys, and for dark themes the amber/rose/red tints; panels use the --panel, --panel-soft, --chip, --line tokens. A NEW colour class used anywhere in the app (for example blue or green) must also be remapped in each theme block in globals.css, or it will look wrong there.
 - Planned: animated backgrounds or moving characters per theme, as a fixed decoration layer behind the content that ignores taps (`pointer-events-none`), added in the layout and chosen by theme id.
 
+## Deleting and category suggestions
+- A 容量 (package) can be deleted only when it has no price entries (`deletePackage`, `app/products/deleteActions.ts`). A バリエーション can be deleted only when none of its 容量 has price entries; its 容量 are deleted with it (`delete_variation()` SQL function, one transaction). Both are allowed for any logged-in user, with one confirm dialog.
+- Deleting a PRODUCT is admin only (`delete_product()` SQL function checks `is_admin()`), with two confirm dialogs in the 商品を編集 area. It writes a tombstone row to `deleted_products` (id, name fields, snapshot of variations, packages and price count). While a tombstone exists, RLS hides the product, its variations, packages and price entries from every screen, including demo mode (`product_is_visible()`, `package_is_visible()`). The rows are NOT deleted. To revive: delete the tombstone row in the SQL Editor. For a permanent cleanup, delete the hidden price entries and rows by hand. Any new table that links to products or packages needs the same visibility rule.
+- Category suggestions: `components/CategoryField.tsx` asks `suggestCategoryNames()` (`app/products/categoryActions.ts`); matching is in `lib/products/category.ts` (whole-term and single-kanji matches, up to 10, shown as name (number of products)).
+- `components/ProductFields.tsx` holds the product fields (商品名, 英語名・別名, ブランド, カテゴリ, メモ) and is used by 商品を追加 and by 価格入力 > 新しい商品として登録 (prefix `np_`). Change fields there, never in one form only.
+
 ## Security
 Per CONVENTIONS.md: RLS everywhere, secrets in env vars only, parameterized queries only, validate the entry form's input. No exceptions for single-user.
 
