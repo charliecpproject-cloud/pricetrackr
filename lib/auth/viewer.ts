@@ -2,20 +2,27 @@ import { cache } from "react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTheme, type ThemeId } from "@/lib/themes/themes";
 
-export type Viewer = { loggedIn: boolean; email: string | null; theme: ThemeId };
+export type Viewer = {
+  loggedIn: boolean;
+  email: string | null;
+  theme: ThemeId;
+  isAdmin: boolean;
+};
 
-// One login check (and theme lookup) per request, shared by the layout and pages.
+// One login check (and profile lookup) per request, shared by the layout and pages.
 export const getViewer = cache(async (): Promise<Viewer> => {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { loggedIn: false, email: null, theme: parseTheme(null) };
+  if (!user) {
+    return { loggedIn: false, email: null, theme: parseTheme(null), isAdmin: false };
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("theme")
+    .select("theme, role")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -23,5 +30,6 @@ export const getViewer = cache(async (): Promise<Viewer> => {
     loggedIn: true,
     email: user.email ?? null,
     theme: parseTheme(profile?.theme),
+    isAdmin: profile?.role === "admin",
   };
 });

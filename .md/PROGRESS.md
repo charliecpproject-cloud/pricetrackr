@@ -71,6 +71,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23b (database: deleted_products archive table; product, variation, package and price rows of an archived product are hidden by RLS via product_is_visible() and package_is_visible(), including demo read; delete_variation() and admin-only delete_product() functions) done
 
 
+- Step 23c (products: delete a 容量 or バリエーション from 商品を編集 only when no price entries exist; admin-only 商品を削除 with two confirmations archives the product; getViewer() returns isAdmin; actions in app/products/deleteActions.ts) done
+
+
 ## In Progress
 
 - (none)

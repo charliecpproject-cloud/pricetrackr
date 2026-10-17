@@ -50,7 +50,9 @@ export default async function ProductsPage({
   const term = (q ?? "").trim().slice(0, 50).replace(/[,()%_*\\]/g, "");
 
   const supabase = await createSupabaseServerClient();
-  const readOnly = !(await getViewer()).loggedIn;
+  const viewer = await getViewer();
+  const readOnly = !viewer.loggedIn;
+  const isAdmin = viewer.isAdmin;
 
   let listQuery = supabase
     .from("products")
@@ -201,7 +203,7 @@ export default async function ProductsPage({
                   <ProductMemoEditor productId={product.id} memo={product.memo ?? null} />
                 </ReadOnlyFieldset>
                 <ReadOnlyFieldset readOnly={readOnly}>
-                  <ProductCardTools product={product} />
+                  <ProductCardTools product={product} isAdmin={isAdmin} />
                 </ReadOnlyFieldset>
               </div>
             );
