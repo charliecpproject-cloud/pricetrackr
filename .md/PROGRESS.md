@@ -71,6 +71,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 20e (themes: theme picker on /settings with previews, server action saves profiles.theme) done
 
 
+- Step 20f (themes wrap-up: PART1_FOUNDATION.md and handoff updated, tag themes-complete) done
+
+
 ## In Progress
 
 - (none)

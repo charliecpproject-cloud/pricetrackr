@@ -49,6 +49,11 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 - Profile button and side menu: `components/ProfileMenu.tsx`, rendered in `app/layout.tsx`. The logout button moved there from the home page.
 - New tables that visitors should see need a "demo read" policy for the anon role using `demo_mode_on()`.
 
+## Themes (built, Steps 20a-20f)
+- `profiles.theme` holds the account's theme; list and parsing in `lib/themes/themes.ts`; `getViewer()` returns it; `app/layout.tsx` sets `data-theme` on html. Picker on `/settings` (`app/settings/ThemePicker.tsx`, `themeActions.ts`).
+- Panels use the tokens `bg-panel`, `border-line`, `bg-panel-soft`, `bg-chip` (never `bg-white` or `stone` panel colours). Each theme is an `html[data-theme="..."]` block at the end of `app/globals.css`. Themes are cosmetic only.
+- Users can update only their own `theme` column (column-level grant); the role column stays protected.
+
 ## Display rules
 - Coupons are per chain; the best of coupon and membership percent is shown (never stacked) as the discounted price with the normal price in brackets (`components/PriceDisplay.tsx`, helpers in `lib/prices/coupon.ts`). Membership checkbox on entry means "the entered price is already the membership price". Bonus points never change prices; small "+Nポイント" text only.
 - Price check shows the latest price per chain, cheapest first (uses the discounted price). Branch is optional detail.

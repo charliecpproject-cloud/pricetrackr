@@ -40,6 +40,13 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - `components/ProfileMenu.tsx` (top right on every page except /login) opens a side menu: email, 設定 and ログアウト when logged in; a ログイン button for visitors. `/settings` shows the account and, for admins only, the デモモード toggle (`app/settings/actions.ts`).
 - `getChainUsage(supabase, canRefresh)` skips the recount for visitors.
 
+## Themes
+- A theme is cosmetic only: colours, backgrounds, blur, borders. Functions and layout never change per theme.
+- Themes are listed in `lib/themes/themes.ts` (id, label, preview colours). The user's choice is saved in `profiles.theme` (users can update only that column) and applied as `data-theme` on `<html>` in `app/layout.tsx`. Visitors and unknown values get the `default` theme.
+- The default theme is the original design. Each other theme is an `html[data-theme="<id>"]` block at the end of `app/globals.css` that redefines the panel tokens `--panel`, `--panel-soft`, `--chip`, `--line` (and may restyle the body background).
+- UI rule: never hard-code `bg-white`, `border-stone-200`, `bg-stone-50` or `bg-stone-100` for panels, inputs, chips or borders. Use `bg-panel`, `border-line`, `bg-panel-soft`, `bg-chip`. Text greys and accent colours stay `stone-*` and `teal-*`.
+- Planned: animated backgrounds or moving characters per theme, as a fixed decoration layer behind the content that ignores taps (`pointer-events-none`), added in the layout and chosen by theme id.
+
 ## Security
 Per CONVENTIONS.md: RLS everywhere, secrets in env vars only, parameterized queries only, validate the entry form's input. No exceptions for single-user.
 
