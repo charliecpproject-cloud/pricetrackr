@@ -65,6 +65,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 20c (themes: panel colours are now named tokens bg-panel, border-line, bg-panel-soft, bg-chip defined in globals.css; all pages renamed from bg-white, border-stone-200, bg-stone-50, bg-stone-100; default look unchanged) done
 
 
+- Step 20d (themes: glass theme in globals.css; translucent panel colours, blur, gradient background) done
+
+
 ## In Progress
 
 - (none)
