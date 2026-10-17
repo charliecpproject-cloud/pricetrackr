@@ -56,6 +56,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 19i (demo mode wrap-up: PART1_FOUNDATION.md and the handoff updated, tag demo-mode-complete) done
 
 
+- Step 20a (themes: profiles.theme column; users can update only their own theme column, role stays protected) done
+
+
 ## In Progress
 
 - (none)
