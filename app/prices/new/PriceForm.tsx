@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import {
   HelpCircle,
   List,
-  Percent,
+  Megaphone,
   Receipt,
   Save,
   Tag,
@@ -335,7 +335,7 @@ export default function PriceForm({
                 onChange={(e) => setIsSale(e.target.checked)}
                 className="h-4 w-4 accent-amber-500"
               />
-              <Percent className="h-4 w-4" />
+              <Megaphone className="h-4 w-4" />
               {saleText}
             </label>
           </div>

@@ -59,6 +59,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 21 (themes: sky, midnight and calm added; colour variables remapped per theme in globals.css; registered in lib/themes/themes.ts) done
 
 
+- Step 22a (price entry: the 特売 chip is a yes/no sale flag, icon changed from percent to megaphone) done
+
+
 ## In Progress
 
 - (none)
