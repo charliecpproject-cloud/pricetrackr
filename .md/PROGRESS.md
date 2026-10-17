@@ -68,6 +68,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23a (products: category suggestions up to 10 via lib/products/category.ts, categoryActions.ts and components/CategoryField.tsx; shared components/ProductFields.tsx used by 商品を追加 and 新しい商品として登録 (which now saves alias, category and memo too); 容量/単位 layout fixed on price entry) done
 
 
+- Step 23b (database: deleted_products archive table; product, variation, package and price rows of an archived product are hidden by RLS via product_is_visible() and package_is_visible(), including demo read; delete_variation() and admin-only delete_product() functions) done
+
+
 ## In Progress
 
 - (none)
