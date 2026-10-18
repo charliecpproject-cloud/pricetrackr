@@ -17,6 +17,8 @@ import { CATEGORY_LABEL, parseCategory, saleLabel } from "@/lib/stores/category"
 import { addPriceObservation } from "@/app/prices/actions";
 import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
+import BulkPriceFields from "./BulkPriceFields";
+import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
@@ -26,6 +28,7 @@ type Chain = {
   name: string;
   memberPercent: number | null;
   hasBonusPoints: boolean;
+  bulkEnabled: boolean;
   category: string | null;
   isTop: boolean;
 };
@@ -91,6 +94,10 @@ export default function PriceForm({
   const [observedAt, setObservedAt] = useState("");
   const [taxBasis, setTaxBasis] = useState<TaxBasis>("unknown");
   const [isMember, setIsMember] = useState(true);
+  const [isBulk, setIsBulk] = useState(false);
+  const [bulkPercent, setBulkPercent] = useState("");
+  const [bulkQuantity, setBulkQuantity] = useState("");
+  const bulkTouchedRef = useRef(false);
   const [bonusPoints, setBonusPoints] = useState("");
   const [notes, setNotes] = useState("");
   const [focusMode, setFocusMode] = useState(false);
@@ -115,6 +122,8 @@ export default function PriceForm({
     if (state.message) {
       setPrice("");
       setNotes("");
+      setIsBulk(false);
+      bulkTouchedRef.current = false;
       if (focusRef.current) {
         // 連続入力: keep chain, branch, tax, sale and member price; start the next item
         setBonusPoints("");
@@ -170,6 +179,26 @@ export default function PriceForm({
   const branchOptions = branches.filter((b) => b.chainId === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
   const selectedChain = chains.find((c) => c.id === chainId);
+
+  // Chains with the bulk option: fill the percent and quantity used last
+  // (same product first, then the chain), unless the user already typed something.
+  useEffect(() => {
+    if (!selectedChain?.bulkEnabled) {
+      setIsBulk(false);
+      return;
+    }
+    let cancelled = false;
+    lookupBulkDefaults(chainId, selectedPackage)
+      .then((found) => {
+        if (cancelled || !found || bulkTouchedRef.current) return;
+        setBulkPercent(String(found.percent));
+        setBulkQuantity(String(found.quantity));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [chainId, selectedChain?.bulkEnabled, selectedPackage]);
 
   // Dropdown content: the short list (or everything), grouped by category.
   // The chains arrive already sorted, so groups appear in the right order.
@@ -389,7 +418,32 @@ export default function PriceForm({
             </label>
           </div>
         </Field>
-        <MemberPriceCheck chain={selectedChain} checked={isMember} onChange={setIsMember} />
+        <MemberPriceCheck
+          chain={selectedChain}
+          checked={isMember}
+          onChange={(value) => {
+            setIsMember(value);
+            if (value) setIsBulk(false);
+          }}
+        />
+        <BulkPriceFields
+          chain={selectedChain}
+          checked={isBulk}
+          onCheckedChange={(value) => {
+            setIsBulk(value);
+            if (value) setIsMember(false);
+          }}
+          percent={bulkPercent}
+          onPercentChange={(value) => {
+            bulkTouchedRef.current = true;
+            setBulkPercent(value);
+          }}
+          quantity={bulkQuantity}
+          onQuantityChange={(value) => {
+            bulkTouchedRef.current = true;
+            setBulkQuantity(value);
+          }}
+        />
       </div>
 
       <fieldset className="min-w-0">

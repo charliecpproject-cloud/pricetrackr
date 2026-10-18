@@ -31,7 +31,7 @@ export default async function NewPricePage({
 
   const { data: chains, error: chainsError } = await supabase
     .from("store_chains")
-    .select("id, name, category, created_at, member_discount_percent, has_bonus_points")
+    .select("id, name, category, created_at, member_discount_percent, has_bonus_points, bulk_enabled")
     .order("name", { ascending: true });
 
   const { data: shops, error: shopsError } = await supabase
@@ -105,6 +105,7 @@ export default async function NewPricePage({
     }))
   );
   const topSet = new Set(topIds);
+  const bulkById = new Map(((chains ?? []) as any[]).map((c) => [c.id as string, !!c.bulk_enabled]));
   const chainOptions = sorted.map((c) => ({
     id: c.id,
     name: c.name,
@@ -112,6 +113,7 @@ export default async function NewPricePage({
     isTop: topSet.has(c.id),
     memberPercent: c.memberPercent,
     hasBonusPoints: c.hasBonusPoints,
+    bulkEnabled: bulkById.get(c.id) ?? false,
   }));
 
   const branchOptions = (shops ?? []).map((shop: any) => ({

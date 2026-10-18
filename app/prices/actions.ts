@@ -6,6 +6,14 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
 import { TAX_BASES } from "@/lib/prices/tax";
 import { parseBarcodes } from "@/lib/products/barcode";
+import {
+  BULK_MAX_PERCENT,
+  BULK_MAX_QUANTITY,
+  BULK_MIN_PERCENT,
+  BULK_MIN_QUANTITY,
+  parseBulkPercent,
+  parseBulkQuantity,
+} from "@/lib/prices/bulk";
 
 type State = {
   error: string | null;
@@ -239,7 +247,7 @@ export async function addPriceObservation(
   // Read the chain's options on the server; never trust the browser for these.
   const { data: chainRow, error: chainError } = await supabase
     .from("store_chains")
-    .select("member_discount_percent, has_bonus_points")
+    .select("member_discount_percent, has_bonus_points, bulk_enabled")
     .eq("id", store_chain_id)
     .single();
   if (chainError || !chainRow) {
@@ -261,6 +269,23 @@ export async function addPriceObservation(
       return { error: "ポイントは0以上の整数で入力してください" };
     }
     bonusPoints = n;
+  }
+
+  // まとめ買い: the entered price already includes a bulk discount (percent and quantity).
+  let bulkPercent: number | null = null;
+  let bulkQuantity: number | null = null;
+  if (formData.get("is_bulk_price") === "on" && chainRow.bulk_enabled === true) {
+    bulkPercent = parseBulkPercent(text(formData, "bulk_percent"));
+    if (bulkPercent === null) {
+      return { error: `割引率は${BULK_MIN_PERCENT}〜${BULK_MAX_PERCENT}の整数で入力してください` };
+    }
+    bulkQuantity = parseBulkQuantity(text(formData, "bulk_quantity"));
+    if (bulkQuantity === null) {
+      return { error: `個数は${BULK_MIN_QUANTITY}〜${BULK_MAX_QUANTITY}の整数で入力してください` };
+    }
+    if (isMemberPrice) {
+      return { error: "会員価格とまとめ買いは同時に選べません" };
+    }
   }
 
   // Find or create the product and package typed into the "新規" panel.
@@ -306,6 +331,8 @@ export async function addPriceObservation(
     is_member_price: isMemberPrice,
     tax_basis: taxBasis,
     bonus_points: bonusPoints,
+    bulk_percent: bulkPercent,
+    bulk_quantity: bulkQuantity,
     notes,
   });
 

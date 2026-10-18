@@ -134,6 +134,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 29b (bulk discount: lib/prices/bulk.ts with tests (validation 1-99 % and 2-999 items, original price calculated back and rounded up); chain option まとめ買い割引あり in the chain settings; dark themes remap rose-50) done
 
 
+- Step 29c (bulk discount on price entry: checkbox plus 割引率 and 個数 for chains with the option; last used values at the chain (same product first) prefill them via app/prices/bulkDefaults.ts; excludes 会員価格; validated and saved with the price) done
+
+
 ## In Progress
 
 - (none)
