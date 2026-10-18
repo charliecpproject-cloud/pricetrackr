@@ -122,6 +122,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 27a (price check: with no search and no filter only the 3 most recently added products are loaded, under the heading 最近追加した商品) done
 
 
+- Step 28a (profile display name: profiles.display_name, set on 設定 (ProfileNameForm, profileActions.ts), shown as 「○○さん」 in the side menu; getViewer() returns displayName) done
+
+
 ## In Progress
 
 - (none)

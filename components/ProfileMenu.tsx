@@ -9,9 +9,11 @@ import { supabase } from "@/lib/supabase/client";
 export default function ProfileMenu({
   loggedIn,
   email,
+  displayName,
 }: {
   loggedIn: boolean;
   email: string | null;
+  displayName?: string | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -76,7 +78,14 @@ export default function ProfileMenu({
 
             <div className="rounded-xl bg-panel-soft p-3 text-sm text-stone-600">
               {loggedIn ? (
-                <span className="break-all">{email}</span>
+                <>
+                  {displayName && (
+                    <span className="block text-base font-bold text-stone-900">
+                      {displayName}さん
+                    </span>
+                  )}
+                  <span className="break-all">{email}</span>
+                </>
               ) : (
                 <>
                   <span className="font-bold text-stone-800">デモモード（閲覧のみ）</span>

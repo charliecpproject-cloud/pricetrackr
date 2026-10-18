@@ -15,7 +15,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ja" data-theme={viewer.theme} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
-        <ProfileMenu loggedIn={viewer.loggedIn} email={viewer.email} />
+        <ProfileMenu
+          loggedIn={viewer.loggedIn}
+          email={viewer.email}
+          displayName={viewer.displayName}
+        />
         <main className="mx-auto w-full min-w-0 max-w-xl px-4 pb-28 pt-2 [overflow-wrap:anywhere] [&_input]:min-w-0 [&_select]:min-w-0 [&_textarea]:min-w-0">
           {children}
         </main>

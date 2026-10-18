@@ -33,7 +33,7 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - Unit price (helpers in `lib/prices/unit.ts`, never stored): ml and L per 100 ml, g and kg per 100 g, 個 / 枚 / 袋 per piece. Computed from the discounted price (same estimate as the big price), shown with the tax label, and only on the product detail page (latest price card and each history row). Different kinds (ml vs g) are never compared.
 
 ## Demo mode and roles
-- `profiles(id → auth.users, role text: admin or user)`: one row per account, created by a trigger. Users read only their own row; roles change only in the Supabase SQL Editor, never from the app. `is_admin()` is the SQL helper.
+- `profiles(id → auth.users, role text: admin or user, theme, display_name = optional nickname up to 30 characters, not unique, used for the greeting; users may update only theme and display_name)`: one row per account, created by a trigger. Users read only their own row; roles change only in the Supabase SQL Editor, never from the app. `is_admin()` is the SQL helper.
 - `app_settings(id boolean, demo_mode boolean default false)`: one row. Anyone can read it; only admins can update it (RLS). `demo_mode_on()` is the SQL helper.
 - While demo mode is on, visitors without an account can only READ (anon select policies on store_chains, shops, products, product_variations, product_packages, price_observations, store_chain_usage). Every write policy stays authenticated-only. New tables that visitors should see need their own "demo read" policy.
 - `proxy.ts` lets visitors in only when the flag is on; if the flag cannot be read, demo mode counts as off.

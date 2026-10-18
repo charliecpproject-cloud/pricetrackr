@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import DemoToggle from "./DemoToggle";
 import ThemePicker from "./ThemePicker";
+import ProfileNameForm from "./ProfileNameForm";
 import { parseTheme } from "@/lib/themes/themes";
 
 export default async function SettingsPage() {
@@ -13,7 +14,7 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, theme")
+    .select("role, theme, display_name")
     .eq("id", user.id)
     .maybeSingle();
   const isAdmin = profile?.role === "admin";
@@ -38,6 +39,7 @@ export default async function SettingsPage() {
         <h2 className="text-lg font-bold text-stone-900">アカウント</h2>
         <p className="break-all text-stone-700">{user.email}</p>
         <p className="text-sm text-stone-500">種類：{isAdmin ? "管理者" : "一般"}</p>
+        <ProfileNameForm current={(profile?.display_name as string | null) ?? ""} />
       </div>
 
       <div className={`${cardCls} space-y-3`}>

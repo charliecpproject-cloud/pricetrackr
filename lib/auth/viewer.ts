@@ -7,6 +7,7 @@ export type Viewer = {
   email: string | null;
   theme: ThemeId;
   isAdmin: boolean;
+  displayName: string | null;
 };
 
 // One login check (and profile lookup) per request, shared by the layout and pages.
@@ -17,12 +18,18 @@ export const getViewer = cache(async (): Promise<Viewer> => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { loggedIn: false, email: null, theme: parseTheme(null), isAdmin: false };
+    return {
+      loggedIn: false,
+      email: null,
+      theme: parseTheme(null),
+      isAdmin: false,
+      displayName: null,
+    };
   }
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("theme, role")
+    .select("theme, role, display_name")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -31,5 +38,6 @@ export const getViewer = cache(async (): Promise<Viewer> => {
     email: user.email ?? null,
     theme: parseTheme(profile?.theme),
     isAdmin: profile?.role === "admin",
+    displayName: (profile?.display_name as string | null) ?? null,
   };
 });
