@@ -125,6 +125,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 28a (profile display name: profiles.display_name, set on 設定 (ProfileNameForm, profileActions.ts), shown as 「○○さん」 in the side menu; getViewer() returns displayName) done
 
 
+- Step 28b (home dashboard: Japanese greeting with the display name, compact shortcut tiles, 最近の更新 feed of recent price entries and new products, admin tools row; lib/home with tests) done
+
+
 ## In Progress
 
 - (none)
