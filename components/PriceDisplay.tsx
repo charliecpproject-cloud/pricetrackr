@@ -1,5 +1,6 @@
 import { bestDiscount, couponPrice } from "@/lib/prices/coupon";
 import { formatYen } from "@/lib/prices/format";
+import { pointsNeeded } from "@/lib/prices/points";
 import { TAX_BADGE_LABEL, type TaxBasis } from "@/lib/prices/tax";
 
 type Props = {
@@ -7,15 +8,43 @@ type Props = {
   couponPercents?: number[] | null;
   memberPercent?: number | null;
   isMemberPrice?: boolean;
+  // ウェル活: on the point-use day 1 point is worth this many yen. null = not enabled.
+  pointUseMultiplier?: number | null;
   size?: "md" | "lg";
   taxBasis?: TaxBasis;
 };
 
-export default function PriceDisplay({ taxBasis, ...rest }: Props) {
-  return (
+export default function PriceDisplay({ taxBasis, pointUseMultiplier, ...rest }: Props) {
+  const points = pointUseMultiplier
+    ? pointsNeeded(Number(rest.price), pointUseMultiplier)
+    : null;
+
+  const main = (
     <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
       <PriceCore {...rest} />
       {taxBasis && <TaxBadge basis={taxBasis} />}
+    </span>
+  );
+
+  if (points === null) return main;
+
+  // An extra line, not a replacement: points are not yen and only work on that day,
+  // so it never changes the main price, the cheapest badge or the unit price.
+  return (
+    <span className="inline-flex flex-col items-start gap-1">
+      {main}
+      <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <span className="inline-flex items-center rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
+          ウェル活
+        </span>
+        <span className="text-xl font-bold tabular-nums text-amber-700">
+          {points.toLocaleString("ja-JP")}ポイント
+        </span>
+        <span className="text-sm tabular-nums text-stone-500">
+          （{rest.isMemberPrice ? "会員価格" : "通常価格"} {formatYen(rest.price)}）
+        </span>
+        {taxBasis && <TaxBadge basis={taxBasis} />}
+      </span>
     </span>
   );
 }
@@ -40,7 +69,7 @@ function PriceCore({
   memberPercent,
   isMemberPrice,
   size = "md",
-}: Props) {
+}: Omit<Props, "taxBasis" | "pointUseMultiplier">) {
   const normal = Number(price);
   const big = size === "lg" ? "text-4xl" : "text-2xl";
   const wrap = "inline-flex flex-wrap items-baseline gap-x-2 gap-y-1";

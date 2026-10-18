@@ -7,6 +7,7 @@ import PriceDisplay from "@/components/PriceDisplay";
 import { parseTaxBasis } from "@/lib/prices/tax";
 import { parseCategory, saleLabel } from "@/lib/stores/category";
 import { effectivePrice } from "@/lib/prices/coupon";
+import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { unitPriceText } from "@/lib/prices/unit";
 import UnitPriceLine from "@/components/UnitPriceLine";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
@@ -54,7 +55,7 @@ export default async function PackageDetailPage({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, notes, store_chains (name, category, coupon_percents, member_discount_percent), shops (name)"
+      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, notes, store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier), shops (name)"
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -86,6 +87,10 @@ export default async function PackageDetailPage({
         pkg.package_unit
       ),
       memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
+      pointUseMultiplier: pointUseMultiplierOf(
+        chain?.point_use_enabled,
+        chain?.point_use_multiplier
+      ),
       chainName: (chain?.name as string | undefined) ?? "",
       category: parseCategory(chain?.category),
       branchName: (branch?.name as string | undefined) ?? "",
@@ -122,7 +127,7 @@ export default async function PackageDetailPage({
         <div className="rounded-2xl border border-line bg-panel p-5 shadow-sm">
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
-            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} taxBasis={latest.taxBasis} size="lg" />
+            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} pointUseMultiplier={latest.pointUseMultiplier} taxBasis={latest.taxBasis} size="lg" />
             <UnitPriceLine text={latest.unitText} taxBasis={latest.taxBasis} />
           </div>
           <p className="mt-2 text-sm text-stone-500">
@@ -155,7 +160,7 @@ export default async function PackageDetailPage({
                       <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">{saleLabel(r.category)}</span>
                     )}
                   </p>
-                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} taxBasis={r.taxBasis} size="md" />
+                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} pointUseMultiplier={r.pointUseMultiplier} taxBasis={r.taxBasis} size="md" />
                 </div>
                 <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
                 <UnitPriceLine text={r.unitText} taxBasis={r.taxBasis} />

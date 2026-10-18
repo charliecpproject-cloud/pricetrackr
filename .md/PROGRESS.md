@@ -95,6 +95,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 24b (ウェル活: lib/prices/points.ts with tests; 感謝デー section with ウェル活 checkbox and 倍率 (default 1.5) in the chain options form and its save action) done
 
 
+- Step 24c (ウェル活 line on prices: components/PriceDisplay.tsx shows points needed for chains with it enabled; passed from the price check and product detail pages; docs updated) done
+
+
 ## In Progress
 
 - (none)

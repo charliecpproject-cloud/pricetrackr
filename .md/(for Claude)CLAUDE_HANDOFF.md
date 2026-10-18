@@ -33,7 +33,7 @@ function Rep($file, $old, $new) {
 To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 
 ## Data model (check `supabase/migrations` for the truth)
-- `store_chains(id, name, coupon_percents int[] default '{}' (allowed 5/10/15), member_discount_percent smallint null, has_bonus_points bool default false)`
+- `store_chains(id, name, coupon_percents int[] default '{}' (allowed 5/10/15), member_discount_percent smallint null, has_bonus_points bool default false, point_use_enabled bool default false, point_use_multiplier numeric(4,2) default 1.5)`
 - `shops(id, store_chain_id, name, address, region)`, unique `(id, store_chain_id)`
 - `products(id, name_ja = main name in any language, name_en = optional 英語名・別名 alias, brand, category, memo)`
 - `product_variations(id, product_id, attributes jsonb [{name,value}], attributes_key)`, key unique per product

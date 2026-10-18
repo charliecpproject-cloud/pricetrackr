@@ -3,6 +3,7 @@ import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
+import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
 import { isCheapest, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
@@ -34,6 +35,7 @@ type ChainPrice = {
   couponPercents: number[];
   memberPercent: number | null;
   isMemberPrice: boolean;
+  pointUseMultiplier: number | null;
   bonusPoints: number | null;
   effective: number;
   taxBasis: TaxBasis;
@@ -117,7 +119,7 @@ export default async function CheckPage({
       .from("price_observations")
       .select(
         `product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points, tax_basis,
-         store_chains (name, category, coupon_percents, member_discount_percent)`
+         store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier)`
       )
       .order("observed_at", { ascending: false })
       .order("created_at", { ascending: false })
@@ -148,6 +150,10 @@ export default async function CheckPage({
       const percents: number[] = chain?.coupon_percents ?? [];
       const memberPercent: number | null = chain?.member_discount_percent ?? null;
       const isMemberPrice = !!obs.is_member_price;
+      const pointUseMultiplier = pointUseMultiplierOf(
+        chain?.point_use_enabled,
+        chain?.point_use_multiplier
+      );
       const effective = effectivePrice(price, {
         couponPercents: percents,
         memberPercent,
@@ -170,6 +176,7 @@ export default async function CheckPage({
           memberPercent,
           isMemberPrice,
           bonusPoints: (obs.bonus_points as number | null) ?? null,
+          pointUseMultiplier,
           effective,
           taxBasis: parseTaxBasis(obs.tax_basis),
         });
@@ -512,6 +519,7 @@ export default async function CheckPage({
                         couponPercents={r.couponPercents}
                         memberPercent={r.memberPercent}
                         isMemberPrice={r.isMemberPrice}
+                        pointUseMultiplier={r.pointUseMultiplier}
                         taxBasis={r.taxBasis}
                         size="md"
                       />
