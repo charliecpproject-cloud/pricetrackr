@@ -128,6 +128,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 28b (home dashboard: Japanese greeting with the display name, compact shortcut tiles, 最近の更新 feed of recent price entries and new products, admin tools row; lib/home with tests) done
 
 
+- Step 29a (database: store_chains.bulk_enabled; price_observations.bulk_percent (1-99) and bulk_quantity (2-999), set together or both null; partial index for the last-used lookup) done
+
+
 ## In Progress
 
 - (none)
