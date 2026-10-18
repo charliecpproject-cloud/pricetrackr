@@ -447,7 +447,19 @@ export default function ProductCardTools({
             </div>
           )}
 
-          <ProductBarcodes productId={product.id} barcodes={barcodes} />
+          <ProductBarcodes
+            productId={product.id}
+            barcodes={barcodes}
+            packages={packages.map((p) => ({
+              id: p.id,
+              label: [
+                p.variation_id ? variationLabels.get(p.variation_id) : null,
+                packageLabel(p.package_size, p.package_unit),
+              ]
+                .filter(Boolean)
+                .join(" ・ "),
+            }))}
+          />
 
           {isAdmin && (
             <ProductDeleteForm id={product.id} name={productName} priceCount={sumCount(packages)} />

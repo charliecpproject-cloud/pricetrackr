@@ -24,7 +24,8 @@ export default function ScanClient() {
 
       const result = await lookupBarcode(raw);
       if (result.status === "found") {
-        router.push(`/prices/new?product=${result.productId}`);
+        const packagePart = result.packageId ? `&package=${result.packageId}` : "";
+        router.push(`/prices/new?product=${result.productId}${packagePart}`);
         return;
       }
       if (result.status === "not_found") {

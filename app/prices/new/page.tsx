@@ -13,9 +13,9 @@ import { parseCategory } from "@/lib/stores/category";
 export default async function NewPricePage({
   searchParams,
 }: {
-  searchParams: Promise<{ product?: string }>;
+  searchParams: Promise<{ product?: string; package?: string }>;
 }) {
-  const { product: productParam } = await searchParams;
+  const { product: productParam, package: packageParam } = await searchParams;
   // A product chosen by a barcode scan (must be a valid id).
   const parsedProductId = z.string().uuid().safeParse(productParam);
   const focusProductId = parsedProductId.success ? parsedProductId.data : null;
@@ -81,7 +81,14 @@ export default async function NewPricePage({
   const listedPackages = focusProduct
     ? packages.filter((p) => p.productId === focusProduct.id)
     : packages;
-  const initialPackageId = focusProduct && listedPackages.length === 1 ? listedPackages[0].id : "";
+  const wantedPackage = z.string().uuid().safeParse(packageParam);
+  const wantedPackageId = wantedPackage.success ? wantedPackage.data : null;
+  const initialPackageId =
+    focusProduct && wantedPackageId && listedPackages.some((p) => p.id === wantedPackageId)
+      ? wantedPackageId
+      : focusProduct && listedPackages.length === 1
+        ? listedPackages[0].id
+        : "";
   const startNew = !!focusProduct && listedPackages.length === 0;
 
   const readOnly = !(await getViewer()).loggedIn;
@@ -139,7 +146,7 @@ export default async function NewPricePage({
       )}
 
       <PriceForm
-        key={focusProduct?.id ?? "all"}
+        key={`${focusProduct?.id ?? "all"}-${initialPackageId}`}
         packages={listedPackages}
         products={productOptions}
         chains={chainOptions}

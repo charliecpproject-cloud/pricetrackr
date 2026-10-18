@@ -113,6 +113,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 26a (database: product_barcodes now has code as primary key (id column removed) and an optional package_id with a composite foreign key to product_packages; barcodes survive deletion of their package) done
 
 
+- Step 26b (barcodes: code is the key, optional 容量 per barcode shown and chosen in 商品を編集, scan opens the exact 容量, a barcode entered with a new product links to its new 容量) done
+
+
 ## In Progress
 
 - (none)

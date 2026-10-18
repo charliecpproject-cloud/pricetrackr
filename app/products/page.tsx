@@ -16,7 +16,7 @@ const PAGE_SIZE = 20; // search results
 const ALL_LIMIT = 300; // すべての商品
 
 const PRODUCT_SELECT =
-  "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (id, code)";
+  "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code, package_id)";
 
 type Package = {
   id: string;
@@ -39,7 +39,7 @@ type Product = {
   memo: string | null;
   product_variations: Variation[] | null;
   product_packages: Package[] | null;
-  product_barcodes?: { id: string; code: string }[] | null;
+  product_barcodes?: { code: string; package_id: string | null }[] | null;
 };
 
 const chipCls =

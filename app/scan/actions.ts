@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { normalizeBarcode } from "@/lib/products/barcode";
 
 type LookupResult =
-  | { status: "found"; productId: string }
+  | { status: "found"; productId: string; packageId: string | null }
   | { status: "not_found"; code: string }
   | { status: "invalid"; message: string };
 
@@ -21,7 +21,7 @@ export async function lookupBarcode(raw: string): Promise<LookupResult> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("product_barcodes")
-    .select("product_id")
+    .select("product_id, package_id")
     .eq("code", code)
     .limit(1);
   if (error) {
@@ -30,7 +30,11 @@ export async function lookupBarcode(raw: string): Promise<LookupResult> {
   }
 
   if (data && data.length > 0) {
-    return { status: "found", productId: data[0].product_id as string };
+    return {
+      status: "found",
+      productId: data[0].product_id as string,
+      packageId: (data[0].package_id as string | null) ?? null,
+    };
   }
   return { status: "not_found", code };
 }

@@ -188,6 +188,13 @@ async function resolveNewPackage(
           : "容量を追加できませんでした",
     };
   }
+  if (barcodes.length > 0) {
+    const { error: linkError } = await supabase
+      .from("product_barcodes")
+      .update({ package_id: pkg.id })
+      .in("code", barcodes);
+    if (linkError) console.error("Barcode package link error:", linkError.message, linkError.code);
+  }
   return { packageId: pkg.id as string };
 }
 
