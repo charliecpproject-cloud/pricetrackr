@@ -19,14 +19,19 @@ export default function ChainOptionsForm({
   couponPercents,
   memberPercent,
   hasBonusPoints,
+  pointUseEnabled,
+  pointUseMultiplier,
 }: {
   chainId: string;
   couponPercents: number[];
   memberPercent: number | null;
   hasBonusPoints: boolean;
+  pointUseEnabled: boolean;
+  pointUseMultiplier: number;
 }) {
   const [state, formAction, pending] = useActionState(updateChainCoupons, initial);
   const [memberOn, setMemberOn] = useState(memberPercent !== null);
+  const [pointOn, setPointOn] = useState(pointUseEnabled);
 
   return (
     <form action={formAction} className="mt-3 space-y-4 rounded-xl bg-panel-soft p-3">
@@ -77,6 +82,39 @@ export default function ChainOptionsForm({
             %
           </label>
         </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className={legendCls}>感謝デー（ポイントの価値が上がる日）</legend>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className={boxCls}>
+            <input
+              type="checkbox"
+              name="point_use_enabled"
+              checked={pointOn}
+              onChange={(e) => setPointOn(e.target.checked)}
+              className="h-5 w-5 accent-amber-600"
+            />
+            ウェル活
+          </label>
+          <label className="flex items-center gap-2 text-base text-stone-700">
+            倍率
+            <input
+              type="number"
+              name="point_use_multiplier"
+              min={1}
+              max={10}
+              step={0.01}
+              defaultValue={pointUseMultiplier}
+              disabled={!pointOn}
+              className="h-12 w-24 rounded-lg border border-line bg-panel px-3 text-base disabled:opacity-40"
+            />
+            倍
+          </label>
+        </div>
+        <p className="mt-2 text-xs text-stone-500">
+          ポイント1点を倍率の円として使える日の設定です。価格に必要なポイント数を表示します（日付は判定しません）。
+        </p>
       </fieldset>
 
       <fieldset>

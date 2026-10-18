@@ -45,6 +45,16 @@ export async function updateChainCoupons(
 
   const hasBonusPoints = formData.get("has_bonus_points") === "on";
 
+  const pointUseEnabled = formData.get("point_use_enabled") === "on";
+  let pointUseMultiplier: number | null = null;
+  if (pointUseEnabled) {
+    const m = Number(String(formData.get("point_use_multiplier") ?? "").normalize("NFKC").trim());
+    if (!Number.isFinite(m) || m < 1 || m > 10) {
+      return { error: "倍率は1〜10の数値で入力してください", message: null };
+    }
+    pointUseMultiplier = Math.round(m * 100) / 100;
+  }
+
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("store_chains")
@@ -52,6 +62,8 @@ export async function updateChainCoupons(
       coupon_percents: percents,
       member_discount_percent: memberPercent,
       has_bonus_points: hasBonusPoints,
+      point_use_enabled: pointUseEnabled,
+      ...(pointUseMultiplier !== null ? { point_use_multiplier: pointUseMultiplier } : {}),
     })
     .eq("id", parsed.data.chainId);
 

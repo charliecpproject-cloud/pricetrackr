@@ -92,6 +92,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 24a (database: store_chains.point_use_enabled and point_use_multiplier for the 感謝デー ウェル活 option) done
 
 
+- Step 24b (ウェル活: lib/prices/points.ts with tests; 感謝デー section with ウェル活 checkbox and 倍率 (default 1.5) in the chain options form and its save action) done
+
+
 ## In Progress
 
 - (none)
