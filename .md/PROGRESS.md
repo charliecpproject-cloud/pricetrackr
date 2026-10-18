@@ -119,6 +119,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 26c (home cards: title and description on separate lines; admin-only 管理者ツール card on the home page; /admin tool list and a placeholder /admin/merge product merge page) done
 
 
+- Step 27a (price check: with no search and no filter only the 3 most recently added products are loaded, under the heading 最近追加した商品) done
+
+
 ## In Progress
 
 - (none)

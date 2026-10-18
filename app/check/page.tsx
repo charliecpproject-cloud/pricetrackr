@@ -25,6 +25,8 @@ import {
 } from "@/lib/stores/category";
 import { variationLabel, parseAttributes } from "@/lib/products/variation";
 
+const RECENT_COUNT = 3; // products shown when there is no search and no filter
+
 type ChainPrice = {
   chainId: string;
   chainName: string;
@@ -191,7 +193,36 @@ export default async function CheckPage({
   let products: any[] = [];
   let latest: LatestMap = new Map();
 
-  if (hasPriceFilter) {
+  const isDefaultView = !term && !hasPriceFilter;
+
+  if (isDefaultView) {
+    // No search and no filter: only the most recently added products.
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        `id, name_en, name_ja, brand,
+         product_packages (
+           id,
+           package_size,
+           package_unit,
+           variation_id,
+           product_variations (id, attributes)
+         )`
+      )
+      .order("created_at", { ascending: false })
+      .limit(RECENT_COUNT);
+    if (error) {
+      console.error("Products fetch error:", error.message, error.code);
+    }
+    products = (data ?? []) as any[];
+
+    const recentPackageIds = products.flatMap((p: any) =>
+      ([p.product_packages].flat().filter(Boolean) as any[]).map((pkg) => pkg.id as string)
+    );
+    if (recentPackageIds.length > 0) {
+      latest = buildLatest(await fetchObservations(recentPackageIds));
+    }
+  } else if (hasPriceFilter) {
     // Find the matching prices first, then load only the packages they belong to.
     latest = buildLatest(await fetchObservations(null));
     const ids = Array.from(latest.keys()).slice(0, 200);
@@ -456,6 +487,15 @@ export default async function CheckPage({
           </div>
         </details>
       </form>
+
+      {isDefaultView && (
+        <div>
+          <h2 className="text-lg font-bold text-stone-900">最近追加した商品</h2>
+          <p className="mt-1 text-sm text-stone-500">
+            新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は、検索か絞り込みで探せます。
+          </p>
+        </div>
+      )}
 
       {cards.length === 0 ? (
         <p className="text-stone-500">
