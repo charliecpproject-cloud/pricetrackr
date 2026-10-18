@@ -110,6 +110,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 25d (barcode scan page /scan with camera and manual entry, lookupBarcode action, home card, price entry preselects the scanned product and opens the new-容量 panel when it has none; docs updated) done
 
 
+- Step 26a (database: product_barcodes now has code as primary key (id column removed) and an optional package_id with a composite foreign key to product_packages; barcodes survive deletion of their package) done
+
+
 ## In Progress
 
 - (none)
