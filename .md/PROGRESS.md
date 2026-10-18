@@ -116,6 +116,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 26b (barcodes: code is the key, optional 容量 per barcode shown and chosen in 商品を編集, scan opens the exact 容量, a barcode entered with a new product links to its new 容量) done
 
 
+- Step 26c (home cards: title and description on separate lines; admin-only 管理者ツール card on the home page; /admin tool list and a placeholder /admin/merge product merge page) done
+
+
 ## In Progress
 
 - (none)

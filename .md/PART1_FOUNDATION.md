@@ -68,6 +68,11 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - The バーコード field (several rows, each with a camera button) is part of `components/ProductFields.tsx`, so 商品を追加 and 新しい商品として登録 both have it. Existing products: バーコード section in 商品を編集 (`app/products/ProductBarcodes.tsx`).
 - `/scan` (home card バーコード, also a link on 価格入力): the camera reads the code on the device with the browser `BarcodeDetector` (Android Chrome; no library, nothing uploaded); where it is unsupported the page says so and a box takes the typed number (a USB scanner types into it). `lookupBarcode()` (`app/scan/actions.ts`): found → `/prices/new?product=<id>&package=<id if the barcode has a 容量>` (only that product 容量 listed, preselected when there is exactly one, the 新規 panel opens when it has none); not found → `/products?barcode=<code>` (商品を追加 opens with the code filled in; after saving, it continues to `/prices/new?product=<new id>`).
 
+## Admin tools
+- Admin accounts (profiles.role = admin) see a 管理者ツール card at the bottom of the home page, leading to `/admin` (`app/admin/page.tsx`), a list of tools. Both `/admin` and its sub pages check `getViewer().isAdmin` on the server and redirect everyone else to the home page. Add a future tool by adding an entry to the `tools` list there and a page under `app/admin/`. Real admin actions must also be enforced in the database (admin check inside the SQL function or RLS policy), as `delete_product()` does.
+- `/admin/merge` (商品の統合) is only a placeholder (準備中) so far.
+- The home cards put the title and the description on separate lines (Android wrapped them badly).
+
 ## Security
 Per CONVENTIONS.md: RLS everywhere, secrets in env vars only, parameterized queries only, validate the entry form's input. No exceptions for single-user.
 

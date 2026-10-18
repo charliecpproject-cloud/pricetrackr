@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, PlusCircle, ScanLine, Search } from "lucide-react";
+import { ChevronRight, PlusCircle, ScanLine, Search, ShieldCheck } from "lucide-react";
+import { getViewer } from "@/lib/auth/viewer";
 
 const actions = [
   {
@@ -23,7 +24,18 @@ const actions = [
   },
 ];
 
-export default function HomePage() {
+// Shown at the bottom, for admin accounts only.
+const adminAction = {
+  href: "/admin",
+  title: "管理者ツール",
+  description: "商品の統合など",
+  Icon: ShieldCheck,
+};
+
+export default async function HomePage() {
+  const viewer = await getViewer();
+  const cards = viewer.isAdmin ? [...actions, adminAction] : actions;
+
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-4 rounded-3xl bg-gradient-to-br from-teal-600 to-teal-500 p-5 text-white shadow-sm">
@@ -38,7 +50,7 @@ export default function HomePage() {
       </div>
 
       <div className="space-y-3">
-        {actions.map(({ href, title, description, Icon }) => (
+        {cards.map(({ href, title, description, Icon }) => (
           <Link
             key={href}
             href={href}
@@ -48,8 +60,8 @@ export default function HomePage() {
               <Icon className="h-6 w-6" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="text-lg font-bold text-stone-900">{title}</span>
-              <span className="ml-2 text-sm text-stone-500">{description}</span>
+              <span className="block text-lg font-bold text-stone-900">{title}</span>
+              <span className="block text-sm text-stone-500">{description}</span>
             </span>
             <ChevronRight className="h-5 w-5 shrink-0 text-stone-400" />
           </Link>
