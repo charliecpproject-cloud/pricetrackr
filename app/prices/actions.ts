@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
 import { TAX_BASES } from "@/lib/prices/tax";
+import { parseBarcodes } from "@/lib/products/barcode";
 
 type State = {
   error: string | null;
@@ -74,6 +75,10 @@ async function resolveNewPackage(
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
+  const barcodeResult = parseBarcodes(formData.getAll("np_barcode"));
+  if (!barcodeResult.ok) return { error: barcodeResult.error };
+  const barcodes = barcodeResult.codes;
+
   const size = parseSize(text(formData, "np_size"));
   if (size === null) return { error: "容量は0より大きい数値で入力してください" };
 
@@ -134,6 +139,22 @@ async function resolveNewPackage(
       return { error: "商品を追加できませんでした" };
     }
     productId = created.id as string;
+    if (barcodes.length > 0) {
+      const { error: codeError } = await supabase
+        .from("product_barcodes")
+        .insert(barcodes.map((code) => ({ product_id: created.id, code })));
+      if (codeError) {
+        console.error("Barcode insert error:", codeError.message, codeError.code);
+        // Do not keep a half-saved product.
+        await supabase.from("products").delete().eq("id", created.id);
+        return {
+          error:
+            codeError.code === "23505"
+              ? "このバーコードはすでに登録されています"
+              : SAVE_FAILED,
+        };
+      }
+    }
     variationId = null;
   }
 

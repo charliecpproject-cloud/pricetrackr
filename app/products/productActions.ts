@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { parseBarcodes } from "@/lib/products/barcode";
+import { BARCODE_TAKEN_HIDDEN, takenBarcodeMessage } from "@/lib/products/barcodeDb";
 
 import {
   duplicateAttributeName,
@@ -10,7 +12,7 @@ import {
   variationKey,
 } from "@/lib/products/variation";
 
-type State = { error: string | null; message?: string | null };
+type State = { error: string | null; message?: string | null; productId?: string | null };
 type Supabase = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
 const SAVE_FAILED = "保存できませんでした。もう一度お試しください。";
@@ -21,7 +23,8 @@ const fields = {
     .trim()
     .min(1, "商品名を入力してください")
     .max(100, "商品名は100文字以内で入力してください"),
-  brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください"), other_name: z.string().trim().max(100, "英語名・別名は100文字以内で入力してください"),
+  brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください"),
+  other_name: z.string().trim().max(100, "英語名・別名は100文字以内で入力してください"),
   category: z.string().trim().max(100, "カテゴリは100文字以内で入力してください"),
 };
 
@@ -80,9 +83,14 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
     name: get(formData, "name"),
     brand: get(formData, "brand"),
     category: get(formData, "category"),
-    memo: get(formData, "memo"), other_name: get(formData, "other_name"),
+    memo: get(formData, "memo"),
+    other_name: get(formData, "other_name"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  const barcodeResult = parseBarcodes(formData.getAll("barcode"));
+  if (!barcodeResult.ok) return { error: barcodeResult.error };
+  const codes = barcodeResult.codes;
 
   const { name, other_name, brand, category, memo } = parsed.data;
   const names = { name_ja: name, name_en: other_name || null };
@@ -92,19 +100,39 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
   if (check === "failed") return { error: SAVE_FAILED };
   if (check === "duplicate") return { error: "同じ商品がすでに登録されています" };
 
-  const { error } = await supabase.from("products").insert({
-    ...names,
-    brand: brand || null,
-    category: category || null,
-    memo: memo || null,
-  });
-  if (error) {
-    console.error("Product insert error:", error.message, error.code);
+  // A barcode belongs to one product only.
+  const taken = await takenBarcodeMessage(supabase, codes);
+  if (taken) return { error: taken };
+
+  const { data: created, error } = await supabase
+    .from("products")
+    .insert({
+      ...names,
+      brand: brand || null,
+      category: category || null,
+      memo: memo || null,
+    })
+    .select("id")
+    .single();
+  if (error || !created) {
+    console.error("Product insert error:", error?.message, error?.code);
     return { error: SAVE_FAILED };
   }
 
+  if (codes.length > 0) {
+    const { error: codeError } = await supabase
+      .from("product_barcodes")
+      .insert(codes.map((code) => ({ product_id: created.id, code })));
+    if (codeError) {
+      console.error("Barcode insert error:", codeError.message, codeError.code);
+      // Do not keep a half-saved product.
+      await supabase.from("products").delete().eq("id", created.id);
+      return { error: codeError.code === "23505" ? BARCODE_TAKEN_HIDDEN : SAVE_FAILED };
+    }
+  }
+
   refresh();
-  return { error: null, message: "追加しました" };
+  return { error: null, message: "追加しました", productId: created.id as string };
 }
 
 export async function updateProduct(_prevState: State, formData: FormData): Promise<State> {

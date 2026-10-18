@@ -101,6 +101,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 25a (database: product_barcodes table, one code belongs to one product, hidden for archived products, demo read) done
 
 
+- Step 25b (barcodes server side: lib/products/barcode.ts normalising and parsing with tests, barcodeDb.ts, addBarcode and deleteBarcode actions, createProduct saves barcodes and returns the product id, inline new product on price entry saves np_barcode) done
+
+
 ## In Progress
 
 - (none)
