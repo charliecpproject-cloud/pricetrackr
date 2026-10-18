@@ -33,7 +33,7 @@ function Rep($file, $old, $new) {
 To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 
 ## Data model (check `supabase/migrations` for the truth)
-- `store_chains(id, name, coupon_percents int[] default '{}' (allowed 5/10/15), member_discount_percent smallint null, has_bonus_points bool default false, point_use_enabled bool default false, point_use_multiplier numeric(4,2) default 1.5)`
+- `store_chains(id, name, coupon_percents int[] default '{}' (allowed 5/10/15), member_discount_percent smallint null, has_bonus_points bool default false, point_use_enabled bool default false, point_use_multiplier numeric(4,2) default 1.5, bulk_enabled bool default false)`
 - `shops(id, store_chain_id, name, address, region)`, unique `(id, store_chain_id)`
 - `products(id, name_ja = main name in any language, name_en = optional 英語名・別名 alias, brand, category, memo)`
 - `product_variations(id, product_id, attributes jsonb [{name,value}], attributes_key)`, key unique per product
@@ -53,6 +53,7 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 - `profiles.theme` holds the account's theme; list and parsing in `lib/themes/themes.ts`; `getViewer()` returns it; `app/layout.tsx` sets `data-theme` on html. Picker on `/settings` (`app/settings/ThemePicker.tsx`, `themeActions.ts`).
 - Panels use the tokens `bg-panel`, `border-line`, `bg-panel-soft`, `bg-chip` (never `bg-white` or `stone` panel colours). Each theme is an `html[data-theme="..."]` block at the end of `app/globals.css`. Themes are cosmetic only.
 - Users can update only their own `theme` column (column-level grant); the role column stays protected.
+- まとめ買い: store_chains.bulk_enabled; price_observations.bulk_percent and bulk_quantity (set together, entered price is the already-discounted 1-item price); defaults from the last bulk price at the chain (bulkDefaults.ts); shown by PriceDisplay with the original price calculated back (lib/prices/bulk.ts); cannot be combined with 会員価格.
 - Display name: profiles.display_name (optional, max 30, not unique; users can update theme and display_name only), set on /settings, used for the home greeting and the side menu. The home page has a 最近の更新 feed (recent price entries and new products); no notices/announcements table yet.
 - Admin tools: /admin (admin only, redirects others), tool list in app/admin/page.tsx; /admin/merge is a placeholder.
 - Barcodes: product_barcodes (code is the primary key, product_id required, package_id optional with a composite FK; max 10 per product); /scan reads codes with the browser BarcodeDetector (no library, no image upload; needs Android Chrome, otherwise manual entry); scan found goes to /prices/new?product=<id>, not found goes to /products?barcode=<code>. Barcode field is in components/ProductFields.tsx.

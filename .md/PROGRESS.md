@@ -137,6 +137,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 29c (bulk discount on price entry: checkbox plus 割引率 and 個数 for chains with the option; last used values at the chain (same product first) prefill them via app/prices/bulkDefaults.ts; excludes 会員価格; validated and saved with the price) done
 
 
+- Step 29d (bulk discount display: PriceDisplay shows まとめ買い badge, entered price, normal price calculated back and the quantity condition; used on the price check, product detail and home feed; bulk prices count as the entered price for 最安, the price range filter and the unit price; docs updated) done
+
+
 ## In Progress
 
 - (none)

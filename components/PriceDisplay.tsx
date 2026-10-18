@@ -1,4 +1,5 @@
 import { bestDiscount, couponPrice } from "@/lib/prices/coupon";
+import { originalPrice } from "@/lib/prices/bulk";
 import { formatYen } from "@/lib/prices/format";
 import { pointsNeeded } from "@/lib/prices/points";
 import { TAX_BADGE_LABEL, type TaxBasis } from "@/lib/prices/tax";
@@ -8,6 +9,9 @@ type Props = {
   couponPercents?: number[] | null;
   memberPercent?: number | null;
   isMemberPrice?: boolean;
+  // まとめ買い: the entered price already includes this discount (set together).
+  bulkPercent?: number | null;
+  bulkQuantity?: number | null;
   // ウェル活: on the point-use day 1 point is worth this many yen. null = not enabled.
   pointUseMultiplier?: number | null;
   size?: "md" | "lg";
@@ -68,6 +72,8 @@ function PriceCore({
   couponPercents,
   memberPercent,
   isMemberPrice,
+  bulkPercent,
+  bulkQuantity,
   size = "md",
 }: Omit<Props, "taxBasis" | "pointUseMultiplier">) {
   const normal = Number(price);
@@ -84,6 +90,30 @@ function PriceCore({
         <span className={`${big} font-bold tabular-nums text-indigo-600`}>
           {formatYen(price)}
         </span>
+      </span>
+    );
+  }
+
+  // The entered price already includes a bulk discount: show it as entered, with the
+  // normal price calculated back (an estimate) and the quantity condition.
+  if (bulkPercent !== null && bulkPercent !== undefined) {
+    const original = originalPrice(normal, bulkPercent);
+    return (
+      <span className={wrap}>
+        <span className="inline-flex items-center rounded-md bg-rose-100 px-1.5 py-0.5 text-xs font-bold text-rose-700">
+          まとめ買い{bulkPercent}%引
+        </span>
+        <span className={`${big} font-bold tabular-nums text-rose-600`}>
+          {formatYen(price)}
+        </span>
+        {original !== null && (
+          <span className="text-sm tabular-nums text-stone-500">
+            （通常価格 {formatYen(original)}）
+          </span>
+        )}
+        {bulkQuantity ? (
+          <span className="basis-full text-xs text-stone-500">{bulkQuantity}個以上のとき</span>
+        ) : null}
       </span>
     );
   }

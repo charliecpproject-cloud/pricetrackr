@@ -31,6 +31,8 @@ type Activity =
       price: number | string;
       isSale: boolean;
       isMemberPrice: boolean;
+      bulkPercent: number | null;
+      bulkQuantity: number | null;
       taxBasis: TaxBasis;
     }
   | { kind: "product"; key: string; at: string; href: string; name: string };
@@ -44,7 +46,7 @@ export default async function HomePage() {
     supabase
       .from("price_observations")
       .select(
-        `id, price, created_at, is_sale, is_member_price, tax_basis, product_package_id,
+        `id, price, created_at, is_sale, is_member_price, tax_basis, bulk_percent, bulk_quantity, product_package_id,
          store_chains (name, category),
          product_packages (package_size, package_unit, products (name_ja, name_en))`
       )
@@ -80,6 +82,8 @@ export default async function HomePage() {
       price: o.price as number | string,
       isSale: !!o.is_sale,
       isMemberPrice: !!o.is_member_price,
+      bulkPercent: (o.bulk_percent as number | null) ?? null,
+      bulkQuantity: (o.bulk_quantity as number | null) ?? null,
       taxBasis: parseTaxBasis(o.tax_basis),
     };
   });
@@ -168,6 +172,8 @@ export default async function HomePage() {
                     <PriceDisplay
                       price={a.price}
                       isMemberPrice={a.isMemberPrice}
+                      bulkPercent={a.bulkPercent}
+                      bulkQuantity={a.bulkQuantity}
                       taxBasis={a.taxBasis}
                       size="md"
                     />
