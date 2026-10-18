@@ -31,8 +31,27 @@ type PackageRow = {
 type State = { error: string | null; message?: string | null };
 const initial: State = { error: null, message: null };
 
-const adminNote =
-  "\n価格の記録がある場合、記録は残りますが画面には表示されなくなります。";
+// null = the number of price records could not be loaded.
+type Count = number | null;
+
+const countText = (count: Count) => (count === null ? "件数不明" : `${count}件`);
+
+// The line of a delete confirmation that tells what happens to price records.
+function priceLine(count: Count, isAdmin: boolean): string {
+  if (count === null) return "価格の記録：件数を取得できませんでした";
+  if (count === 0) return "価格の記録：0件（そのまま削除されます）";
+  if (isAdmin) {
+    return `価格の記録：${count}件\n【管理者の上書き削除】記録は残りますが、画面には表示されなくなります。`;
+  }
+  return `価格の記録：${count}件`;
+}
+
+const isOverride = (count: Count, isAdmin: boolean) =>
+  isAdmin && count !== null && count > 0;
+
+// A regular user cannot delete when records exist: skip the dialog, the server explains.
+const blockedForUser = (count: Count, isAdmin: boolean) =>
+  !isAdmin && count !== null && count > 0;
 
 function Messages({ state }: { state: State }) {
   return (
@@ -102,23 +121,30 @@ function ProductEditForm({ product }: { product: Product }) {
 function VariationDeleteForm({
   id,
   packageCount,
+  priceCount,
   isAdmin,
 }: {
   id: string;
   packageCount: number;
+  priceCount: Count;
   isAdmin: boolean;
 }) {
   const [state, formAction, pending] = useActionState(deleteVariation, initial);
   const target =
     packageCount > 0 ? `このバリエーションと容量${packageCount}件` : "このバリエーション";
+  const override = isOverride(priceCount, isAdmin);
 
   return (
     <div>
       <form
         action={formAction}
         onSubmit={(e) => {
-          const note = isAdmin ? adminNote : "";
-          if (!window.confirm(`${target}を削除しますか？${note}\nこの操作は元に戻せません。`)) {
+          if (blockedForUser(priceCount, isAdmin)) return;
+          if (
+            !window.confirm(
+              `${target}を削除しますか？\n${priceLine(priceCount, isAdmin)}\nこの操作は元に戻せません。`
+            )
+          ) {
             e.preventDefault();
           }
         }}
@@ -127,9 +153,12 @@ function VariationDeleteForm({
         <button
           type="submit"
           disabled={pending}
-          className="h-11 text-sm font-medium text-red-600 disabled:opacity-50"
+          className={`h-11 text-sm text-red-600 disabled:opacity-50 ${
+            override ? "font-bold" : "font-medium"
+          }`}
         >
-          このバリエーションを削除
+          {override ? "このバリエーションを上書き削除" : "このバリエーションを削除"}
+          （価格の記録 {countText(priceCount)}）
         </button>
       </form>
       <Messages state={state} />
@@ -141,11 +170,13 @@ function VariationEditForm({
   id,
   attributes,
   packageCount,
+  priceCount,
   isAdmin,
 }: {
   id: string;
   attributes: Attribute[];
   packageCount: number;
+  priceCount: Count;
   isAdmin: boolean;
 }) {
   const [state, formAction, pending] = useActionState(updateVariation, initial);
@@ -209,7 +240,12 @@ function VariationEditForm({
           {pending ? "保存中…" : "保存"}
         </Button>
       </form>
-      <VariationDeleteForm id={id} packageCount={packageCount} isAdmin={isAdmin} />
+      <VariationDeleteForm
+        id={id}
+        packageCount={packageCount}
+        priceCount={priceCount}
+        isAdmin={isAdmin}
+      />
     </div>
   );
 }
@@ -217,25 +253,31 @@ function VariationEditForm({
 function PackageRowItem({
   id,
   label,
+  priceCount,
   isAdmin,
 }: {
   id: string;
   label: string;
+  priceCount: Count;
   isAdmin: boolean;
 }) {
   const [state, formAction, pending] = useActionState(deletePackage, initial);
+  const override = isOverride(priceCount, isAdmin);
 
   return (
     <li className="rounded-xl border border-line bg-panel p-2 pl-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="min-w-0 text-sm text-stone-800">{label}</span>
+        <div className="min-w-0">
+          <p className="text-sm text-stone-800">{label}</p>
+          <p className="text-xs text-stone-500">価格の記録 {countText(priceCount)}</p>
+        </div>
         <form
           action={formAction}
           onSubmit={(e) => {
-            const note = isAdmin ? adminNote : "";
+            if (blockedForUser(priceCount, isAdmin)) return;
             if (
               !window.confirm(
-                `この容量（${label}）を削除しますか？${note}\nこの操作は元に戻せません。`
+                `この容量（${label}）を削除しますか？\n${priceLine(priceCount, isAdmin)}\nこの操作は元に戻せません。`
               )
             ) {
               e.preventDefault();
@@ -246,9 +288,11 @@ function PackageRowItem({
           <button
             type="submit"
             disabled={pending}
-            className="h-10 px-3 text-sm font-medium text-red-600 disabled:opacity-50"
+            className={`h-10 shrink-0 px-3 text-sm text-red-600 disabled:opacity-50 ${
+              override ? "font-bold" : "font-medium"
+            }`}
           >
-            削除
+            {override ? "上書き削除" : "削除"}
           </button>
         </form>
       </div>
@@ -257,8 +301,22 @@ function PackageRowItem({
   );
 }
 
-function ProductDeleteForm({ id, name }: { id: string; name: string }) {
+function ProductDeleteForm({
+  id,
+  name,
+  priceCount,
+}: {
+  id: string;
+  name: string;
+  priceCount: Count;
+}) {
   const [state, formAction, pending] = useActionState(deleteProduct, initial);
+  const line =
+    priceCount === null
+      ? "価格の記録：件数を取得できませんでした"
+      : priceCount === 0
+        ? "価格の記録：0件"
+        : `価格の記録：${priceCount}件は残りますが、画面には表示されなくなります。`;
 
   return (
     <div className="space-y-1 rounded-xl border border-red-200 p-3">
@@ -271,7 +329,7 @@ function ProductDeleteForm({ id, name }: { id: string; name: string }) {
         onSubmit={(e) => {
           if (
             !window.confirm(
-              `「${name}」を削除しますか？\n容量・バリエーションと価格の記録は画面に表示されなくなります。`
+              `「${name}」を削除しますか？\n容量・バリエーションも画面に表示されなくなります。\n${line}`
             )
           ) {
             e.preventDefault();
@@ -284,7 +342,7 @@ function ProductDeleteForm({ id, name }: { id: string; name: string }) {
           disabled={pending}
           className="h-11 text-sm font-medium text-red-600 disabled:opacity-50"
         >
-          この商品を削除
+          この商品を削除（価格の記録 {countText(priceCount)}）
         </button>
       </form>
       <Messages state={state} />
@@ -298,9 +356,12 @@ const addBtnCls =
 export default function ProductCardTools({
   product,
   isAdmin = false,
+  priceCounts = null,
 }: {
   product: Product;
   isAdmin?: boolean;
+  // price records per package id; null = could not be loaded
+  priceCounts?: Record<string, number> | null;
 }) {
   const { openAddVariation, openAddPackage } = useProductDialogs();
 
@@ -310,6 +371,11 @@ export default function ProductCardTools({
   const packages = [product.product_packages].flat().filter(Boolean) as PackageRow[];
   const variationLabels = new Map(variations.map((v) => [v.id, variationLabel(v.attributes)]));
   const productName = product.name_ja || product.name_en || "この商品";
+
+  const packageCount = (pkgId: string): Count =>
+    priceCounts === null ? null : (priceCounts[pkgId] ?? 0);
+  const sumCount = (list: PackageRow[]): Count =>
+    priceCounts === null ? null : list.reduce((sum, p) => sum + (priceCounts[p.id] ?? 0), 0);
 
   const dialogProduct = {
     id: product.id,
@@ -327,18 +393,22 @@ export default function ProductCardTools({
           {variations.length > 0 && (
             <div className="space-y-3">
               <h4 className="text-sm font-bold text-stone-800">バリエーションを編集</h4>
-              {variations.map((v) => (
-                <VariationEditForm
-                  key={v.id}
-                  id={v.id}
-                  attributes={v.attributes}
-                  packageCount={packages.filter((p) => p.variation_id === v.id).length}
-                  isAdmin={isAdmin}
-                />
-              ))}
+              {variations.map((v) => {
+                const own = packages.filter((p) => p.variation_id === v.id);
+                return (
+                  <VariationEditForm
+                    key={v.id}
+                    id={v.id}
+                    attributes={v.attributes}
+                    packageCount={own.length}
+                    priceCount={sumCount(own)}
+                    isAdmin={isAdmin}
+                  />
+                );
+              })}
               <p className="text-xs text-stone-500">
                 {isAdmin
-                  ? "価格の記録があるバリエーションは、記録を残したまま非表示になります。"
+                  ? "価格の記録があるバリエーションは、管理者のみ上書き削除できます（記録は残り、非表示になります）。"
                   : "価格の記録があるバリエーションは削除できません。"}
               </p>
             </div>
@@ -353,6 +423,7 @@ export default function ProductCardTools({
                     key={p.id}
                     id={p.id}
                     isAdmin={isAdmin}
+                    priceCount={packageCount(p.id)}
                     label={[
                       p.variation_id ? variationLabels.get(p.variation_id) : null,
                       packageLabel(p.package_size, p.package_unit),
@@ -364,13 +435,15 @@ export default function ProductCardTools({
               </ul>
               <p className="text-xs text-stone-500">
                 {isAdmin
-                  ? "価格の記録がある容量は、記録を残したまま非表示になります。"
+                  ? "価格の記録がある容量は、管理者のみ上書き削除できます（記録は残り、非表示になります）。"
                   : "価格の記録がある容量は削除できません。"}
               </p>
             </div>
           )}
 
-          {isAdmin && <ProductDeleteForm id={product.id} name={productName} />}
+          {isAdmin && (
+            <ProductDeleteForm id={product.id} name={productName} priceCount={sumCount(packages)} />
+          )}
         </div>
       </details>
 

@@ -41,8 +41,8 @@ type Product = {
 };
 
 const chipCls =
-  "rounded-full bg-stone-100 px-2.5 py-1 text-sm font-medium text-stone-700";
-const sectionCls = "rounded-2xl border border-stone-200 bg-white p-4";
+  "rounded-full bg-chip px-2.5 py-1 text-sm font-medium text-stone-700";
+const sectionCls = "rounded-2xl border border-line bg-panel p-4";
 const summaryCls = "cursor-pointer text-base font-semibold text-stone-900";
 const linkBtnCls =
   "flex h-12 items-center justify-center rounded-xl border border-line bg-panel text-base font-medium text-stone-700 hover:bg-panel-soft";
@@ -85,6 +85,32 @@ export default async function ProductsPage({
   const productList: Product[] = (listResult.data as any) ?? [];
   const variationRows = variationsResult.data ?? [];
 
+  // Number of price records per package, for the delete buttons.
+  // null = could not be loaded (the buttons then say 件数不明, never a wrong 0件).
+  let priceCounts: Record<string, number> | null = {};
+  if (readOnly) {
+    priceCounts = null;
+  } else {
+    const packageIds = productList.flatMap((p) =>
+      (p.product_packages ?? []).map((k) => k.id)
+    );
+    if (packageIds.length > 0) {
+      const { data, error } = await supabase.rpc("package_price_counts", {
+        p_package_ids: packageIds,
+      });
+      if (error) {
+        console.error("Price counts error:", error.message, error.code);
+        priceCounts = null;
+      } else {
+        const counts: Record<string, number> = {};
+        for (const row of (data ?? []) as { package_id: string; entry_count: number | string }[]) {
+          counts[row.package_id] = Number(row.entry_count);
+        }
+        priceCounts = counts;
+      }
+    }
+  }
+
   /** 全バリエーションで使用されている属性名の集合（入力候補用） */
   const attributeNameSet = new Set<string>();
   variationRows.forEach((v) => {
@@ -120,11 +146,32 @@ export default async function ProductsPage({
           </button>
         </form>
 
+        <div className="space-y-3">
+          {showAll ? (
+            <Link href="/products" className={linkBtnCls}>
+              最近の商品だけ表示
+            </Link>
+          ) : (
+            <Link href="/products?all=1" className={linkBtnCls}>
+              すべての商品を表示
+            </Link>
+          )}
+
+          <details className={sectionCls}>
+            <summary className={summaryCls}>商品を追加</summary>
+            <div className="mt-4">
+              <ReadOnlyFieldset readOnly={readOnly}>
+                <ProductForm />
+              </ReadOnlyFieldset>
+            </div>
+          </details>
+        </div>
+
         <div>
           <h2 className="text-lg font-bold text-stone-900">{heading}</h2>
           {!term && !showAll && (
             <p className="mt-1 text-sm text-stone-500">
-              新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は検索するか、下のボタンで表示できます。
+              新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は検索するか、上のボタンで表示できます。
             </p>
           )}
         </div>
@@ -205,7 +252,11 @@ export default async function ProductsPage({
                     <ProductMemoEditor productId={product.id} memo={product.memo ?? null} />
                   </ReadOnlyFieldset>
                   <ReadOnlyFieldset readOnly={readOnly}>
-                    <ProductCardTools product={product} isAdmin={isAdmin} />
+                    <ProductCardTools
+                      product={product}
+                      isAdmin={isAdmin}
+                      priceCounts={priceCounts}
+                    />
                   </ReadOnlyFieldset>
                 </div>
               );
@@ -223,27 +274,6 @@ export default async function ProductsPage({
             先頭の{ALL_LIMIT}件を表示しています。検索で絞り込めます。
           </p>
         )}
-
-        {showAll ? (
-          <Link href="/products" className={linkBtnCls}>
-            最近の商品だけ表示
-          </Link>
-        ) : (
-          <Link href="/products?all=1" className={linkBtnCls}>
-            すべての商品を表示
-          </Link>
-        )}
-
-        <div className="space-y-3">
-          <details className={sectionCls}>
-            <summary className={summaryCls}>商品を追加</summary>
-            <div className="mt-4">
-              <ReadOnlyFieldset readOnly={readOnly}>
-                <ProductForm />
-              </ReadOnlyFieldset>
-            </div>
-          </details>
-        </div>
       </div>
     </ProductDialogsProvider>
   );

@@ -86,6 +86,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23g (database: one archive table deleted_records with a kind column (product, package, variation) replaces deleted_products, deleted_packages and deleted_variations; package_price_counts() helper) done
 
 
+- Step 23h (products: delete buttons and dialogs show the price record count and mark admin overrides; the all/recent toggle and 商品を追加 moved above the cards; page colours use theme tokens again) done
+
+
 ## In Progress
 
 - (none)
