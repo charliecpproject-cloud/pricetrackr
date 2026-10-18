@@ -7,6 +7,7 @@ type Options = {
   has_bonus_points?: boolean | null;
   point_use_enabled?: boolean | null;
   point_use_multiplier?: number | string | null;
+  bulk_enabled?: boolean | null;
 } | null;
 
 // Loads one chain's options and shows the settings form.
@@ -21,7 +22,7 @@ export default async function CouponForm({
   const { data, error } = await supabase
     .from("store_chains")
     .select(
-      "coupon_percents, member_discount_percent, has_bonus_points, point_use_enabled, point_use_multiplier"
+      "coupon_percents, member_discount_percent, has_bonus_points, point_use_enabled, point_use_multiplier, bulk_enabled"
     )
     .eq("id", chainId)
     .single();
@@ -40,6 +41,7 @@ export default async function CouponForm({
       hasBonusPoints={options?.has_bonus_points ?? false}
       pointUseEnabled={options?.point_use_enabled ?? false}
       pointUseMultiplier={Number(options?.point_use_multiplier ?? 1.5) || 1.5}
+      bulkEnabled={options?.bulk_enabled ?? false}
     />
   );
 }

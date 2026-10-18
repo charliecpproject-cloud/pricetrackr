@@ -63,6 +63,7 @@ export async function updateChainCoupons(
       member_discount_percent: memberPercent,
       has_bonus_points: hasBonusPoints,
       point_use_enabled: pointUseEnabled,
+      bulk_enabled: formData.get("bulk_enabled") === "on",
       ...(pointUseMultiplier !== null ? { point_use_multiplier: pointUseMultiplier } : {}),
     })
     .eq("id", parsed.data.chainId);

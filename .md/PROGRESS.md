@@ -131,6 +131,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 29a (database: store_chains.bulk_enabled; price_observations.bulk_percent (1-99) and bulk_quantity (2-999), set together or both null; partial index for the last-used lookup) done
 
 
+- Step 29b (bulk discount: lib/prices/bulk.ts with tests (validation 1-99 % and 2-999 items, original price calculated back and rounded up); chain option まとめ買い割引あり in the chain settings; dark themes remap rose-50) done
+
+
 ## In Progress
 
 - (none)

@@ -21,6 +21,7 @@ export default function ChainOptionsForm({
   hasBonusPoints,
   pointUseEnabled,
   pointUseMultiplier,
+  bulkEnabled,
 }: {
   chainId: string;
   couponPercents: number[];
@@ -28,6 +29,7 @@ export default function ChainOptionsForm({
   hasBonusPoints: boolean;
   pointUseEnabled: boolean;
   pointUseMultiplier: number;
+  bulkEnabled: boolean;
 }) {
   const [state, formAction, pending] = useActionState(updateChainCoupons, initial);
   const [memberOn, setMemberOn] = useState(memberPercent !== null);
@@ -128,6 +130,22 @@ export default function ChainOptionsForm({
           />
           ボーナスポイントあり
         </label>
+      </fieldset>
+
+      <fieldset>
+        <legend className={legendCls}>まとめ買い割引（特定の商品を○個以上で割引）</legend>
+        <label className={boxCls}>
+          <input
+            type="checkbox"
+            name="bulk_enabled"
+            defaultChecked={bulkEnabled}
+            className="h-5 w-5 accent-rose-600"
+          />
+          まとめ買い割引あり
+        </label>
+        <p className="mt-2 text-xs text-stone-500">
+          オンにすると、価格入力で「まとめ買い割引後の価格」「割引率」「個数」を入力できます。割引は対象の商品だけなので、商品ごとに価格入力のときに選びます。
+        </p>
       </fieldset>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
