@@ -98,6 +98,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 24c (ウェル活 line on prices: components/PriceDisplay.tsx shows points needed for chains with it enabled; passed from the price check and product detail pages; docs updated) done
 
 
+- Step 25a (database: product_barcodes table, one code belongs to one product, hidden for archived products, demo read) done
+
+
 ## In Progress
 
 - (none)
