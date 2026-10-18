@@ -89,6 +89,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23h (products: delete buttons and dialogs show the price record count and mark admin overrides; the all/recent toggle and 商品を追加 moved above the cards; page colours use theme tokens again) done
 
 
+- Step 24a (database: store_chains.point_use_enabled and point_use_multiplier for the 感謝デー ウェル活 option) done
+
+
 ## In Progress
 
 - (none)
