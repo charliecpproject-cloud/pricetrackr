@@ -83,6 +83,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 23f (products page: default shows the 3 newest products with a heading and an all-products button; one shared popup (ProductDialogs.tsx) for バリエーションを追加 and 容量を追加 from each card; admin product delete needs one confirmation; delete actions use delete_package/delete_variation/delete_product; old bottom add forms removed) done
 
 
+- Step 23g (database: one archive table deleted_records with a kind column (product, package, variation) replaces deleted_products, deleted_packages and deleted_variations; package_price_counts() helper) done
+
+
 ## In Progress
 
 - (none)
