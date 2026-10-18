@@ -9,6 +9,7 @@ import { updateProduct, updateVariation } from "@/app/products/productActions";
 import { deletePackage, deleteProduct, deleteVariation } from "@/app/products/deleteActions";
 import { useProductDialogs } from "@/app/products/ProductDialogs";
 import { packageLabel } from "@/lib/prices/format";
+import ProductBarcodes from "@/app/products/ProductBarcodes";
 import { parseAttributes, variationLabel, type Attribute } from "@/lib/products/variation";
 
 type Product = {
@@ -19,6 +20,7 @@ type Product = {
   category: string | null;
   product_variations?: unknown;
   product_packages?: unknown;
+  product_barcodes?: unknown;
 };
 
 type PackageRow = {
@@ -371,6 +373,10 @@ export default function ProductCardTools({
   const packages = [product.product_packages].flat().filter(Boolean) as PackageRow[];
   const variationLabels = new Map(variations.map((v) => [v.id, variationLabel(v.attributes)]));
   const productName = product.name_ja || product.name_en || "この商品";
+  const barcodes = [product.product_barcodes].flat().filter(Boolean) as {
+    id: string;
+    code: string;
+  }[];
 
   const packageCount = (pkgId: string): Count =>
     priceCounts === null ? null : (priceCounts[pkgId] ?? 0);
@@ -440,6 +446,8 @@ export default function ProductCardTools({
               </p>
             </div>
           )}
+
+          <ProductBarcodes productId={product.id} barcodes={barcodes} />
 
           {isAdmin && (
             <ProductDeleteForm id={product.id} name={productName} priceCount={sumCount(packages)} />

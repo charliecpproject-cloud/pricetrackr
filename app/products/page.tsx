@@ -9,13 +9,14 @@ import ProductCardTools from "./ProductCardTools";
 import { ProductDialogsProvider } from "./ProductDialogs";
 import ReadOnlyFieldset from "@/components/ReadOnlyFieldset";
 import { getViewer } from "@/lib/auth/viewer";
+import { normalizeBarcode } from "@/lib/products/barcode";
 
 const RECENT_COUNT = 3; // shown by default
 const PAGE_SIZE = 20; // search results
 const ALL_LIMIT = 300; // すべての商品
 
 const PRODUCT_SELECT =
-  "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)";
+  "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (id, code)";
 
 type Package = {
   id: string;
@@ -38,6 +39,7 @@ type Product = {
   memo: string | null;
   product_variations: Variation[] | null;
   product_packages: Package[] | null;
+  product_barcodes?: { id: string; code: string }[] | null;
 };
 
 const chipCls =
@@ -50,9 +52,11 @@ const linkBtnCls =
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; all?: string }>;
+  searchParams: Promise<{ q?: string; all?: string; barcode?: string }>;
 }) {
-  const { q, all } = await searchParams;
+  const { q, all, barcode } = await searchParams;
+  // A barcode that was scanned but not found: the add form opens with it filled in.
+  const newBarcode = normalizeBarcode(barcode ?? "") ?? "";
   // Keep the search term short and free of characters that break the filter.
   const term = (q ?? "").trim().slice(0, 50).replace(/[,()%_*\\]/g, "");
   const showAll = all === "1" && !term;
@@ -157,11 +161,11 @@ export default async function ProductsPage({
             </Link>
           )}
 
-          <details className={sectionCls}>
+          <details open={newBarcode !== ""} className={sectionCls}>
             <summary className={summaryCls}>商品を追加</summary>
             <div className="mt-4">
               <ReadOnlyFieldset readOnly={readOnly}>
-                <ProductForm />
+                <ProductForm defaultBarcode={newBarcode} />
               </ReadOnlyFieldset>
             </div>
           </details>

@@ -104,6 +104,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 25b (barcodes server side: lib/products/barcode.ts normalising and parsing with tests, barcodeDb.ts, addBarcode and deleteBarcode actions, createProduct saves barcodes and returns the product id, inline new product on price entry saves np_barcode) done
 
 
+- Step 25c (barcode screens: components/BarcodeScanner.tsx (BarcodeDetector, no upload), BarcodeScanModal, BarcodeInput; ProductFields has a multi-row バーコード field used by 商品を追加 and 新しい商品として登録; ProductForm continues to price entry after a scan; ProductBarcodes in 商品を編集; 商品 page opens the add form with ?barcode=) done
+
+
 ## In Progress
 
 - (none)
