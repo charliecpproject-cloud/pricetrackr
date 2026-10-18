@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { ScanLine } from "lucide-react";
+import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { packageLabel } from "@/lib/prices/format";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
@@ -7,7 +10,16 @@ import { getChainUsage } from "@/lib/stores/usage";
 import { arrangeChains } from "@/lib/stores/arrange";
 import { parseCategory } from "@/lib/stores/category";
 
-export default async function NewPricePage() {
+export default async function NewPricePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ product?: string }>;
+}) {
+  const { product: productParam } = await searchParams;
+  // A product chosen by a barcode scan (must be a valid id).
+  const parsedProductId = z.string().uuid().safeParse(productParam);
+  const focusProductId = parsedProductId.success ? parsedProductId.data : null;
+
   const supabase = await createSupabaseServerClient();
 
   const { data: products, error: productsError } = await supabase
@@ -31,7 +43,7 @@ export default async function NewPricePage() {
   if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
   if (shopsError) console.error("Shops fetch error:", shopsError.message, shopsError.code);
 
-  const packages: { id: string; label: string; search: string }[] = [];
+  const packages: { id: string; productId: string; label: string; search: string }[] = [];
   const productOptions: {
     id: string;
     label: string;
@@ -51,6 +63,7 @@ export default async function NewPricePage() {
       const variation = variations.find((v) => v.id === pkg.variation_id);
       packages.push({
         id: pkg.id as string,
+        productId: product.id as string,
         label: [title, variation?.label, packageLabel(pkg.package_size, pkg.package_unit)]
           .filter(Boolean)
           .join(" — "),
@@ -60,6 +73,16 @@ export default async function NewPricePage() {
       });
     }
   }
+
+  // Product chosen by a barcode scan: only its 容量 are listed.
+  const focusProduct = focusProductId
+    ? productOptions.find((p) => p.id === focusProductId)
+    : undefined;
+  const listedPackages = focusProduct
+    ? packages.filter((p) => p.productId === focusProduct.id)
+    : packages;
+  const initialPackageId = focusProduct && listedPackages.length === 1 ? listedPackages[0].id : "";
+  const startNew = !!focusProduct && listedPackages.length === 0;
 
   const readOnly = !(await getViewer()).loggedIn;
   const usage = await getChainUsage(supabase, !readOnly);
@@ -95,13 +118,36 @@ export default async function NewPricePage() {
       <div>
         <h1 className="text-2xl font-bold text-stone-900">価格入力</h1>
         <p className="mt-1 text-sm text-stone-500">店で見た価格を記録します</p>
+        <Link
+          href="/scan"
+          className="mt-3 inline-flex h-10 items-center gap-1.5 rounded-xl border border-line bg-panel px-3 text-sm font-medium text-stone-700 hover:bg-panel-soft"
+        >
+          <ScanLine className="h-4 w-4" />
+          バーコードを読み取る
+        </Link>
       </div>
+
+      {focusProduct && (
+        <div className="flex items-center justify-between gap-3 rounded-xl bg-teal-50 px-3 py-2 text-sm text-teal-700">
+          <span className="min-w-0">
+            バーコードで選んだ商品：<span className="font-bold">{focusProduct.label}</span>
+          </span>
+          <Link href="/prices/new" className="shrink-0 font-medium underline">
+            解除
+          </Link>
+        </div>
+      )}
+
       <PriceForm
-        packages={packages}
+        key={focusProduct?.id ?? "all"}
+        packages={listedPackages}
         products={productOptions}
         chains={chainOptions}
         branches={branchOptions}
         readOnly={readOnly}
+        initialPackageId={initialPackageId}
+        startNew={startNew}
+        defaultProductId={focusProduct?.id ?? ""}
       />
     </div>
   );

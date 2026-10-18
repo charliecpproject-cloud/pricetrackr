@@ -107,6 +107,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 25c (barcode screens: components/BarcodeScanner.tsx (BarcodeDetector, no upload), BarcodeScanModal, BarcodeInput; ProductFields has a multi-row バーコード field used by 商品を追加 and 新しい商品として登録; ProductForm continues to price entry after a scan; ProductBarcodes in 商品を編集; 商品 page opens the add form with ?barcode=) done
 
 
+- Step 25d (barcode scan page /scan with camera and manual entry, lookupBarcode action, home card, price entry preselects the scanned product and opens the new-容量 panel when it has none; docs updated) done
+
+
 ## In Progress
 
 - (none)

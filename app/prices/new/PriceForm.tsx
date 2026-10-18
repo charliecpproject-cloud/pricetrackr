@@ -64,17 +64,23 @@ export default function PriceForm({
   chains,
   branches,
   readOnly = false,
+  initialPackageId = "",
+  startNew = false,
+  defaultProductId = "",
 }: {
   packages: Pkg[];
   products: ProductOption[];
   chains: Chain[];
   branches: Branch[];
   readOnly?: boolean;
+  initialPackageId?: string;
+  startNew?: boolean;
+  defaultProductId?: string;
 }) {
   const [state, formAction, pending] = useActionState(addPriceObservation, initialState);
   const [search, setSearch] = useState("");
-  const [packageId, setPackageId] = useState("");
-  const [isNewPackage, setIsNewPackage] = useState(false);
+  const [packageId, setPackageId] = useState(initialPackageId);
+  const [isNewPackage, setIsNewPackage] = useState(startNew);
   const [chainId, setChainId] = useState("");
   const [branchId, setBranchId] = useState("");
   const [isNewBranch, setIsNewBranch] = useState(false);
@@ -212,7 +218,7 @@ export default function PriceForm({
             <span className={`${labelCls} mb-0`}>新しい商品・容量を登録</span>
             <NewToggle checked onChange={setIsNewPackage} />
           </div>
-          <NewPackageFields products={products} />
+          <NewPackageFields products={products} defaultProductId={defaultProductId} />
         </div>
       ) : (
         <>

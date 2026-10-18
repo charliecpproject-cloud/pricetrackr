@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, PlusCircle, Search } from "lucide-react";
+import { ChevronRight, PlusCircle, ScanLine, Search } from "lucide-react";
 
 const actions = [
   {
@@ -14,6 +14,12 @@ const actions = [
     title: "価格確認",
     description: "商品の最新価格を調べる",
     Icon: Search,
+  },
+  {
+    href: "/scan",
+    title: "バーコード",
+    description: "読み取って商品を開く",
+    Icon: ScanLine,
   },
 ];
 

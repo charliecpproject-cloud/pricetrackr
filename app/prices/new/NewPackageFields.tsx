@@ -23,8 +23,14 @@ const UNITS = [
 // controlCls is full width; the unit dropdown must stay small.
 const unitCls = controlCls.replace("w-full", "w-24 shrink-0");
 
-export default function NewPackageFields({ products }: { products: ProductOption[] }) {
-  const [productId, setProductId] = useState("");
+export default function NewPackageFields({
+  products,
+  defaultProductId = "",
+}: {
+  products: ProductOption[];
+  defaultProductId?: string;
+}) {
+  const [productId, setProductId] = useState(defaultProductId);
   const [variationId, setVariationId] = useState("");
 
   const product = products.find((p) => p.id === productId);

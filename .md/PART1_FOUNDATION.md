@@ -63,6 +63,11 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - Every delete button on 商品 shows how many price records are attached (価格の記録 N件, or 件数不明 if the count could not be loaded). For an admin with records attached the button reads 上書き削除 and the confirm dialog says it is an admin override (records stay but are hidden). A regular user with records attached gets no dialog, only the error message. Counts come from `package_price_counts()` (loaded once per page in `app/products/page.tsx`).
 - On 商品, the すべての商品を表示 / 最近の商品だけ表示 button and 商品を追加 sit at the top, above the cards.
 
+## Barcodes
+- `product_barcodes(id, product_id, code unique, created_at)`: a product can have up to 10 barcodes, a code belongs to one product. Only the code text is stored, never an image. Codes are normalised by `lib/products/barcode.ts` (full-width to half-width, spaces and hyphens removed, upper case, 12-digit UPC stored as 13 digits). Barcodes of archived (deleted) products are hidden like the product, but the code stays reserved.
+- The バーコード field (several rows, each with a camera button) is part of `components/ProductFields.tsx`, so 商品を追加 and 新しい商品として登録 both have it. Existing products: バーコード section in 商品を編集 (`app/products/ProductBarcodes.tsx`).
+- `/scan` (home card バーコード, also a link on 価格入力): the camera reads the code on the device with the browser `BarcodeDetector` (Android Chrome; no library, nothing uploaded); where it is unsupported the page says so and a box takes the typed number (a USB scanner types into it). `lookupBarcode()` (`app/scan/actions.ts`): found → `/prices/new?product=<id>` (only that product 容量 listed, preselected when there is exactly one, the 新規 panel opens when it has none); not found → `/products?barcode=<code>` (商品を追加 opens with the code filled in; after saving, it continues to `/prices/new?product=<new id>`).
+
 ## Security
 Per CONVENTIONS.md: RLS everywhere, secrets in env vars only, parameterized queries only, validate the entry form's input. No exceptions for single-user.
 
