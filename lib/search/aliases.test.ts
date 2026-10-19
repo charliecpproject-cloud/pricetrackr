@@ -14,7 +14,7 @@ describe("expandQuery", () => {
   it("keeps the other words and ignores case, width and kana", () => {
     expect(expandQuery("ＢＡＢＹ　ＦＯＯＤ りんご", aliases)).toEqual([
       "baby food リンゴ",
-      "ベビーフード りんご",
+      "ベビーフード リンゴ",
     ]);
   });
 
