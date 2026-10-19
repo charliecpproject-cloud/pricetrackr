@@ -1,5 +1,5 @@
-import { formatYen } from "@/lib/prices/format";
-import type { TaxBasis } from "@/lib/prices/tax";
+import { formatYen } from "./format";
+import type { TaxBasis } from "./tax";
 
 /** Tax-included price estimate. Rounded down to the yen, like coupon prices. */
 export function taxIncludedEstimate(price: number, ratePercent: number): number | null {

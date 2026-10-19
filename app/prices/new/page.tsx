@@ -9,6 +9,7 @@ import { getViewer } from "@/lib/auth/viewer";
 import { getChainUsage } from "@/lib/stores/usage";
 import { arrangeChains } from "@/lib/stores/arrange";
 import { parseCategory } from "@/lib/stores/category";
+import type { SearchAlias } from "@/lib/search/aliases";
 
 export default async function NewPricePage({
   searchParams,
@@ -23,7 +24,7 @@ export default async function NewPricePage({
   const supabase = await createSupabaseServerClient();
 
   // Everything the page needs is fetched at the same time.
-  const [productsResult, chainsResult, shopsResult, viewer] = await Promise.all([
+  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer] = await Promise.all([
     supabase
       .from("products")
       .select(
@@ -35,12 +36,14 @@ export default async function NewPricePage({
       .select("id, name, category, created_at, member_discount_percent, has_bonus_points, bulk_enabled")
       .order("name", { ascending: true }),
     supabase.from("shops").select("id, store_chain_id, name").order("name", { ascending: true }),
+    supabase.from("search_aliases").select("alias, canonical").eq("enabled", true),
     getViewer(),
   ]);
 
   const { data: products, error: productsError } = productsResult;
   const { data: chains, error: chainsError } = chainsResult;
   const { data: shops, error: shopsError } = shopsResult;
+  const aliases = (aliasesResult.data ?? []) as SearchAlias[];
 
   if (productsError) console.error("Products fetch error:", productsError.message, productsError.code);
   if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
@@ -184,6 +187,7 @@ export default async function NewPricePage({
         chains={chainOptions}
         branches={branchOptions}
         readOnly={readOnly}
+        aliases={aliases}
         initialPackageId={initialPackageId}
         startNew={startNew}
         defaultProductId={focusProduct?.id ?? ""}

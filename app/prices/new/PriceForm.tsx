@@ -21,7 +21,7 @@ import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
 import BulkPriceFields from "./BulkPriceFields";
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
-import { matchesSearch } from "@/lib/search/normalize";
+import { matchesSearchWithAliases, type SearchAlias } from "@/lib/search/aliases";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
@@ -75,6 +75,7 @@ export default function PriceForm({
   chains,
   branches,
   readOnly = false,
+  aliases = [],
   initialPackageId = "",
   startNew = false,
   defaultProductId = "",
@@ -84,6 +85,7 @@ export default function PriceForm({
   chains: Chain[];
   branches: Branch[];
   readOnly?: boolean;
+  aliases?: SearchAlias[];
   initialPackageId?: string;
   startNew?: boolean;
   defaultProductId?: string;
@@ -180,7 +182,7 @@ export default function PriceForm({
 
   const keyword = search.trim();
   const filtered = keyword
-    ? packages.filter((p) => matchesSearch(`${p.label} ${p.search}`, keyword))
+    ? packages.filter((p) => matchesSearchWithAliases(`${p.label} ${p.search}`, keyword, aliases))
     : packages;
   const selectedPackage = filtered.some((p) => p.id === packageId) ? packageId : "";
 

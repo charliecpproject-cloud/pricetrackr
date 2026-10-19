@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, GitMerge } from "lucide-react";
+import { ChevronRight, GitMerge, Tags } from "lucide-react";
 import { getViewer } from "@/lib/auth/viewer";
 
 // Add future admin tools (price approval, ...) to this list.
@@ -11,6 +11,13 @@ const tools = [
     description: "重複して登録された商品を1つにまとめる",
     Icon: GitMerge,
     ready: false,
+  },
+  {
+    href: "/admin/aliases",
+    title: "検索の別名",
+    description: "別名（例：離乳食）で検索しても見つかるようにする",
+    Icon: Tags,
+    ready: true,
   },
 ];
 
