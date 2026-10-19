@@ -206,11 +206,78 @@ async function resolveNewPackage(
   return { packageId: pkg.id as string };
 }
 
+// The price entry list offers 一個 (count 1) for a product or variation that has no 容量 yet.
+// The list value is: default:<productId>:<variationId, or - when there are no variations>.
+const DEFAULT_PACKAGE_PLACEHOLDER = "00000000-0000-0000-0000-000000000000";
+
+function parseDefaultPackageRef(
+  raw: string | null
+): { productId: string; variationId: string | null } | null {
+  if (!raw) return null;
+  const match = /^default:([0-9a-f-]{36}):([0-9a-f-]{36}|-)$/i.exec(raw);
+  if (!match) return null;
+  const productId = z.string().uuid().safeParse(match[1]);
+  if (!productId.success) return null;
+  if (match[2] === "-") return { productId: productId.data, variationId: null };
+  const variationId = z.string().uuid().safeParse(match[2]);
+  return variationId.success
+    ? { productId: productId.data, variationId: variationId.data }
+    : null;
+}
+
+// Finds the 1個 容量 of the product (or variation), or creates it.
+async function resolveDefaultPackage(
+  supabase: Supabase,
+  productId: string,
+  variationId: string | null
+): Promise<{ packageId: string } | { error: string }> {
+  const { data: variations, error: variationError } = await supabase
+    .from("product_variations")
+    .select("id")
+    .eq("product_id", productId);
+  if (variationError) {
+    console.error("Variation fetch error:", variationError.message, variationError.code);
+    return { error: SAVE_FAILED };
+  }
+  const list = (variations ?? []) as { id: string }[];
+  if (list.length > 0 && !variationId) return { error: "バリエーションを選んでください" };
+  if (variationId && !list.some((v) => v.id === variationId)) {
+    return { error: "選んだバリエーションはこの商品のものではありません" };
+  }
+
+  let lookup = supabase
+    .from("product_packages")
+    .select("id")
+    .eq("product_id", productId)
+    .eq("package_size", 1)
+    .eq("package_unit", "count");
+  lookup = variationId ? lookup.eq("variation_id", variationId) : lookup.is("variation_id", null);
+  const { data: found } = await lookup.limit(1);
+  if (found && found.length > 0) return { packageId: found[0].id as string };
+
+  const { data: created, error } = await supabase
+    .from("product_packages")
+    .insert({
+      product_id: productId,
+      variation_id: variationId,
+      package_size: 1,
+      package_unit: "count",
+    })
+    .select("id")
+    .single();
+  if (error || !created) {
+    console.error("Default package insert error:", error?.message, error?.code);
+    return { error: "容量を追加できませんでした" };
+  }
+  return { packageId: created.id as string };
+}
+
 export async function addPriceObservation(
   _prevState: State,
   formData: FormData
 ): Promise<State> {
   const isNewPackage = text(formData, "new_package") === "1";
+  const defaultRef = parseDefaultPackageRef(text(formData, "product_package_id"));
 
   const parsed = baseSchema.safeParse({
     store_chain_id: text(formData, "store_chain_id") ?? "",
@@ -225,7 +292,7 @@ export async function addPriceObservation(
     const check = z
       .string()
       .uuid("商品・容量を選んでください")
-      .safeParse(text(formData, "product_package_id") ?? "");
+      .safeParse(defaultRef ? DEFAULT_PACKAGE_PLACEHOLDER : (text(formData, "product_package_id") ?? ""));
     if (!check.success) return { error: check.error.issues[0].message };
     packageId = check.data;
   }
@@ -243,6 +310,17 @@ export async function addPriceObservation(
   const isSale = formData.get("is_sale") === "on";
 
   const supabase = await createSupabaseServerClient();
+
+  // 一個: create the 1個 容量 for a product or variation that has none yet.
+  if (defaultRef) {
+    const resolvedDefault = await resolveDefaultPackage(
+      supabase,
+      defaultRef.productId,
+      defaultRef.variationId
+    );
+    if ("error" in resolvedDefault) return { error: resolvedDefault.error };
+    packageId = resolvedDefault.packageId;
+  }
 
   // Read the chain's options on the server; never trust the browser for these.
   const { data: chainRow, error: chainError } = await supabase

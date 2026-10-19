@@ -7,6 +7,7 @@ type Defaults = { percent: number; quantity: number };
 
 // The bulk percent and quantity used last at this chain: first for the same product
 // (any of its 容量), otherwise the latest bulk price at the chain.
+// packageId is a real 容量 id, or "default:<productId>:..." for a product without a 容量.
 export async function lookupBulkDefaults(
   chainId: string,
   packageId: string
@@ -14,7 +15,6 @@ export async function lookupBulkDefaults(
   const chain = z.string().uuid().safeParse(chainId);
   if (!chain.success) return null;
   const chainUuid = chain.data;
-  const pkg = z.string().uuid().safeParse(packageId);
 
   const supabase = await createSupabaseServerClient();
 
@@ -40,22 +40,33 @@ export async function lookupBulkDefaults(
       : null;
   }
 
-  if (pkg.success) {
-    const { data: pkgRow } = await supabase
-      .from("product_packages")
-      .select("product_id")
-      .eq("id", pkg.data)
-      .maybeSingle();
-    if (pkgRow?.product_id) {
-      const { data: siblings } = await supabase
+  // Which product is this?
+  let productId: string | null = null;
+  const defaultMatch = /^default:([0-9a-f-]{36}):/i.exec(packageId);
+  if (defaultMatch) {
+    const parsed = z.string().uuid().safeParse(defaultMatch[1]);
+    if (parsed.success) productId = parsed.data;
+  } else {
+    const pkg = z.string().uuid().safeParse(packageId);
+    if (pkg.success) {
+      const { data: pkgRow } = await supabase
         .from("product_packages")
-        .select("id")
-        .eq("product_id", pkgRow.product_id);
-      const ids = ((siblings ?? []) as { id: string }[]).map((s) => s.id);
-      if (ids.length > 0) {
-        const found = await latest(ids);
-        if (found) return found;
-      }
+        .select("product_id")
+        .eq("id", pkg.data)
+        .maybeSingle();
+      productId = (pkgRow?.product_id as string | undefined) ?? null;
+    }
+  }
+
+  if (productId) {
+    const { data: siblings } = await supabase
+      .from("product_packages")
+      .select("id")
+      .eq("product_id", productId);
+    const ids = ((siblings ?? []) as { id: string }[]).map((s) => s.id);
+    if (ids.length > 0) {
+      const found = await latest(ids);
+      if (found) return found;
     }
   }
 

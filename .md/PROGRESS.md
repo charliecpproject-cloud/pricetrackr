@@ -149,6 +149,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 31b (search: lib/search/normalize.ts (width, case and kana insensitive, all words must match) with tests; lib/search/products.ts calls search_products(); used by 商品 and 価格確認 (best match first on 商品); the 価格入力 product list filter uses matchesSearch) done
 
 
+- Step 31c (price entry: a product or variation without a 容量 can get a price; the list offers 1個 and the 容量 is created on the first save; the page queries run together; the list search text includes category and barcodes; bulk defaults understand the 1個 entry) done
+
+
 ## In Progress
 
 - (none)

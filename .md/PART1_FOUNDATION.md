@@ -74,6 +74,10 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - `/admin/merge` (商品の統合) is only a placeholder (準備中) so far.
 - The home cards put the title and the description on separate lines (Android wrapped them badly).
 
+## Search and the default 容量
+- Product search must use `search_products()` (database, via `lib/search/products.ts`) on the server, and `matchesSearch()` (`lib/search/normalize.ts`) in the browser: both are width, case and hiragana/katakana insensitive, every word must match, and they cover name, 英語名・別名, brand, category, memo, variation values, barcodes and sizes. Never filter with plain `ilike` on a few columns again.
+- A price always points at a 容量, but the 価格入力 list also offers `商品名 — 1個` for a product (or a variation) that has no 容量 yet. Its value is `default:<productId>:<variationId or ->`; `addPriceObservation` creates the 1個 (size 1, unit count) 容量 when the first price is saved (`resolveDefaultPackage` in `app/prices/actions.ts`). A product that already has 容量 gets no automatic 1個.
+
 ## Security
 Per CONVENTIONS.md: RLS everywhere, secrets in env vars only, parameterized queries only, validate the entry form's input. No exceptions for single-user.
 

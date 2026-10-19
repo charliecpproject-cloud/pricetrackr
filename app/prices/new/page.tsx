@@ -22,22 +22,25 @@ export default async function NewPricePage({
 
   const supabase = await createSupabaseServerClient();
 
-  const { data: products, error: productsError } = await supabase
-    .from("products")
-    .select(
-      "id, name_en, name_ja, brand, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit)"
-    )
-    .order("name_en", { ascending: true });
+  // Everything the page needs is fetched at the same time.
+  const [productsResult, chainsResult, shopsResult, viewer] = await Promise.all([
+    supabase
+      .from("products")
+      .select(
+        "id, name_en, name_ja, brand, category, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code)"
+      )
+      .order("name_en", { ascending: true }),
+    supabase
+      .from("store_chains")
+      .select("id, name, category, created_at, member_discount_percent, has_bonus_points, bulk_enabled")
+      .order("name", { ascending: true }),
+    supabase.from("shops").select("id, store_chain_id, name").order("name", { ascending: true }),
+    getViewer(),
+  ]);
 
-  const { data: chains, error: chainsError } = await supabase
-    .from("store_chains")
-    .select("id, name, category, created_at, member_discount_percent, has_bonus_points, bulk_enabled")
-    .order("name", { ascending: true });
-
-  const { data: shops, error: shopsError } = await supabase
-    .from("shops")
-    .select("id, store_chain_id, name")
-    .order("name", { ascending: true });
+  const { data: products, error: productsError } = productsResult;
+  const { data: chains, error: chainsError } = chainsResult;
+  const { data: shops, error: shopsError } = shopsResult;
 
   if (productsError) console.error("Products fetch error:", productsError.message, productsError.code);
   if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
@@ -56,10 +59,19 @@ export default async function NewPricePage({
     const variations = ([product.product_variations].flat().filter(Boolean) as any[]).map(
       (v) => ({ id: v.id as string, label: variationLabel(parseAttributes(v.attributes)) })
     );
+    const productPackages = [product.product_packages].flat().filter(Boolean) as any[];
+    const barcodeText = ([product.product_barcodes].flat().filter(Boolean) as any[])
+      .map((b) => b.code as string)
+      .join(" ");
 
     productOptions.push({ id: product.id as string, label: title, variations });
 
-    for (const pkg of ([product.product_packages].flat().filter(Boolean) as any[])) {
+    const searchText = (variationText?: string) =>
+      [product.name_ja, product.name_en, product.brand, product.category, variationText, barcodeText]
+        .filter(Boolean)
+        .join(" ");
+
+    for (const pkg of productPackages) {
       const variation = variations.find((v) => v.id === pkg.variation_id);
       packages.push({
         id: pkg.id as string,
@@ -67,9 +79,27 @@ export default async function NewPricePage({
         label: [title, variation?.label, packageLabel(pkg.package_size, pkg.package_unit)]
           .filter(Boolean)
           .join(" — "),
-        search: [product.name_ja, product.name_en, product.brand, variation?.label]
-          .filter(Boolean)
-          .join(" "),
+        search: searchText(variation?.label),
+      });
+    }
+
+    // 一個: a product (or a variation) without any 容量 can still get a price.
+    // The 1個 容量 is created when the first price is saved.
+    const withoutPackage =
+      variations.length === 0
+        ? productPackages.length === 0
+          ? [{ variationId: null as string | null, label: undefined as string | undefined }]
+          : []
+        : variations
+            .filter((v) => !productPackages.some((p) => p.variation_id === v.id))
+            .map((v) => ({ variationId: v.id as string | null, label: v.label as string | undefined }));
+
+    for (const target of withoutPackage) {
+      packages.push({
+        id: `default:${product.id}:${target.variationId ?? "-"}`,
+        productId: product.id as string,
+        label: [title, target.label, packageLabel(1, "count")].filter(Boolean).join(" — "),
+        search: searchText(target.label),
       });
     }
   }
@@ -91,7 +121,7 @@ export default async function NewPricePage({
         : "";
   const startNew = !!focusProduct && listedPackages.length === 0;
 
-  const readOnly = !(await getViewer()).loggedIn;
+  const readOnly = !viewer.loggedIn;
   const usage = await getChainUsage(supabase, !readOnly);
   const { sorted, topIds } = arrangeChains(
     (chains ?? []).map((chain: any) => ({
