@@ -143,6 +143,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 30 (toast notifications: components/ToastProvider.tsx, lib/toast/useToastedActionState.ts; all useActionState forms switched to the toasted hook by script; green success 3 s, red error 5 s; the price form old local toast removed) done
 
 
+- Step 31a (database: search_normalize() and search_products() across name, alias, brand, category, memo, variation values, barcodes and sizes; width, case and kana insensitive; all words must match; ranked) done
+
+
 ## In Progress
 
 - (none)
