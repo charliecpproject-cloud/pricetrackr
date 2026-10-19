@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppNav from "@/components/AppNav";
+import { ToastProvider } from "@/components/ToastProvider";
 import ProfileMenu from "@/components/ProfileMenu";
 import { getViewer } from "@/lib/auth/viewer";
 
@@ -15,6 +16,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ja" data-theme={viewer.theme} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
+        <ToastProvider>
         <ProfileMenu
           loggedIn={viewer.loggedIn}
           email={viewer.email}
@@ -24,6 +26,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <AppNav />
+      </ToastProvider>
       </body>
     </html>
   );

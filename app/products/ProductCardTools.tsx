@@ -1,6 +1,7 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
@@ -65,7 +66,7 @@ function Messages({ state }: { state: State }) {
 }
 
 function ProductEditForm({ product }: { product: Product }) {
-  const [state, formAction, pending] = useActionState(updateProduct, initial);
+  const [state, formAction, pending] = useToastedActionState(updateProduct, initial);
   const main = product.name_ja || product.name_en || "";
   const alias = product.name_ja ? (product.name_en ?? "") : "";
 
@@ -131,7 +132,7 @@ function VariationDeleteForm({
   priceCount: Count;
   isAdmin: boolean;
 }) {
-  const [state, formAction, pending] = useActionState(deleteVariation, initial);
+  const [state, formAction, pending] = useToastedActionState(deleteVariation, initial);
   const target =
     packageCount > 0 ? `このバリエーションと容量${packageCount}件` : "このバリエーション";
   const override = isOverride(priceCount, isAdmin);
@@ -181,7 +182,7 @@ function VariationEditForm({
   priceCount: Count;
   isAdmin: boolean;
 }) {
-  const [state, formAction, pending] = useActionState(updateVariation, initial);
+  const [state, formAction, pending] = useToastedActionState(updateVariation, initial);
   const [rows, setRows] = useState(() =>
     attributes.map((a, i) => ({ id: i, name: a.name, value: a.value }))
   );
@@ -263,7 +264,7 @@ function PackageRowItem({
   priceCount: Count;
   isAdmin: boolean;
 }) {
-  const [state, formAction, pending] = useActionState(deletePackage, initial);
+  const [state, formAction, pending] = useToastedActionState(deletePackage, initial);
   const override = isOverride(priceCount, isAdmin);
 
   return (
@@ -312,7 +313,7 @@ function ProductDeleteForm({
   name: string;
   priceCount: Count;
 }) {
-  const [state, formAction, pending] = useActionState(deleteProduct, initial);
+  const [state, formAction, pending] = useToastedActionState(deleteProduct, initial);
   const line =
     priceCount === null
       ? "価格の記録：件数を取得できませんでした"

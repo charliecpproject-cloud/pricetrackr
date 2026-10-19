@@ -1,15 +1,7 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import {
-  createContext,
-  useActionState,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
@@ -62,7 +54,7 @@ function AddPackageForm({
   product: DialogProduct;
   onDone: () => void;
 }) {
-  const [state, formAction, pending] = useActionState<PackageState, FormData>(
+  const [state, formAction, pending] = useToastedActionState<PackageState, FormData>(
     addPackage,
     packageInitial
   );
@@ -142,7 +134,7 @@ function AddVariationForm({
   attributeNames: string[];
   onDone: () => void;
 }) {
-  const [state, formAction, pending] = useActionState(addVariation, variationInitial);
+  const [state, formAction, pending] = useToastedActionState(addVariation, variationInitial);
   const [rows, setRows] = useState([{ id: 0, name: "", value: "" }]);
   const [nextId, setNextId] = useState(1);
 

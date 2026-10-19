@@ -1,6 +1,6 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge, controlCls, labelCls } from "@/components/FormParts";
 import { setDisplayName } from "./profileActions";
@@ -11,7 +11,7 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function ProfileNameForm({ current }: { current: string }) {
-  const [state, formAction, pending] = useActionState(setDisplayName, initialState);
+  const [state, formAction, pending] = useToastedActionState(setDisplayName, initialState);
 
   return (
     <form action={formAction} className="space-y-2 pt-2">

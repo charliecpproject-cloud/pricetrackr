@@ -1,6 +1,6 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
 import { CATEGORY_LABEL, STORE_CATEGORIES } from "@/lib/stores/category";
@@ -28,7 +28,7 @@ export function ChainEditor({
 }: {
   chain: { id: string; name: string; category: string | null };
 }) {
-  const [state, formAction, pending] = useActionState(updateStoreChain, initial);
+  const [state, formAction, pending] = useToastedActionState(updateStoreChain, initial);
 
   return (
     <div className="rounded-xl bg-panel-soft p-3">
@@ -70,7 +70,7 @@ export function ChainEditor({
 }
 
 export function ChainDeleteButton({ id, shopCount }: { id: string; shopCount: number }) {
-  const [state, formAction, pending] = useActionState(deleteStoreChain, initial);
+  const [state, formAction, pending] = useToastedActionState(deleteStoreChain, initial);
 
   return (
     <div>
@@ -102,8 +102,8 @@ export function ShopRow({
 }: {
   shop: { id: string; name: string; region: string | null; address: string | null };
 }) {
-  const [saveState, saveAction, saving] = useActionState(updateShop, initial);
-  const [deleteState, deleteAction, deleting] = useActionState(deleteShop, initial);
+  const [saveState, saveAction, saving] = useToastedActionState(updateShop, initial);
+  const [deleteState, deleteAction, deleting] = useToastedActionState(deleteShop, initial);
 
   return (
     <li className="rounded-xl border border-line p-3">

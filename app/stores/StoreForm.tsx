@@ -1,6 +1,6 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
 import { CATEGORY_LABEL, STORE_CATEGORIES } from "@/lib/stores/category";
@@ -8,7 +8,7 @@ import { addStoreChain } from "./actions";
 
 export default function StoreForm() {
   const initialState = { error: null as string | null };
-  const [state, formAction, pending] = useActionState(addStoreChain, initialState);
+  const [state, formAction, pending] = useToastedActionState(addStoreChain, initialState);
 
   return (
     <form action={formAction} className="space-y-4">

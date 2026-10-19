@@ -101,5 +101,9 @@ Next.js 16 (App Router), React 19, Tailwind 4, TypeScript strict, npm (not pnpm)
 - Stores: a dropdown chooses one chain (`?chain=<id>`); only that chain's branches are loaded; the add-chain and add-branch forms are collapsed `<details>`.
 - Products: search first (`?q=`), 20 products at a time; the add forms (商品, バリエーション, 容量) are collapsed `<details>` below the list.
 
+## Notifications (toasts)
+- After a save or delete a toast appears at the top of the screen (`components/ToastProvider.tsx`, mounted in `app/layout.tsx`): green for success (3 s), red for an error (5 s), tap × to close, up to 3 stacked. The inline messages stay.
+- Forms must use `useToastedActionState` from `lib/toast/useToastedActionState.ts` instead of React `useActionState` (same arguments and result). The toast text is the `message` or `error` returned by the server action; a result without a message shows 保存しました.
+
 ## UI language
 Japanese only, hardcoded strings, no i18n library, polite です/ます tone. Show `name_ja` first, falling back to `name_en`. A product has ONE main name field (商品名, any language, no language detection), stored in the `name_ja` column, plus an optional 英語名・別名 alias stored in `name_en` and used in searches. The column names are historical. Products are always referenced by id, so renaming never breaks prices. Never translate code identifiers, form field names, database columns, or stored values (source, status, currency, tax_basis). Terms: ホーム, 価格入力, 価格確認, 店舗, チェーン, 支店, 商品, 容量, 価格, 特売, 日時, メモ, 保存, 削除, 検索, ログイン, ログアウト, メールアドレス, パスワード, クーポン, 通常価格, 会員価格, 最安, 税抜き, 税込み, 不明 (radio), 税抜 / 税込 / 税不明 (badges), 商品バリエーション, パッケージ. Unit `count` displays as 個.

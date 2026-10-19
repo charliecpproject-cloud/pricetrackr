@@ -1,6 +1,6 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { setDemoMode } from "./actions";
 
@@ -10,7 +10,7 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function DemoToggle({ demoMode }: { demoMode: boolean }) {
-  const [state, formAction, pending] = useActionState(setDemoMode, initialState);
+  const [state, formAction, pending] = useToastedActionState(setDemoMode, initialState);
 
   return (
     <form action={formAction} className="space-y-3">

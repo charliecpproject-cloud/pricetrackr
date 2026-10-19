@@ -1,6 +1,6 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState } from "react";
 import { updateProductMemo } from "@/app/products/memoActions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,7 +17,7 @@ export default function ProductMemoEditor({
   productId: string;
   memo: string | null;
 }) {
-  const [state, formAction, pending] = useActionState(updateProductMemo, initialState);
+  const [state, formAction, pending] = useToastedActionState(updateProductMemo, initialState);
 
   return (
     <details className="mt-3 rounded-xl bg-panel-soft p-3">

@@ -140,6 +140,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 29d (bulk discount display: PriceDisplay shows まとめ買い badge, entered price, normal price calculated back and the quantity condition; used on the price check, product detail and home feed; bulk prices count as the entered price for 最安, the price range filter and the unit price; docs updated) done
 
 
+- Step 30 (toast notifications: components/ToastProvider.tsx, lib/toast/useToastedActionState.ts; all useActionState forms switched to the toasted hook by script; green success 3 s, red error 5 s; the price form old local toast removed) done
+
+
 ## In Progress
 
 - (none)

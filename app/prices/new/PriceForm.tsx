@@ -1,6 +1,7 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { startTransition, useActionState, useEffect, useRef, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import {
   HelpCircle,
   List,
@@ -80,7 +81,7 @@ export default function PriceForm({
   startNew?: boolean;
   defaultProductId?: string;
 }) {
-  const [state, formAction, pending] = useActionState(addPriceObservation, initialState);
+  const [state, formAction, pending] = useToastedActionState(addPriceObservation, initialState);
   const [search, setSearch] = useState("");
   const [packageId, setPackageId] = useState(initialPackageId);
   const [isNewPackage, setIsNewPackage] = useState(startNew);
@@ -165,7 +166,7 @@ export default function PriceForm({
   useEffect(() => {
     const text = state.error ?? state.message;
     if (!text) return;
-    setToast({ text, ok: !state.error });
+    // the message is shown by the shared toast now
     const id = setTimeout(() => setToast(null), 4000);
     return () => clearTimeout(id);
   }, [state]);

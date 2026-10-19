@@ -1,6 +1,7 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import ProductFields from "@/components/ProductFields";
@@ -15,7 +16,7 @@ const initialState: { error: string | null; message?: string | null; productId?:
 
 export default function ProductForm({ defaultBarcode = "" }: { defaultBarcode?: string }) {
   const router = useRouter();
-  const [state, formAction, pending] = useActionState(createProduct, initialState);
+  const [state, formAction, pending] = useToastedActionState(createProduct, initialState);
 
   // Opened from a barcode scan: continue with the price entry for the new product.
   useEffect(() => {

@@ -1,6 +1,6 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { THEMES, type ThemeId } from "@/lib/themes/themes";
 import { setTheme } from "./themeActions";
@@ -11,7 +11,7 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function ThemePicker({ current }: { current: ThemeId }) {
-  const [state, formAction, pending] = useActionState(setTheme, initialState);
+  const [state, formAction, pending] = useToastedActionState(setTheme, initialState);
 
   return (
     <form action={formAction} className="space-y-3">

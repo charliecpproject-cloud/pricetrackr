@@ -1,6 +1,7 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { updateChainCoupons } from "./couponActions";
 import { Button } from "@/components/ui/button";
 
@@ -31,7 +32,7 @@ export default function ChainOptionsForm({
   pointUseMultiplier: number;
   bulkEnabled: boolean;
 }) {
-  const [state, formAction, pending] = useActionState(updateChainCoupons, initial);
+  const [state, formAction, pending] = useToastedActionState(updateChainCoupons, initial);
   const [memberOn, setMemberOn] = useState(memberPercent !== null);
   const [pointOn, setPointOn] = useState(pointUseEnabled);
 

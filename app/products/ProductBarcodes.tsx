@@ -1,6 +1,6 @@
 "use client";
+import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { controlCls } from "@/components/FormParts";
 import BarcodeInput from "@/components/BarcodeInput";
@@ -10,7 +10,7 @@ type State = { error: string | null; message?: string | null };
 const initial: State = { error: null, message: null };
 
 function BarcodeRow({ code, packageLabel }: { code: string; packageLabel: string | null }) {
-  const [state, formAction, pending] = useActionState(deleteBarcode, initial);
+  const [state, formAction, pending] = useToastedActionState(deleteBarcode, initial);
 
   return (
     <li className="rounded-xl border border-line bg-panel p-2 pl-3">
@@ -51,7 +51,7 @@ export default function ProductBarcodes({
   barcodes: { code: string; package_id?: string | null }[];
   packages: { id: string; label: string }[];
 }) {
-  const [state, formAction, pending] = useActionState(addBarcode, initial);
+  const [state, formAction, pending] = useToastedActionState(addBarcode, initial);
 
   return (
     <div className="space-y-3">
