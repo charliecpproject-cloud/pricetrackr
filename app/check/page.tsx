@@ -3,6 +3,7 @@ import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
+import { searchProductIds } from "@/lib/search/products";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -194,7 +195,9 @@ export default async function CheckPage({
     return latest;
   }
 
-  const nameFilter = `name_en.ilike.%${term}%,name_ja.ilike.%${term}%,brand.ilike.%${term}%`;
+  // Search: name, alias, brand, category, memo, variations, barcodes and sizes (search_products).
+  const matchedIds = term ? await searchProductIds(supabase, term) : [];
+  const nameFilter = `id.in.(${matchedIds.join(",") || "00000000-0000-0000-0000-000000000000"})`;
 
   let products: any[] = [];
   let latest: LatestMap = new Map();
@@ -327,7 +330,7 @@ export default async function CheckPage({
             name="q"
             type="search"
             defaultValue={term}
-            placeholder="商品名・ブランドで検索"
+            placeholder="商品名・ブランド・カテゴリ・バーコードなどで検索"
             className="h-12 w-full rounded-xl border border-line bg-panel pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
           />
           <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-stone-400" />

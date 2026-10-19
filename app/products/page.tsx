@@ -10,6 +10,7 @@ import { ProductDialogsProvider } from "./ProductDialogs";
 import ReadOnlyFieldset from "@/components/ReadOnlyFieldset";
 import { getViewer } from "@/lib/auth/viewer";
 import { normalizeBarcode } from "@/lib/products/barcode";
+import { searchProductIds } from "@/lib/search/products";
 
 const RECENT_COUNT = 3; // shown by default
 const PAGE_SIZE = 20; // search results
@@ -66,10 +67,14 @@ export default async function ProductsPage({
   const readOnly = !viewer.loggedIn;
   const isAdmin = viewer.isAdmin;
 
+  // Search: name, alias, brand, category, memo, variations, barcodes and sizes (search_products).
+  const matchedIds = term ? await searchProductIds(supabase, term, PAGE_SIZE) : null;
+  const searchFilter = `id.in.(${(matchedIds ?? []).join(",") || "00000000-0000-0000-0000-000000000000"})`;
+
   const base = supabase.from("products").select(PRODUCT_SELECT);
   const listQuery = term
     ? base
-        .or(`name_en.ilike.%${term}%,name_ja.ilike.%${term}%,brand.ilike.%${term}%`)
+        .or(searchFilter)
         .order("name_ja", { ascending: true })
         .limit(PAGE_SIZE)
     : showAll
@@ -86,7 +91,11 @@ export default async function ProductsPage({
   if (variationsResult.error)
     console.error("Variations fetch error:", variationsResult.error);
 
-  const productList: Product[] = (listResult.data as any) ?? [];
+  const rawList: Product[] = (listResult.data as any) ?? [];
+  // A search shows the best match first.
+  const productList = matchedIds
+    ? [...rawList].sort((a, b) => matchedIds.indexOf(a.id) - matchedIds.indexOf(b.id))
+    : rawList;
   const variationRows = variationsResult.data ?? [];
 
   // Number of price records per package, for the delete buttons.
@@ -138,7 +147,7 @@ export default async function ProductsPage({
             name="q"
             type="search"
             defaultValue={term}
-            placeholder="商品名・ブランドで検索"
+            placeholder="商品名・ブランド・カテゴリ・バーコードなどで検索"
             className="h-12 w-full rounded-xl border border-line bg-panel pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
           />
           <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-stone-400" />

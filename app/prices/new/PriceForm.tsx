@@ -20,6 +20,7 @@ import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
 import BulkPriceFields from "./BulkPriceFields";
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
+import { matchesSearch } from "@/lib/search/normalize";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
@@ -171,9 +172,9 @@ export default function PriceForm({
     return () => clearTimeout(id);
   }, [state]);
 
-  const keyword = search.trim().toLowerCase();
+  const keyword = search.trim();
   const filtered = keyword
-    ? packages.filter((p) => `${p.label} ${p.search}`.toLowerCase().includes(keyword))
+    ? packages.filter((p) => matchesSearch(`${p.label} ${p.search}`, keyword))
     : packages;
   const selectedPackage = filtered.some((p) => p.id === packageId) ? packageId : "";
 
@@ -259,7 +260,7 @@ export default function PriceForm({
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="商品名・ブランドで絞り込み"
+              placeholder="商品名・ブランド・カテゴリなどで絞り込み"
               className={controlCls}
             />
           </Field>

@@ -146,6 +146,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 31a (database: search_normalize() and search_products() across name, alias, brand, category, memo, variation values, barcodes and sizes; width, case and kana insensitive; all words must match; ranked) done
 
 
+- Step 31b (search: lib/search/normalize.ts (width, case and kana insensitive, all words must match) with tests; lib/search/products.ts calls search_products(); used by 商品 and 価格確認 (best match first on 商品); the 価格入力 product list filter uses matchesSearch) done
+
+
 ## In Progress
 
 - (none)
