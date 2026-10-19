@@ -33,6 +33,7 @@ type Activity =
       isMemberPrice: boolean;
       bulkPercent: number | null;
       bulkQuantity: number | null;
+      taxRate: number | null;
       taxBasis: TaxBasis;
     }
   | { kind: "product"; key: string; at: string; href: string; name: string };
@@ -48,7 +49,7 @@ export default async function HomePage() {
       .select(
         `id, price, created_at, is_sale, is_member_price, tax_basis, bulk_percent, bulk_quantity, product_package_id,
          store_chains (name, category),
-         product_packages (package_size, package_unit, products (name_ja, name_en))`
+         product_packages (package_size, package_unit, products (name_ja, name_en, tax_rate))`
       )
       .order("created_at", { ascending: false })
       .limit(5),
@@ -84,6 +85,7 @@ export default async function HomePage() {
       isMemberPrice: !!o.is_member_price,
       bulkPercent: (o.bulk_percent as number | null) ?? null,
       bulkQuantity: (o.bulk_quantity as number | null) ?? null,
+      taxRate: (product?.tax_rate as number | null) ?? null,
       taxBasis: parseTaxBasis(o.tax_basis),
     };
   });
@@ -174,6 +176,7 @@ export default async function HomePage() {
                       isMemberPrice={a.isMemberPrice}
                       bulkPercent={a.bulkPercent}
                       bulkQuantity={a.bulkQuantity}
+                      taxRate={a.taxRate}
                       taxBasis={a.taxBasis}
                       size="md"
                     />

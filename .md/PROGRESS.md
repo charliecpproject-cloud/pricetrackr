@@ -155,6 +155,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 32a (price entry: 日時 defaults to today 12:00 Japan time, also after a save in 連続入力; a 今 button sets the current date and time) done
 
 
+- Step 32b (tax rate per product: products.tax_rate, 税率 field in the add forms and 商品を編集, calculator icon with a tooltip on 税抜き and 税不明 prices (price check, product detail, home feed); lib/prices/taxHint.ts with tests) done
+
+
 ## In Progress
 
 - (none)

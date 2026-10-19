@@ -17,7 +17,7 @@ const PAGE_SIZE = 20; // search results
 const ALL_LIMIT = 300; // すべての商品
 
 const PRODUCT_SELECT =
-  "id, name_ja, name_en, brand, category, memo, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code, package_id)";
+  "id, name_ja, name_en, brand, category, memo, tax_rate, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code, package_id)";
 
 type Package = {
   id: string;
@@ -38,6 +38,7 @@ type Product = {
   brand: string | null;
   category: string | null;
   memo: string | null;
+  tax_rate?: number | null;
   product_variations: Variation[] | null;
   product_packages: Package[] | null;
   product_barcodes?: { code: string; package_id: string | null }[] | null;

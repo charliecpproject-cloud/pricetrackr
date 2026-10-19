@@ -3,6 +3,7 @@ import { originalPrice } from "@/lib/prices/bulk";
 import { formatYen } from "@/lib/prices/format";
 import { pointsNeeded } from "@/lib/prices/points";
 import { TAX_BADGE_LABEL, type TaxBasis } from "@/lib/prices/tax";
+import TaxHint from "@/components/TaxHint";
 
 type Props = {
   price: number | string;
@@ -14,19 +15,35 @@ type Props = {
   bulkQuantity?: number | null;
   // ウェル活: on the point-use day 1 point is worth this many yen. null = not enabled.
   pointUseMultiplier?: number | null;
+  // Tax rate (%) of the product: for 税抜き / 税不明 prices an icon suggests the tax-included price.
+  taxRate?: number | null;
   size?: "md" | "lg";
   taxBasis?: TaxBasis;
 };
 
-export default function PriceDisplay({ taxBasis, pointUseMultiplier, ...rest }: Props) {
+export default function PriceDisplay({
+  taxBasis,
+  taxRate,
+  pointUseMultiplier,
+  ...rest
+}: Props) {
   const points = pointUseMultiplier
     ? pointsNeeded(Number(rest.price), pointUseMultiplier)
     : null;
+  const showTaxHint =
+    !!taxBasis && taxBasis !== "incl" && taxRate !== null && taxRate !== undefined;
 
   const main = (
     <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
       <PriceCore {...rest} />
       {taxBasis && <TaxBadge basis={taxBasis} />}
+      {showTaxHint && (
+        <TaxHint
+          price={Number(rest.price)}
+          rate={taxRate as number}
+          basis={taxBasis as TaxBasis}
+        />
+      )}
     </span>
   );
 
@@ -75,7 +92,7 @@ function PriceCore({
   bulkPercent,
   bulkQuantity,
   size = "md",
-}: Omit<Props, "taxBasis" | "pointUseMultiplier">) {
+}: Omit<Props, "taxBasis" | "taxRate" | "pointUseMultiplier">) {
   const normal = Number(price);
   const big = size === "lg" ? "text-4xl" : "text-2xl";
   const wrap = "inline-flex flex-wrap items-baseline gap-x-2 gap-y-1";

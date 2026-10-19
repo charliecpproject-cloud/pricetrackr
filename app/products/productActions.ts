@@ -39,6 +39,15 @@ const updateSchema = z.object({
   other_name: z.string().trim().max(100, "別名は100文字以内で入力してください"),
 });
 
+// "" means not set. Otherwise 0 to 30 (8 and 10 are the usual rates).
+function parseTaxRate(raw: string): { ok: true; value: number | null } | { ok: false } {
+  const text = raw.normalize("NFKC").trim();
+  if (text === "") return { ok: true, value: null };
+  if (!/^\d{1,2}$/.test(text)) return { ok: false };
+  const n = Number(text);
+  return n >= 0 && n <= 30 ? { ok: true, value: n } : { ok: false };
+}
+
 function get(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
@@ -88,6 +97,9 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
+  const taxResult = parseTaxRate(get(formData, "tax_rate"));
+  if (!taxResult.ok) return { error: "税率が正しくありません" };
+
   const barcodeResult = parseBarcodes(formData.getAll("barcode"));
   if (!barcodeResult.ok) return { error: barcodeResult.error };
   const codes = barcodeResult.codes;
@@ -111,6 +123,7 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
       brand: brand || null,
       category: category || null,
       memo: memo || null,
+      tax_rate: taxResult.value,
     })
     .select("id")
     .single();
@@ -146,6 +159,8 @@ export async function updateProduct(_prevState: State, formData: FormData): Prom
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const { id, name, other_name, brand, category } = parsed.data;
+  const taxResult = parseTaxRate(get(formData, "tax_rate"));
+  if (!taxResult.ok) return { error: "税率が正しくありません" };
   const names = { name_ja: name, name_en: other_name || null };
 
   const supabase = await createSupabaseServerClient();
@@ -155,7 +170,12 @@ export async function updateProduct(_prevState: State, formData: FormData): Prom
 
   const { data, error } = await supabase
     .from("products")
-    .update({ ...names, brand: brand || null, category: category || null })
+    .update({
+      ...names,
+      brand: brand || null,
+      category: category || null,
+      tax_rate: taxResult.value,
+    })
     .eq("id", id)
     .select("id");
   if (error) {

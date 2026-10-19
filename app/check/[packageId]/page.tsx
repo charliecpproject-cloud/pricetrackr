@@ -31,7 +31,7 @@ export default async function PackageDetailPage({
   const { data: pkg, error: pkgError } = await supabase
     .from("product_packages")
     .select(
-      "id, package_size, package_unit, products (name_en, name_ja, brand, memo), product_variations (attributes)"
+      "id, package_size, package_unit, products (name_en, name_ja, brand, memo, tax_rate), product_variations (attributes)"
     )
     .eq("id", packageId)
     .single();
@@ -129,7 +129,7 @@ export default async function PackageDetailPage({
         <div className="rounded-2xl border border-line bg-panel p-5 shadow-sm">
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
-            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} pointUseMultiplier={latest.pointUseMultiplier} bulkPercent={latest.bulkPercent} bulkQuantity={latest.bulkQuantity} taxBasis={latest.taxBasis} size="lg" />
+            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} pointUseMultiplier={latest.pointUseMultiplier} bulkPercent={latest.bulkPercent} bulkQuantity={latest.bulkQuantity} taxRate={product.tax_rate ?? null} taxBasis={latest.taxBasis} size="lg" />
             <UnitPriceLine text={latest.unitText} taxBasis={latest.taxBasis} />
           </div>
           <p className="mt-2 text-sm text-stone-500">
@@ -162,7 +162,7 @@ export default async function PackageDetailPage({
                       <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">{saleLabel(r.category)}</span>
                     )}
                   </p>
-                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} pointUseMultiplier={r.pointUseMultiplier} bulkPercent={r.bulkPercent} bulkQuantity={r.bulkQuantity} taxBasis={r.taxBasis} size="md" />
+                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} pointUseMultiplier={r.pointUseMultiplier} bulkPercent={r.bulkPercent} bulkQuantity={r.bulkQuantity} taxRate={product.tax_rate ?? null} taxBasis={r.taxBasis} size="md" />
                 </div>
                 <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
                 <UnitPriceLine text={r.unitText} taxBasis={r.taxBasis} />

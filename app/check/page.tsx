@@ -209,7 +209,7 @@ export default async function CheckPage({
     const { data, error } = await supabase
       .from("products")
       .select(
-        `id, name_en, name_ja, brand,
+        `id, name_en, name_ja, brand, tax_rate,
          product_packages (
            id,
            package_size,
@@ -239,7 +239,7 @@ export default async function CheckPage({
       let query = supabase
         .from("products")
         .select(
-          `id, name_en, name_ja, brand,
+          `id, name_en, name_ja, brand, tax_rate,
            product_packages!inner (
              id,
              package_size,
@@ -262,7 +262,7 @@ export default async function CheckPage({
     let query = supabase
       .from("products")
       .select(
-        `id, name_en, name_ja, brand,
+        `id, name_en, name_ja, brand, tax_rate,
          product_packages (
            id,
            package_size,
@@ -309,6 +309,7 @@ export default async function CheckPage({
           sub,
           size: packageLabel(pkg.package_size, pkg.package_unit),
           variationLabel: variationText,
+          taxRate: (product.tax_rate as number | null) ?? null,
           rows: Array.from(latest.get(pkg.id)?.values() ?? []).sort(
             (a, b) =>
               new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime()
@@ -571,6 +572,7 @@ export default async function CheckPage({
                         pointUseMultiplier={r.pointUseMultiplier}
                         bulkPercent={r.bulkPercent}
                         bulkQuantity={r.bulkQuantity}
+                        taxRate={card.taxRate}
                         taxBasis={r.taxBasis}
                         size="md"
                       />

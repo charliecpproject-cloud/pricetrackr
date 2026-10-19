@@ -68,6 +68,25 @@ export default function ProductFields({
       </Field>
 
       <Field
+        label="税率"
+        kind="optional"
+        htmlFor={id("tax_rate")}
+        hint="分かるときだけ設定します。税抜き・税不明の価格に、税込の目安を表示するために使います。"
+      >
+        <select
+          id={id("tax_rate")}
+          name={id("tax_rate")}
+          defaultValue=""
+          className={controlCls}
+        >
+          <option value="">未設定</option>
+          <option value="8">8%（軽減税率：食品など）</option>
+          <option value="10">10%</option>
+          <option value="0">0%（非課税）</option>
+        </select>
+      </Field>
+
+      <Field
         label="バーコード"
         kind="optional"
         htmlFor={id("barcode-0")}

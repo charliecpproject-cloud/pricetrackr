@@ -22,6 +22,7 @@ type Product = {
   product_variations?: unknown;
   product_packages?: unknown;
   product_barcodes?: unknown;
+  tax_rate?: number | null;
 };
 
 type PackageRow = {
@@ -112,6 +113,28 @@ function ProductEditForm({ product }: { product: Product }) {
           name="category"
           defaultValue={product.category ?? ""}
         />
+      </Field>
+      <Field
+        label="税率"
+        kind="optional"
+        htmlFor={`tax-${product.id}`}
+        hint="すべてのバリエーション・容量に使います。税抜き・税不明の価格に、税込の目安を表示します。"
+      >
+        <select
+          id={`tax-${product.id}`}
+          name="tax_rate"
+          defaultValue={
+            product.tax_rate === null || product.tax_rate === undefined
+              ? ""
+              : String(product.tax_rate)
+          }
+          className={controlCls}
+        >
+          <option value="">未設定</option>
+          <option value="8">8%（軽減税率：食品など）</option>
+          <option value="10">10%</option>
+          <option value="0">0%（非課税）</option>
+        </select>
       </Field>
       <Messages state={state} />
       <Button type="submit" disabled={pending} className="h-12 w-full">

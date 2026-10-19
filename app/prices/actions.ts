@@ -45,6 +45,10 @@ const newPackageSchema = z.object({
   other_name: z.string().trim().max(100, "英語名・別名は100文字以内で入力してください").nullable(),
   category: z.string().trim().max(100, "カテゴリは100文字以内で入力してください").nullable(),
   memo: z.string().trim().max(1000, "メモは1000文字以内で入力してください").nullable(),
+  tax_rate: z
+    .string()
+    .regex(/^(?:\d|[12]\d|30)$/, "税率が正しくありません")
+    .nullable(),
   unit: z.enum(UNITS, { error: "単位を選んでください" }),
 });
 
@@ -79,6 +83,7 @@ async function resolveNewPackage(
     other_name: text(formData, "np_other_name"),
     category: text(formData, "np_category"),
     memo: text(formData, "np_memo"),
+    tax_rate: text(formData, "np_tax_rate"),
     unit: text(formData, "np_unit") ?? "",
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -90,7 +95,7 @@ async function resolveNewPackage(
   const size = parseSize(text(formData, "np_size"));
   if (size === null) return { error: "容量は0より大きい数値で入力してください" };
 
-  const { name, brand, unit, other_name, category, memo } = parsed.data;
+  const { name, brand, unit, other_name, category, memo, tax_rate } = parsed.data;
   const name_ja = name;
   const name_en: string | null = other_name;
   let productId = parsed.data.product_id;
@@ -139,7 +144,14 @@ async function resolveNewPackage(
 
     const { data: created, error: productError } = await supabase
       .from("products")
-      .insert({ name_ja, name_en, brand, category, memo })
+      .insert({
+        name_ja,
+        name_en,
+        brand,
+        category,
+        memo,
+        tax_rate: tax_rate === null ? null : Number(tax_rate),
+      })
       .select("id")
       .single();
     if (productError || !created) {
