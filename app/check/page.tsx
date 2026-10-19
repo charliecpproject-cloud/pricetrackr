@@ -4,6 +4,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
 import { searchProductIds } from "@/lib/search/products";
+import { parseSearchScope, searchPlaceholder } from "@/lib/search/scope";
+import SearchScopeChips from "./SearchScopeChips";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -79,7 +81,10 @@ export default async function CheckPage({
 }: {
   searchParams: Promise<RawParams>;
 }) {
-  const f = parseFilters(await searchParams);
+  const rawParams = await searchParams;
+  const f = parseFilters(rawParams);
+  // What to search: every field (default), or only the name, brand, category or barcode.
+  const scope = parseSearchScope((rawParams as unknown as Record<string, unknown>).scope);
   const term = f.q;
   const activeCount = countActive(f);
 
@@ -196,7 +201,7 @@ export default async function CheckPage({
   }
 
   // Search: name, alias, brand, category, memo, variations, barcodes and sizes (search_products).
-  const matchedIds = term ? await searchProductIds(supabase, term) : [];
+  const matchedIds = term ? await searchProductIds(supabase, term, 50, scope) : [];
   const nameFilter = `id.in.(${matchedIds.join(",") || "00000000-0000-0000-0000-000000000000"})`;
 
   let products: any[] = [];
@@ -326,12 +331,14 @@ export default async function CheckPage({
       <h1 className="text-2xl font-bold text-stone-900">価格確認</h1>
 
       <form action="/check" className="space-y-3">
+        <SearchScopeChips key={scope} current={scope} />
+
         <div className="relative">
           <input
             name="q"
             type="search"
             defaultValue={term}
-            placeholder="商品名・ブランド・カテゴリ・バーコードなどで検索"
+            placeholder={searchPlaceholder(scope)}
             className="h-12 w-full rounded-xl border border-line bg-panel pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
           />
           <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-stone-400" />

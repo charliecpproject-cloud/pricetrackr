@@ -158,6 +158,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 32b (tax rate per product: products.tax_rate, 税率 field in the add forms and 商品を編集, calculator icon with a tooltip on 税抜き and 税不明 prices (price check, product detail, home feed); lib/prices/taxHint.ts with tests) done
 
 
+- Step 33a (価格確認: search scope buttons above the search box (すべて, 商品名, ブランド, カテゴリ, バーコード); search_products() takes a scope; lib/search/scope.ts with tests) done
+
+
 ## In Progress
 
 - (none)
