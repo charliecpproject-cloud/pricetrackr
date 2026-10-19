@@ -4,6 +4,7 @@ import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 import { startTransition, useEffect, useRef, useState } from "react";
 import {
   HelpCircle,
+  Clock,
   List,
   Megaphone,
   Repeat,
@@ -63,6 +64,11 @@ function nowInJapan(): string {
   return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
 }
 
+// Today at 12:00 in Japan: the default time of a new price.
+function noonInJapan(): string {
+  return `${nowInJapan().slice(0, 10)}T12:00`;
+}
+
 export default function PriceForm({
   packages,
   products,
@@ -115,7 +121,7 @@ export default function PriceForm({
 
   // Default time is set after mount, so server and browser output match.
   useEffect(() => {
-    setObservedAt(nowInJapan());
+    setObservedAt(noonInJapan());
   }, []);
 
   // After a successful save: clear the price and go back to the dropdowns,
@@ -129,7 +135,7 @@ export default function PriceForm({
       if (focusRef.current) {
         // 連続入力: keep chain, branch, tax, sale and member price; start the next item
         setBonusPoints("");
-        setObservedAt(nowInJapan());
+        setObservedAt(noonInJapan());
         setPackageId("");
         setIsNewPackage(false);
         setSearch("");
@@ -479,15 +485,28 @@ export default function PriceForm({
       <BonusPointsField chain={selectedChain} value={bonusPoints} onChange={setBonusPoints} />
 
       <Field label="日時" kind="required" htmlFor="observed_at">
-        <input
-          id="observed_at"
-          name="observed_at"
-          type="datetime-local"
-          required
-          value={observedAt}
-          onChange={(e) => setObservedAt(e.target.value)}
-          className={controlCls}
-        />
+        <div className="flex gap-2">
+          <div className="min-w-0 flex-1">
+            <input
+              id="observed_at"
+              name="observed_at"
+              type="datetime-local"
+              required
+              value={observedAt}
+              onChange={(e) => setObservedAt(e.target.value)}
+              className={controlCls}
+            />
+          </div>
+          <button
+            type="button"
+            aria-label="現在の日時にする"
+            onClick={() => setObservedAt(nowInJapan())}
+            className="flex h-12 shrink-0 items-center gap-1.5 rounded-xl border border-line bg-panel px-4 text-sm font-medium text-stone-700 active:scale-95"
+          >
+            <Clock className="h-4 w-4" />
+            今
+          </button>
+        </div>
       </Field>
 
       <Field label="メモ" kind="optional" htmlFor="notes">

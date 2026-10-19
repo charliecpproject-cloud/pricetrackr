@@ -152,6 +152,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 31c (price entry: a product or variation without a 容量 can get a price; the list offers 1個 and the 容量 is created on the first save; the page queries run together; the list search text includes category and barcodes; bulk defaults understand the 1個 entry) done
 
 
+- Step 32a (price entry: 日時 defaults to today 12:00 Japan time, also after a save in 連続入力; a 今 button sets the current date and time) done
+
+
 ## In Progress
 
 - (none)
