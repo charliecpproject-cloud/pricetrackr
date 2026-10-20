@@ -3,6 +3,7 @@ import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
+import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
 import { searchProductIds } from "@/lib/search/products";
 import { parseSearchScope, searchPlaceholder } from "@/lib/search/scope";
 import SearchScopeChips from "./SearchScopeChips";
@@ -44,8 +45,7 @@ type ChainPrice = {
   memberPercent: number | null;
   isMemberPrice: boolean;
   pointUseMultiplier: number | null;
-  bulkPercent: number | null;
-  bulkQuantity: number | null;
+  bulkTiers: BulkTier[];
   bonusPoints: number | null;
   effective: number;
   taxBasis: TaxBasis;
@@ -131,7 +131,7 @@ export default async function CheckPage({
     let query = supabase
       .from("price_observations")
       .select(
-        `product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points, tax_basis, bulk_percent, bulk_quantity,
+        `product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points, tax_basis, bulk_tiers,
          store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier)`
       )
       .order("observed_at", { ascending: false })
@@ -163,13 +163,12 @@ export default async function CheckPage({
       const percents: number[] = chain?.coupon_percents ?? [];
       const memberPercent: number | null = chain?.member_discount_percent ?? null;
       const isMemberPrice = !!obs.is_member_price;
-      const bulkPercent = (obs.bulk_percent as number | null) ?? null;
-      const bulkQuantity = (obs.bulk_quantity as number | null) ?? null;
+      const bulkTiers = parseStoredTiers(obs.bulk_tiers);
       const pointUseMultiplier = pointUseMultiplierOf(
         chain?.point_use_enabled,
         chain?.point_use_multiplier
       );
-      const effective = bulkPercent !== null ? price : effectivePrice(price, {
+      const effective = effectivePrice(price, {
         couponPercents: percents,
         memberPercent,
         isMemberPrice,
@@ -192,8 +191,7 @@ export default async function CheckPage({
           isMemberPrice,
           bonusPoints: (obs.bonus_points as number | null) ?? null,
           pointUseMultiplier,
-          bulkPercent,
-          bulkQuantity,
+          bulkTiers,
           effective,
           taxBasis: parseTaxBasis(obs.tax_basis),
         });
@@ -530,8 +528,7 @@ export default async function CheckPage({
                         memberPercent={r.memberPercent}
                         isMemberPrice={r.isMemberPrice}
                         pointUseMultiplier={r.pointUseMultiplier}
-                        bulkPercent={r.bulkPercent}
-                        bulkQuantity={r.bulkQuantity}
+                        bulkTiers={r.bulkTiers}
                         taxRate={card.taxRate}
                         taxBasis={r.taxBasis}
                         size="md"

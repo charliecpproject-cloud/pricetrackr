@@ -1,5 +1,5 @@
 import { bestDiscount, couponPrice } from "@/lib/prices/coupon";
-import { originalPrice } from "@/lib/prices/bulk";
+import { bulkTierPrice, type BulkTier } from "@/lib/prices/bulk";
 import { formatYen } from "@/lib/prices/format";
 import { pointsNeeded } from "@/lib/prices/points";
 import { TAX_BADGE_LABEL, type TaxBasis } from "@/lib/prices/tax";
@@ -10,9 +10,8 @@ type Props = {
   couponPercents?: number[] | null;
   memberPercent?: number | null;
   isMemberPrice?: boolean;
-  // まとめ買い: the entered price already includes this discount (set together).
-  bulkPercent?: number | null;
-  bulkQuantity?: number | null;
+  // まとめ買い: tiers applied on top of the entered (regular, 1-item) price.
+  bulkTiers?: BulkTier[] | null;
   // ウェル活: on the point-use day 1 point is worth this many yen. null = not enabled.
   pointUseMultiplier?: number | null;
   // Tax rate (%) of the product: for 税抜き / 税不明 prices an icon suggests the tax-included price.
@@ -25,6 +24,7 @@ export default function PriceDisplay({
   taxBasis,
   taxRate,
   pointUseMultiplier,
+  bulkTiers,
   ...rest
 }: Props) {
   const points = pointUseMultiplier
@@ -32,6 +32,7 @@ export default function PriceDisplay({
     : null;
   const showTaxHint =
     !!taxBasis && taxBasis !== "incl" && taxRate !== null && taxRate !== undefined;
+  const tiers = Number.isFinite(Number(rest.price)) ? (bulkTiers ?? []) : [];
 
   const main = (
     <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
@@ -47,25 +48,48 @@ export default function PriceDisplay({
     </span>
   );
 
-  if (points === null) return main;
+  if (points === null && tiers.length === 0) return main;
 
-  // An extra line, not a replacement: points are not yen and only work on that day,
-  // so it never changes the main price, the cheapest badge or the unit price.
+  // Extra lines, not a replacement: the main price stays the regular price, so bulk
+  // tiers and points never change the cheapest badge, sorting or the unit price.
   return (
-    <span className="inline-flex flex-col items-start gap-1">
+    <span className="inline-flex flex-col items-start gap-1.5">
       {main}
-      <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <span className="inline-flex items-center rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
-          ウェル活
+      {tiers.length > 0 && (
+        <span className="inline-flex flex-col items-start gap-0.5">
+          <span className="inline-flex items-center rounded-md bg-rose-100 px-1.5 py-0.5 text-xs font-bold text-rose-700">
+            まとめ買い
+          </span>
+          {tiers.map((tier) => (
+            <span
+              key={tier.quantity}
+              className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-0.5"
+            >
+              <span className="text-sm text-stone-600">
+                {tier.quantity}個以上 {tier.percent}%引
+              </span>
+              <span className="text-xl font-bold tabular-nums text-rose-600">
+                {formatYen(bulkTierPrice(Number(rest.price), tier.percent))}
+              </span>
+              <span className="text-xs text-stone-500">（1個あたり）</span>
+            </span>
+          ))}
         </span>
-        <span className="text-xl font-bold tabular-nums text-amber-700">
-          {points.toLocaleString("ja-JP")}ポイント
+      )}
+      {points !== null && (
+        <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span className="inline-flex items-center rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
+            ウェル活
+          </span>
+          <span className="text-xl font-bold tabular-nums text-amber-700">
+            {points.toLocaleString("ja-JP")}ポイント
+          </span>
+          <span className="text-sm tabular-nums text-stone-500">
+            （{rest.isMemberPrice ? "会員価格" : "通常価格"} {formatYen(rest.price)}）
+          </span>
+          {taxBasis && <TaxBadge basis={taxBasis} />}
         </span>
-        <span className="text-sm tabular-nums text-stone-500">
-          （{rest.isMemberPrice ? "会員価格" : "通常価格"} {formatYen(rest.price)}）
-        </span>
-        {taxBasis && <TaxBadge basis={taxBasis} />}
-      </span>
+      )}
     </span>
   );
 }
@@ -89,10 +113,8 @@ function PriceCore({
   couponPercents,
   memberPercent,
   isMemberPrice,
-  bulkPercent,
-  bulkQuantity,
   size = "md",
-}: Omit<Props, "taxBasis" | "taxRate" | "pointUseMultiplier">) {
+}: Omit<Props, "taxBasis" | "taxRate" | "pointUseMultiplier" | "bulkTiers">) {
   const normal = Number(price);
   const big = size === "lg" ? "text-4xl" : "text-2xl";
   const wrap = "inline-flex flex-wrap items-baseline gap-x-2 gap-y-1";
@@ -107,30 +129,6 @@ function PriceCore({
         <span className={`${big} font-bold tabular-nums text-indigo-600`}>
           {formatYen(price)}
         </span>
-      </span>
-    );
-  }
-
-  // The entered price already includes a bulk discount: show it as entered, with the
-  // normal price calculated back (an estimate) and the quantity condition.
-  if (bulkPercent !== null && bulkPercent !== undefined) {
-    const original = originalPrice(normal, bulkPercent);
-    return (
-      <span className={wrap}>
-        <span className="inline-flex items-center rounded-md bg-rose-100 px-1.5 py-0.5 text-xs font-bold text-rose-700">
-          まとめ買い{bulkPercent}%引
-        </span>
-        <span className={`${big} font-bold tabular-nums text-rose-600`}>
-          {formatYen(price)}
-        </span>
-        {original !== null && (
-          <span className="text-sm tabular-nums text-stone-500">
-            （通常価格 {formatYen(original)}）
-          </span>
-        )}
-        {bulkQuantity ? (
-          <span className="basis-full text-xs text-stone-500">{bulkQuantity}個以上のとき</span>
-        ) : null}
       </span>
     );
   }

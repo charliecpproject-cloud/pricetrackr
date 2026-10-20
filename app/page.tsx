@@ -9,6 +9,7 @@ import { parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
 import { parseCategory, saleLabel } from "@/lib/stores/category";
 import { formatActivityTime } from "@/lib/home/format";
 import { greetingText } from "@/lib/home/greeting";
+import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
 
 const shortcuts = [
   { href: "/prices/new", label: "価格入力", Icon: PlusCircle },
@@ -31,8 +32,7 @@ type Activity =
       price: number | string;
       isSale: boolean;
       isMemberPrice: boolean;
-      bulkPercent: number | null;
-      bulkQuantity: number | null;
+      bulkTiers: BulkTier[];
       taxRate: number | null;
       taxBasis: TaxBasis;
     }
@@ -47,7 +47,7 @@ export default async function HomePage() {
     supabase
       .from("price_observations")
       .select(
-        `id, price, created_at, is_sale, is_member_price, tax_basis, bulk_percent, bulk_quantity, product_package_id,
+        `id, price, created_at, is_sale, is_member_price, tax_basis, bulk_tiers, product_package_id,
          store_chains (name, category),
          product_packages (package_size, package_unit, products (name_ja, name_en, tax_rate))`
       )
@@ -83,8 +83,7 @@ export default async function HomePage() {
       price: o.price as number | string,
       isSale: !!o.is_sale,
       isMemberPrice: !!o.is_member_price,
-      bulkPercent: (o.bulk_percent as number | null) ?? null,
-      bulkQuantity: (o.bulk_quantity as number | null) ?? null,
+      bulkTiers: parseStoredTiers(o.bulk_tiers),
       taxRate: (product?.tax_rate as number | null) ?? null,
       taxBasis: parseTaxBasis(o.tax_basis),
     };
@@ -174,8 +173,7 @@ export default async function HomePage() {
                     <PriceDisplay
                       price={a.price}
                       isMemberPrice={a.isMemberPrice}
-                      bulkPercent={a.bulkPercent}
-                      bulkQuantity={a.bulkQuantity}
+                      bulkTiers={a.bulkTiers}
                       taxRate={a.taxRate}
                       taxBasis={a.taxBasis}
                       size="md"
