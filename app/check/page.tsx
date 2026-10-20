@@ -6,12 +6,15 @@ import { effectivePrice } from "@/lib/prices/coupon";
 import { searchProductIds } from "@/lib/search/products";
 import { parseSearchScope, searchPlaceholder } from "@/lib/search/scope";
 import SearchScopeChips from "./SearchScopeChips";
+import CategoryFilter from "./CategoryFilter";
+import PeriodFilter from "./PeriodFilter";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
 import { isCheapest, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
 import {
   countActive,
+  hasActivePeriod,
   inPriceRange,
   parseFilters,
   rangeEnd,
@@ -107,17 +110,17 @@ export default async function CheckPage({
 
   const since = rangeStart(f);
   const until = rangeEnd(f);
-  const categoryChainIds = f.category
-    ? chains.filter((c) => c.category === f.category).map((c) => c.id)
+  const categoryChainIds = f.categories.length > 0
+    ? chains.filter((c) => c.category !== null && f.categories.includes(c.category)).map((c) => c.id)
     : null;
 
   // Any filter on the prices themselves changes which products can match.
   const hasPriceFilter =
     f.chainId !== null ||
-    f.category !== null ||
+    f.categories.length > 0 ||
     f.sale !== "all" ||
-    since !== null ||
-    until !== null ||
+    hasActivePeriod(f) ||
+    
     f.min !== null ||
     f.max !== null;
 
@@ -389,24 +392,7 @@ export default async function CheckPage({
               </select>
             </div>
 
-            <div>
-              <label htmlFor="f_cat" className={labelCls}>
-                店舗のカテゴリ
-              </label>
-              <select
-                id="f_cat"
-                name="cat"
-                defaultValue={f.category ?? ""}
-                className={controlCls}
-              >
-                <option value="">すべて</option>
-                {STORE_CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {CATEGORY_LABEL[c]}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CategoryFilter key={f.categories.join(",")} selected={f.categories} />
 
             <fieldset className="min-w-0">
               <legend className={labelCls}>価格の種類</legend>
@@ -453,40 +439,7 @@ export default async function CheckPage({
               </p>
             </div>
 
-            <fieldset className="min-w-0">
-              <legend className={labelCls}>期間</legend>
-              <div className="grid grid-cols-4 gap-2">
-                <Chip name="period" value="all" label="全期間" checked={f.period === "all"} />
-                <Chip name="period" value="week" label="1週間" checked={f.period === "week"} />
-                <Chip name="period" value="month" label="1か月" checked={f.period === "month"} />
-                <Chip
-                  name="period"
-                  value="quarter"
-                  label="3か月"
-                  checked={f.period === "quarter"}
-                />
-              </div>
-              <div className="mt-3 flex items-center gap-2">
-                <input
-                  name="from"
-                  type="date"
-                  aria-label="開始日"
-                  defaultValue={f.from ?? ""}
-                  className={controlCls}
-                />
-                <span className="text-stone-500">〜</span>
-                <input
-                  name="to"
-                  type="date"
-                  aria-label="終了日"
-                  defaultValue={f.to ?? ""}
-                  className={controlCls}
-                />
-              </div>
-              <p className="mt-1.5 text-xs text-stone-500">
-                日付を入れた場合は、上の期間より日付が優先されます。
-              </p>
-            </fieldset>
+            <PeriodFilter key={`${f.period}-${f.from}-${f.to}`} period={f.period} from={f.from} to={f.to} />
 
             <div className="flex items-center gap-3">
               <button
@@ -540,7 +493,7 @@ export default async function CheckPage({
               </div>
 
               {card.rows.length === 0 ? (
-                <p className="mt-3 text-sm text-stone-500">まだ価格がありません</p>
+                <p className="mt-3 text-sm text-stone-500">{f.period === "all" ? "まだ価格がありません" : "この期間の価格がありません"}</p>
               ) : (
                 <ul className="mt-3 divide-y divide-stone-100">
                   {card.rows.map((r) => (

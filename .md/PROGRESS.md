@@ -164,6 +164,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 33a-2 (search scope buttons reduced to すべて, 商品名 and カテゴリ) done
 
 
+- Step 33b (価格確認 filters: store categories as multi-select icon buttons with a その他 list; 期間 order 1週間, 1か月, 3か月, 全期間 with 3か月 as the default and the date range only for 全期間; lib/prices/filters.ts and its tests updated) done
+
+
 ## In Progress
 
 - (none)
