@@ -182,6 +182,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 35b (unit price lines: lib/prices/unitLines.ts with tests; price check cards hide the unit price for a single piece (1個 / 1枚 / 1袋); prices with bulk tiers show two unit price lines, 通常 and まとめ買い at the biggest discount, on the cards and the detail page) done
 
 
+- Step 34e (bulk discount tiers, wrap-up: old originalPrice code removed, old bulk_percent and bulk_quantity columns dropped, PART1_FOUNDATION.md and the handoff updated) done
+
+
 ## In Progress
 
 - (none)
@@ -229,3 +232,4 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-17: account types are stored in public.profiles.role ('admin' or 'user'); users can read only their own profile and cannot change roles from the app; demo mode will use a flag in a separate app_settings table, added in the next step.
 - 2026-10-17: demo mode is a flag in app_settings (one row). While on, the anon role can only read store_chains, shops, products, product_variations, product_packages and price_observations; all write policies stay authenticated-only. The flag is off by default.
 - 2026-10-17: in demo mode all pages are visible to visitors; write controls will be shown but disabled. If the demo flag cannot be read, the login guard treats demo mode as off.
+- 2026-10-20: bulk discount (まとめ買い) tiers are stored in price_observations.bulk_tiers (jsonb list of 1-3 {quantity, percent}); the entered price is always the regular 1-item price and each tier is applied on top at display time with the coupon rounding, never stored; bulk is display-only, so ranking, 最安, the price range filter and the unit price use the regular or coupon price; unit price lines show 通常 plus the biggest tier; the old bulk_percent and bulk_quantity columns were dropped.
