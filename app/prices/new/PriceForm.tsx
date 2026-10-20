@@ -19,7 +19,7 @@ import { CATEGORY_LABEL, parseCategory, saleLabel } from "@/lib/stores/category"
 import { addPriceObservation } from "@/app/prices/actions";
 import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
-import BulkPriceFields from "./BulkPriceFields";
+import BulkPriceFields, { emptyBulkRows, rowsFromTiers, type BulkRow } from "./BulkPriceFields";
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
 import { matchesSearchWithAliases, type SearchAlias } from "@/lib/search/aliases";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
@@ -105,8 +105,7 @@ export default function PriceForm({
   const [taxBasis, setTaxBasis] = useState<TaxBasis>("unknown");
   const [isMember, setIsMember] = useState(true);
   const [isBulk, setIsBulk] = useState(false);
-  const [bulkPercent, setBulkPercent] = useState("");
-  const [bulkQuantity, setBulkQuantity] = useState("");
+  const [bulkTiers, setBulkTiers] = useState<BulkRow[]>(emptyBulkRows());
   const bulkTouchedRef = useRef(false);
   const [bonusPoints, setBonusPoints] = useState("");
   const [notes, setNotes] = useState("");
@@ -201,8 +200,7 @@ export default function PriceForm({
     lookupBulkDefaults(chainId, selectedPackage)
       .then((found) => {
         if (cancelled || !found || bulkTouchedRef.current) return;
-        setBulkPercent(String(found.percent));
-        setBulkQuantity(String(found.quantity));
+        setBulkTiers(rowsFromTiers(found));
       })
       .catch(() => {});
     return () => {
@@ -431,27 +429,16 @@ export default function PriceForm({
         <MemberPriceCheck
           chain={selectedChain}
           checked={isMember}
-          onChange={(value) => {
-            setIsMember(value);
-            if (value) setIsBulk(false);
-          }}
+          onChange={setIsMember}
         />
         <BulkPriceFields
           chain={selectedChain}
           checked={isBulk}
-          onCheckedChange={(value) => {
-            setIsBulk(value);
-            if (value) setIsMember(false);
-          }}
-          percent={bulkPercent}
-          onPercentChange={(value) => {
+          onCheckedChange={setIsBulk}
+          tiers={bulkTiers}
+          onTiersChange={(value) => {
             bulkTouchedRef.current = true;
-            setBulkPercent(value);
-          }}
-          quantity={bulkQuantity}
-          onQuantityChange={(value) => {
-            bulkTouchedRef.current = true;
-            setBulkQuantity(value);
+            setBulkTiers(value);
           }}
         />
       </div>

@@ -2,28 +2,27 @@
 
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
 
-type Defaults = { percent: number; quantity: number };
-
-// The bulk percent and quantity used last at this chain: first for the same product
-// (any of its 容量), otherwise the latest bulk price at the chain.
+// The bulk tiers used last at this chain: first for the same product (any of its 容量),
+// otherwise the latest bulk price at the chain.
 // packageId is a real 容量 id, or "default:<productId>:..." for a product without a 容量.
 export async function lookupBulkDefaults(
   chainId: string,
   packageId: string
-): Promise<Defaults | null> {
+): Promise<BulkTier[] | null> {
   const chain = z.string().uuid().safeParse(chainId);
   if (!chain.success) return null;
   const chainUuid = chain.data;
 
   const supabase = await createSupabaseServerClient();
 
-  async function latest(packageIds: string[] | null): Promise<Defaults | null> {
+  async function latest(packageIds: string[] | null): Promise<BulkTier[] | null> {
     let query = supabase
       .from("price_observations")
-      .select("bulk_percent, bulk_quantity")
+      .select("bulk_tiers")
       .eq("store_chain_id", chainUuid)
-      .not("bulk_percent", "is", null)
+      .not("bulk_tiers", "is", null)
       .order("observed_at", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(1);
@@ -34,10 +33,9 @@ export async function lookupBulkDefaults(
       console.error("Bulk defaults error:", error.message, error.code);
       return null;
     }
-    const row = ((data ?? []) as { bulk_percent: number | null; bulk_quantity: number | null }[])[0];
-    return row && row.bulk_percent != null && row.bulk_quantity != null
-      ? { percent: row.bulk_percent, quantity: row.bulk_quantity }
-      : null;
+    const row = ((data ?? []) as { bulk_tiers: unknown }[])[0];
+    const tiers = row ? parseStoredTiers(row.bulk_tiers) : [];
+    return tiers.length > 0 ? tiers : null;
   }
 
   // Which product is this?
