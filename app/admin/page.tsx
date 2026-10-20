@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, GitMerge, Tags } from "lucide-react";
+import { ChevronRight, GitMerge, Ruler, Tags } from "lucide-react";
 import { getViewer } from "@/lib/auth/viewer";
 
 // Add future admin tools (price approval, ...) to this list.
@@ -17,6 +17,13 @@ const tools = [
     title: "検索の別名",
     description: "別名（例：離乳食）で検索しても見つかるようにする",
     Icon: Tags,
+    ready: true,
+  },
+  {
+    href: "/admin/units",
+    title: "単位の言葉",
+    description: "容量の単位に使う言葉（本・玉・パックなど）を表示・非表示・追加・削除する",
+    Icon: Ruler,
     ready: true,
   },
 ];
