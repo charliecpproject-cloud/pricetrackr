@@ -176,6 +176,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 34d (bulk discount tiers, part 3: PriceDisplay shows the regular price with a まとめ買い block listing each tier (quantity, percent, price per item); price check, product detail and the home feed read bulk_tiers; 最安, price range filter and unit price use the regular or coupon price) done
 
 
+- Step 35 (price check: every price row on the cards shows the unit price line, same calculation as the product detail page, so sizes can be compared without opening a product; docs updated) done
+
+
 ## In Progress
 
 - (none)
