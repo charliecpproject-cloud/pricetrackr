@@ -15,12 +15,17 @@ describe("unitPriceText", () => {
     expect(unitPriceText(400, 200, "sheet")).toBe("¥2 / 枚");
     expect(unitPriceText(500, 10, "bag")).toBe("¥50 / 袋");
   });
+  it("shows any other counter word per piece", () => {
+    expect(unitPriceText(300, 6, "本")).toBe("¥50 / 本");
+    expect(unitPriceText(240, 4, "パック")).toBe("¥60 / パック");
+    expect(unitPriceText(500, 2, "玉")).toBe("¥250 / 玉");
+  });
 });
 
 describe("unitPrice", () => {
-  it("returns null for unknown units or invalid sizes", () => {
-    expect(unitPrice(100, 5, "oz")).toBeNull();
-    expect(unitPrice(100, 5, "toString")).toBeNull();
+  it("returns null for an empty or too long unit, or invalid sizes", () => {
+    expect(unitPrice(100, 5, "")).toBeNull();
+    expect(unitPrice(100, 5, "123456789")).toBeNull();
     expect(unitPrice(100, 0, "ml")).toBeNull();
     expect(unitPrice(Number.NaN, 5, "ml")).toBeNull();
   });

@@ -1,13 +1,14 @@
 import { bulkTierPrice, type BulkTier } from "./bulk";
 import { unitPriceText } from "./unit";
+import { isCounterUnit } from "./unitWords";
 
 export type UnitLine = { label: string | null; text: string };
 
-const PER_PIECE_UNITS = ["count", "sheet", "bag"];
+// Every unit that is not a measure (ml, L, g, kg) is a counter word: see unitWords.ts.
 
 /** True for one single piece (1個, 1枚, 1袋): the unit price would only repeat the price. */
 export function isSinglePiece(size: number, unit: string): boolean {
-  return size === 1 && PER_PIECE_UNITS.includes(unit);
+  return size === 1 && isCounterUnit(unit);
 }
 
 /**

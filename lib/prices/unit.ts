@@ -1,16 +1,13 @@
 import { formatYen } from "./format";
+import { counterLabel, isCounterUnit, isMeasureUnit } from "./unitWords";
 
-// How each package unit is normalized: how many base units one package unit
-// is (L = 1000 ml), how many base units the price is shown "per", and the
-// label after the slash.
-const UNITS: Record<string, { factor: number; per: number; label: string }> = {
+// How each measure is normalized: how many base units one package unit is (L = 1000 ml),
+// how many base units the price is shown "per", and the label after the slash.
+const MEASURES: Record<string, { factor: number; per: number; label: string }> = {
   ml: { factor: 1, per: 100, label: "100ml" },
   L: { factor: 1000, per: 100, label: "100ml" },
   g: { factor: 1, per: 100, label: "100g" },
   kg: { factor: 1000, per: 100, label: "100g" },
-  count: { factor: 1, per: 1, label: "個" },
-  sheet: { factor: 1, per: 1, label: "枚" },
-  bag: { factor: 1, per: 1, label: "袋" },
 };
 
 /** Price per normalized unit, rounded to one decimal; null when it can't be computed. */
@@ -19,8 +16,15 @@ export function unitPrice(
   size: number,
   unit: string
 ): { amount: number; label: string } | null {
-  if (!Object.prototype.hasOwnProperty.call(UNITS, unit)) return null;
-  const rule = UNITS[unit];
+  let rule: { factor: number; per: number; label: string };
+  if (isMeasureUnit(unit)) {
+    rule = MEASURES[unit];
+  } else if (isCounterUnit(unit)) {
+    // Any counter word (個, 枚, 袋, 本, 玉, パック, ...) is shown per piece.
+    rule = { factor: 1, per: 1, label: counterLabel(unit) };
+  } else {
+    return null;
+  }
   if (!Number.isFinite(price) || !Number.isFinite(size) || size <= 0 || price < 0) {
     return null;
   }

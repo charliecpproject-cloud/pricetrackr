@@ -7,6 +7,7 @@ describe("isSinglePiece", () => {
     expect(isSinglePiece(1, "count")).toBe(true);
     expect(isSinglePiece(1, "sheet")).toBe(true);
     expect(isSinglePiece(1, "bag")).toBe(true);
+    expect(isSinglePiece(1, "本")).toBe(true);
   });
 
   it("is false for other sizes and for weight or volume units", () => {
@@ -63,6 +64,6 @@ describe("unitPriceLines", () => {
   });
 
   it("gives nothing for an unknown unit", () => {
-    expect(unitPriceLines({ ...base, unit: "box" })).toEqual([]);
+    expect(unitPriceLines({ ...base, unit: "" })).toEqual([]);
   });
 });

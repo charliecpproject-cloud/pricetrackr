@@ -1,3 +1,5 @@
+import { counterLabel, isMeasureUnit } from "./unitWords";
+
 /**
  * 金額を日本円表記にフォーマットします。
  * 例: 1280 => "¥1,280", 98.5 => "¥98.5"
@@ -48,31 +50,19 @@ export function formatJst(iso: string): string {
 
 /**
  * パッケージサイズと単位からラベル文字列を作ります。
- * 例: (500, "ml") => "500 ml", ("1000.0", "ml") => "1000 ml"
- * 「count」または「個」の場合はスペースなしで「個」を付与します。
- * 「sheet」単位は「枚」、 「bag」単位は「袋」を付与します。
+ * ml, L, g, kg は数字とスペースのあとに単位を付けます。例: (500, "ml") => "500 ml"
+ * 数える単位（個・枚・袋・本・玉・パックなど）はスペースなしでその言葉を付けます。
+ * 例: (6, "本") => "6本", (44, "sheet") => "44枚", (1, "count") => "1個"
  */
 export function packageLabel(size: number | string, unit: string): string {
   const num = typeof size === "string" ? Number(size) : size;
   if (Number.isNaN(num)) {
     return "";
   }
-  const numStr = Number.isInteger(num) ? num.toString() : num.toString();
+  const numStr = num.toString();
 
-  // 「count」または「個」のときは「個」をスペースなしで付ける
-  if (unit === "count" || unit === "個") {
-    return `${numStr}個`;
+  if (isMeasureUnit(unit)) {
+    return `${numStr} ${unit}`;
   }
-
-  // 「sheet」単位は「枚」を付与
-  if (unit === "sheet") {
-    return `${numStr}枚`;
-  }
-
-  // 「bag」単位は「袋」を付与
-  if (unit === "bag") {
-    return `${numStr}袋`;
-  }
-
-  return `${numStr} ${unit}`;
+  return `${numStr}${counterLabel(unit)}`;
 }
