@@ -170,6 +170,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 34a-34b (bulk discount tiers, part 1: price_observations.bulk_tiers jsonb with 1-3 tiers, existing bulk rows converted to one-tier lists; lib/prices/bulk.ts parseBulkTiers, parseStoredTiers, bulkTierPrice with tests) done
 
 
+- Step 34c (bulk discount tiers, part 2: price entry has up to 3 quantity/percent rows for chains with the option, saved as bulk_tiers on the observation (entered price is the regular price); tiers prefilled from the last bulk price at the chain; bulk no longer excludes member price) done
+
+
 ## In Progress
 
 - (none)
