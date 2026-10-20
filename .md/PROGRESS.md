@@ -173,6 +173,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 34c (bulk discount tiers, part 2: price entry has up to 3 quantity/percent rows for chains with the option, saved as bulk_tiers on the observation (entered price is the regular price); tiers prefilled from the last bulk price at the chain; bulk no longer excludes member price) done
 
 
+- Step 34d (bulk discount tiers, part 3: PriceDisplay shows the regular price with a まとめ買い block listing each tier (quantity, percent, price per item); price check, product detail and the home feed read bulk_tiers; 最安, price range filter and unit price use the regular or coupon price) done
+
+
 ## In Progress
 
 - (none)
