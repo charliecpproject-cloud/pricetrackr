@@ -194,6 +194,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 37 (products page: the 3 recent products are gone; the default view shows the open 商品を追加 section with no list and no list queries; すべての商品を表示 shows the full list with a 商品一覧を閉じる button back; the add section is collapsed while a list or search is shown; docs updated) done
 
 
+- Step 38a-38b (counter words, part 1: table counter_units (unit, label, enabled, sort_order) seeded with 個 枚 袋 本 玉 束 缶 パック 箱 切れ 丁 尾, readable by everyone, changed only by admins, 個 cannot be hidden or removed, delete_counter_unit() refuses words in use, counter_unit_usage(); lib/prices/unitWords.ts: every unit that is not ml/L/g/kg is a counter word shown as itself, used by packageLabel, unitPrice and the single-piece rule) done
+
+
 ## In Progress
 
 - (none)
@@ -241,4 +244,5 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-17: account types are stored in public.profiles.role ('admin' or 'user'); users can read only their own profile and cannot change roles from the app; demo mode will use a flag in a separate app_settings table, added in the next step.
 - 2026-10-17: demo mode is a flag in app_settings (one row). While on, the anon role can only read store_chains, shops, products, product_variations, product_packages and price_observations; all write policies stay authenticated-only. The flag is off by default.
 - 2026-10-17: in demo mode all pages are visible to visitors; write controls will be shown but disabled. If the demo flag cannot be read, the login guard treats demo mode as off.
+- 2026-10-20: package unit words: the measures ml, L, g, kg stay in code; every other unit is a counter word that is stored as the word itself (the old keys count, sheet and bag keep their words 個, 枚, 袋) and shown per piece; the words offered in the dropdowns live in the table counter_units, managed by admins (show/hide, add, remove only when unused, no renaming, 個 can never be hidden or removed).
 - 2026-10-20: bulk discount (まとめ買い) tiers are stored in price_observations.bulk_tiers (jsonb list of 1-3 {quantity, percent}); the entered price is always the regular 1-item price and each tier is applied on top at display time with the coupon rounding, never stored; bulk is display-only, so ranking, 最安, the price range filter and the unit price use the regular or coupon price; unit price lines show 通常 plus the biggest tier; the old bulk_percent and bulk_quantity columns were dropped.
