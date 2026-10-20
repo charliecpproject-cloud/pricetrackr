@@ -167,6 +167,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 33b (価格確認 filters: store categories as multi-select icon buttons with a その他 list; 期間 order 1週間, 1か月, 3か月, 全期間 with 3か月 as the default and the date range only for 全期間; lib/prices/filters.ts and its tests updated) done
 
 
+- Step 34a-34b (bulk discount tiers, part 1: price_observations.bulk_tiers jsonb with 1-3 tiers, existing bulk rows converted to one-tier lists; lib/prices/bulk.ts parseBulkTiers, parseStoredTiers, bulkTierPrice with tests) done
+
+
 ## In Progress
 
 - (none)
