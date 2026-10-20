@@ -15,6 +15,13 @@ Read this first. It is a briefing for Claude in a new chat, not for Aider (keep 
 - ASK to see an existing file (give a `Get-Content` command) before editing it. Never predict or regenerate a file that has not been shown.
 - Known Aider habits: guesses import/export names, writes long `../` imports (use the `@/` alias), uses `error.errors`, imports shadcn components that are not installed, writes wrong nested-select relationships, rewrites whole files and drops earlier fixes, leaves placeholder text. Prefer small hand edits (Notepad Ctrl+H, or the PowerShell `Rep` helper below), or a complete replacement file only for files Claude has seen.
 - Paths with brackets need quotes or `-LiteralPath`: `"app\check\[packageId]\page.tsx"`. New files are created with `notepad path` (click Yes).
+- New Supabase migrations: always give this automatic three-line pattern with the real migration name, never a placeholder file name that the user has to type by hand (the three indented lines below):
+
+      npx supabase migration new <name>
+      $f = Get-ChildItem supabase\migrations\*_<name>.sql
+      notepad $f.FullName
+
+  Then the SQL to paste, then `npx supabase db push`, then a check query for the SQL Editor.
 - The user tests in the browser and cleans test rows with SQL in the Supabase SQL Editor.
 
 PowerShell helper used for exact one-line edits (prints OK or FAIL):
