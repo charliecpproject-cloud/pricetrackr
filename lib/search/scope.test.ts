@@ -10,7 +10,8 @@ describe("parseSearchScope", () => {
   it("falls back to all", () => {
     expect(parseSearchScope(undefined)).toBe("all");
     expect(parseSearchScope("nope")).toBe("all");
-    expect(parseSearchScope(["brand", "name"])).toBe("brand");
+    expect(parseSearchScope("brand")).toBe("all");
+    expect(parseSearchScope(["category", "name"])).toBe("category");
   });
 });
 

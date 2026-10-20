@@ -2,9 +2,7 @@
 export const SEARCH_SCOPES = [
   { key: "all", label: "すべて" },
   { key: "name", label: "商品名" },
-  { key: "brand", label: "ブランド" },
   { key: "category", label: "カテゴリ" },
-  { key: "barcode", label: "バーコード" },
 ] as const;
 
 export type SearchScope = (typeof SEARCH_SCOPES)[number]["key"];
@@ -19,12 +17,8 @@ export function searchPlaceholder(scope: SearchScope): string {
   switch (scope) {
     case "name":
       return "商品名・英語名・別名で検索";
-    case "brand":
-      return "ブランドで検索";
     case "category":
       return "カテゴリで検索";
-    case "barcode":
-      return "バーコード番号で検索";
     default:
       return "商品名・ブランド・カテゴリ・バーコードなどで検索";
   }

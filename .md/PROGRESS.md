@@ -161,6 +161,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 33a (価格確認: search scope buttons above the search box (すべて, 商品名, ブランド, カテゴリ, バーコード); search_products() takes a scope; lib/search/scope.ts with tests) done
 
 
+- Step 33a-2 (search scope buttons reduced to すべて, 商品名 and カテゴリ) done
+
+
 ## In Progress
 
 - (none)
