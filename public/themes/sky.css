@@ -1,0 +1,41 @@
+/* ===== Theme: sky (light, blue and white) ===== */
+html[data-theme="sky"] {
+  --background: #eef4fb;
+  --foreground: #0f2347;
+  --panel: #ffffff;
+  --panel-soft: #f3f7fd;
+  --chip: #e8eff9;
+  --line: #d5e1f2;
+  --card: #ffffff;
+  --card-foreground: #0f2347;
+  --muted-foreground: #5d7194;
+  --primary: #1d4f9f;
+  --primary-foreground: #ffffff;
+  --border: #d5e1f2;
+  --input: #d5e1f2;
+  --ring: #1d4f9f;
+
+  --color-stone-900: #0f2347;
+  --color-stone-800: #1b3359;
+  --color-stone-700: #2f4670;
+  --color-stone-600: #4a5f85;
+  --color-stone-500: #5d7194;
+  --color-stone-400: #8d9bb5;
+  --color-stone-100: #e3ebf6;
+
+  --color-teal-50: #eaf2fd;
+  --color-teal-100: #d6e5fb;
+  --color-teal-200: #b3cdf5;
+  --color-teal-500: #3f8be0;
+  --color-teal-600: #1d4f9f;
+  --color-teal-700: #153c7c;
+
+  --color-gray-50: #eef4fb;
+  --color-indigo-50: #eaf2fd;
+  --color-indigo-600: #1d4f9f;
+  --color-gray-200: #d5e1f2;
+}
+html[data-theme="sky"] body {
+  background: linear-gradient(180deg, #dce9fa 0, #eef4fb 300px);
+  background-attachment: fixed;
+}

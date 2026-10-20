@@ -4,6 +4,7 @@ import AppNav from "@/components/AppNav";
 import { ToastProvider } from "@/components/ToastProvider";
 import ProfileMenu from "@/components/ProfileMenu";
 import { getViewer } from "@/lib/auth/viewer";
+import { themeStylesheets } from "@/lib/themes/themes";
 
 export const metadata: Metadata = {
   title: "PriceTrackr",
@@ -16,6 +17,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ja" data-theme={viewer.theme} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
+        {themeStylesheets(viewer.theme).map((href) => (
+          <link key={href} rel="stylesheet" href={href} precedence="default" />
+        ))}
         <ToastProvider>
         <ProfileMenu
           loggedIn={viewer.loggedIn}

@@ -1,0 +1,60 @@
+/* ===== Shared by the dark themes (midnight, calm) =====
+   Loaded together with the theme's own file, which defines the --tx-*, --ac-* and panel tokens. */
+html[data-theme="midnight"],
+html[data-theme="calm"] {
+  color-scheme: dark;
+
+  --foreground: var(--tx-2);
+  --card: var(--panel);
+  --card-foreground: var(--tx-2);
+  --muted-foreground: var(--tx-5);
+  --primary: var(--ac-600);
+  --primary-foreground: #ffffff;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--ac-500);
+
+  --color-stone-900: var(--tx-1);
+  --color-stone-800: var(--tx-2);
+  --color-stone-700: var(--tx-3);
+  --color-stone-600: var(--tx-4);
+  --color-stone-500: var(--tx-5);
+  --color-stone-400: var(--tx-6);
+  --color-stone-100: rgb(255 255 255 / 0.08);
+
+  --color-teal-50: var(--ac-tint-1);
+  --color-teal-100: var(--ac-tint-2);
+  --color-teal-200: var(--ac-tint-3);
+  --color-teal-500: var(--ac-500);
+  --color-teal-600: var(--ac-600);
+  --color-teal-700: var(--ac-text);
+
+  --color-amber-50: rgb(245 158 11 / 0.14);
+  --color-amber-100: rgb(245 158 11 / 0.22);
+  --color-amber-700: #fcd34d;
+  --color-rose-50: rgb(244 63 94 / 0.12);
+  --color-rose-100: rgb(244 63 94 / 0.22);
+  --color-rose-600: #fb7185;
+  --color-rose-700: #fda4af;
+  --color-red-600: #f87171;
+  --color-gray-50: transparent;
+  --color-indigo-50: var(--ac-tint-1);
+  --color-indigo-600: var(--ac-600);
+  --color-gray-200: rgb(255 255 255 / 0.1);
+}
+/* Text that used the accent colour must be light on dark panels */
+html[data-theme="midnight"] .text-teal-600,
+html[data-theme="calm"] .text-teal-600 {
+  color: var(--ac-text);
+}
+/* Solid accent backgrounds that carry white text stay dark enough */
+html[data-theme="midnight"] .bg-teal-700,
+html[data-theme="midnight"] .hover\:bg-teal-700:hover,
+html[data-theme="calm"] .bg-teal-700,
+html[data-theme="calm"] .hover\:bg-teal-700:hover {
+  background-color: var(--ac-strong);
+}
+html[data-theme="midnight"] .bg-red-600,
+html[data-theme="calm"] .bg-red-600 {
+  background-color: #c62828;
+}

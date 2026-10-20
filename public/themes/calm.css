@@ -1,0 +1,30 @@
+/* ===== Theme: calm (dark, deep sea; needs dark-base.css) ===== */
+html[data-theme="calm"] {
+  --background: #0a202a;
+  --panel: rgb(14 52 60 / 0.68);
+  --panel-soft: rgb(255 255 255 / 0.05);
+  --chip: rgb(255 255 255 / 0.09);
+  --line: rgb(150 220 205 / 0.2);
+
+  --tx-1: #f1faf7;
+  --tx-2: #e0f0eb;
+  --tx-3: #cbe3dc;
+  --tx-4: #afcfc7;
+  --tx-5: #8fb5ad;
+  --tx-6: #6c9790;
+
+  --ac-tint-1: rgb(110 214 186 / 0.13);
+  --ac-tint-2: rgb(110 214 186 / 0.22);
+  --ac-tint-3: rgb(110 214 186 / 0.4);
+  --ac-500: #2fa58f;
+  --ac-600: #16806d;
+  --ac-strong: #0f6b5b;
+  --ac-text: #a8ecd9;
+}
+html[data-theme="calm"] body {
+  background:
+    radial-gradient(ellipse at 85% -5%, rgb(64 160 150 / 0.35) 0, transparent 55%),
+    radial-gradient(ellipse at 5% 100%, rgb(214 170 120 / 0.16) 0, transparent 50%),
+    linear-gradient(180deg, #0f3038, #0b2430 55%, #09202a);
+  background-attachment: fixed;
+}
