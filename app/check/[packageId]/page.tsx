@@ -9,8 +9,8 @@ import { parseCategory, saleLabel } from "@/lib/stores/category";
 import { effectivePrice } from "@/lib/prices/coupon";
 import { parseStoredTiers } from "@/lib/prices/bulk";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
-import { unitPriceText } from "@/lib/prices/unit";
-import UnitPriceLine from "@/components/UnitPriceLine";
+import { unitPriceLines } from "@/lib/prices/unitLines";
+import UnitPriceLines from "@/components/UnitPriceLines";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
 import { deletePriceObservation } from "./actions";
 import { getViewer } from "@/lib/auth/viewer";
@@ -79,15 +79,17 @@ export default async function PackageDetailPage({
       bonusPoints: (obs.bonus_points as number | null) ?? null,
       bulkTiers: parseStoredTiers(obs.bulk_tiers),
       taxBasis: parseTaxBasis(obs.tax_basis),
-      unitText: unitPriceText(
-        effectivePrice(Number(obs.price), {
+      unitLines: unitPriceLines({
+        displayPrice: effectivePrice(Number(obs.price), {
           couponPercents: chain?.coupon_percents ?? [],
           memberPercent: chain?.member_discount_percent ?? null,
           isMemberPrice: !!obs.is_member_price,
         }),
-        Number(pkg.package_size),
-        pkg.package_unit
-      ),
+        enteredPrice: Number(obs.price),
+        bulkTiers: parseStoredTiers(obs.bulk_tiers),
+        size: Number(pkg.package_size),
+        unit: pkg.package_unit,
+      }),
       memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
       pointUseMultiplier: pointUseMultiplierOf(
         chain?.point_use_enabled,
@@ -130,7 +132,7 @@ export default async function PackageDetailPage({
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
             <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} pointUseMultiplier={latest.pointUseMultiplier} bulkTiers={latest.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={latest.taxBasis} size="lg" />
-            <UnitPriceLine text={latest.unitText} taxBasis={latest.taxBasis} />
+            <UnitPriceLines lines={latest.unitLines} taxBasis={latest.taxBasis} />
           </div>
           <p className="mt-2 text-sm text-stone-500">
             {latest.chainName}
@@ -165,7 +167,7 @@ export default async function PackageDetailPage({
                   <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} pointUseMultiplier={r.pointUseMultiplier} bulkTiers={r.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={r.taxBasis} size="md" />
                 </div>
                 <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
-                <UnitPriceLine text={r.unitText} taxBasis={r.taxBasis} />
+                <UnitPriceLines lines={r.unitLines} taxBasis={r.taxBasis} />
                 {r.notes && <p className="mt-2 text-sm text-stone-700">{r.notes}</p>}
                 <div className="mt-2">
                   <DeleteObservationButton

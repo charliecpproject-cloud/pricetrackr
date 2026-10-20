@@ -13,8 +13,8 @@ import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
 import { isCheapest, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
-import { unitPriceText } from "@/lib/prices/unit";
-import UnitPriceLine from "@/components/UnitPriceLine";
+import { unitPriceLines } from "@/lib/prices/unitLines";
+import UnitPriceLines from "@/components/UnitPriceLines";
 import {
   countActive,
   hasActivePeriod,
@@ -538,8 +538,15 @@ export default async function CheckPage({
                           taxBasis={r.taxBasis}
                           size="md"
                         />
-                        <UnitPriceLine
-                          text={unitPriceText(r.effective, card.sizeValue, card.unit)}
+                        <UnitPriceLines
+                          lines={unitPriceLines({
+                            displayPrice: r.effective,
+                            enteredPrice: r.price,
+                            bulkTiers: r.bulkTiers,
+                            size: card.sizeValue,
+                            unit: card.unit,
+                            hideSinglePiece: true,
+                          })}
                           taxBasis={r.taxBasis}
                         />
                       </div>
