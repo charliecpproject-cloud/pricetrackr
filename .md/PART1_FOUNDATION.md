@@ -5,9 +5,9 @@ Private, single-user price tracker for Japan (JPY), bilingual JA/EN product data
 
 ## Built (Phase 1 and early extras)
 - Next.js on Vercel + Supabase (Auth/DB), owner-only account (sign-ups disabled), RLS on every table.
-- Tables: products, product_variations, product_packages, store_chains, shops, price_observations, profiles, app_settings.
-- Pages: home, price entry (with inline new product/package/branch), price check (latest price per chain), product detail (latest price, history, unit price), stores (chains, branches, coupons, membership and points settings), products (add/edit products, variations, packages, memo), delete own price entries.
-- Also built: chain coupons, membership price and bonus points, product variations, product memo, tax basis, unit price on the detail page, app icon and web app manifest.
+- Tables: products, product_variations, product_packages, store_chains, shops, price_observations, profiles, app_settings, plus store_chain_usage, product_barcodes, search_aliases, counter_units and the archive table deleted_records.
+- Pages: home, price entry (with inline new product/package/branch), price check (latest price per chain), product detail (latest price, history, unit price), stores (chains, branches, coupons, membership and points settings), products (add/edit products, variations, packages, memo), delete own price entries, a barcode scan page (/scan), settings (/settings) and admin tools (/admin).
+- Also built: chain coupons, membership price and bonus points, product variations, product memo, tax basis, unit price (on the detail page and on the price check cards), bulk discount tiers, ウェル活, barcode scanning, demo mode and roles, themes, search with aliases, counter-word units, toast notifications, admin tools, app icon and web app manifest.
 
 ## Not built yet (OUT)
 AI/photo extraction, freshness/trust scoring, translation-approval workflow, internet auto-research, multi-user, shopping list, favorites, alerts, gamification, community/regional features. See PART2/PART3 when relevant — don't build ahead of scope.
