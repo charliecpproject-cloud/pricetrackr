@@ -206,6 +206,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 39 (memo boxes: the shadcn Textarea now uses bg-panel, border-line and shadow-sm instead of a transparent background, so memo fields are visible in every theme) done
 
 
+- Step 39b (the shadcn Input, used only by the login page, now uses bg-panel, border-line and shadow-sm instead of a transparent background) done
+
+
 ## In Progress
 
 - (none)
