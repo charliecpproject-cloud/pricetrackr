@@ -188,6 +188,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 36 (themes: each theme is a plain CSS file in public/themes/ (glass, sky, midnight, calm, shared dark-base), listed in lib/themes/themes.ts and linked from app/layout.tsx only for the theme in use, so the default theme loads none; midnight is lighter and gives cards a subtle glass look; bottom bar tabs sit in a narrower centred row for iPhone) done
 
 
+- Step 36b (login guard proxy.ts skips /themes/ so theme CSS files are served without a login check) done
+
+
 ## In Progress
 
 - (none)
