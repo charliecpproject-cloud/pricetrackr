@@ -12,7 +12,6 @@ import { getViewer } from "@/lib/auth/viewer";
 import { normalizeBarcode } from "@/lib/products/barcode";
 import { searchProductIds } from "@/lib/search/products";
 
-const RECENT_COUNT = 3; // shown by default
 const PAGE_SIZE = 20; // search results
 const ALL_LIMIT = 300; // すべての商品
 
@@ -62,6 +61,8 @@ export default async function ProductsPage({
   // Keep the search term short and free of characters that break the filter.
   const term = (q ?? "").trim().slice(0, 50).replace(/[,()%_*\\]/g, "");
   const showAll = all === "1" && !term;
+  // The default view shows only the add section; a list appears for a search or すべての商品.
+  const showList = term !== "" || showAll;
 
   const supabase = await createSupabaseServerClient();
   const viewer = await getViewer();
@@ -78,14 +79,15 @@ export default async function ProductsPage({
         .or(searchFilter)
         .order("name_ja", { ascending: true })
         .limit(PAGE_SIZE)
-    : showAll
-      ? base.order("name_ja", { ascending: true }).limit(ALL_LIMIT)
-      : base.order("created_at", { ascending: false }).limit(RECENT_COUNT);
+    : base.order("name_ja", { ascending: true }).limit(ALL_LIMIT);
 
   // The list and the (light) attribute-name data are fetched at the same time.
+  // Nothing is loaded for the default view (only the add section is shown).
   const [listResult, variationsResult] = await Promise.all([
-    listQuery,
-    supabase.from("product_variations").select("attributes"),
+    showList ? listQuery : Promise.resolve({ data: [] as Product[], error: null }),
+    showList
+      ? supabase.from("product_variations").select("attributes")
+      : Promise.resolve({ data: [] as { attributes: unknown }[], error: null }),
   ]);
 
   if (listResult.error) console.error("Products fetch error:", listResult.error);
@@ -132,11 +134,7 @@ export default async function ProductsPage({
   });
   const attributeNames = Array.from(attributeNameSet).sort();
 
-  const heading = term
-    ? `「${term}」の検索結果`
-    : showAll
-      ? "すべての商品"
-      : "最近追加した商品";
+  const heading = term ? `「${term}」の検索結果` : "すべての商品";
 
   return (
     <ProductDialogsProvider attributeNames={attributeNames}>
@@ -163,7 +161,7 @@ export default async function ProductsPage({
         <div className="space-y-3">
           {showAll ? (
             <Link href="/products" className={linkBtnCls}>
-              最近の商品だけ表示
+              商品一覧を閉じる
             </Link>
           ) : (
             <Link href="/products?all=1" className={linkBtnCls}>
@@ -171,7 +169,7 @@ export default async function ProductsPage({
             </Link>
           )}
 
-          <details open={newBarcode !== ""} className={sectionCls}>
+          <details open={newBarcode !== "" || !showList} className={sectionCls}>
             <summary className={summaryCls}>商品を追加</summary>
             <div className="mt-4">
               <ReadOnlyFieldset readOnly={readOnly}>
@@ -181,16 +179,11 @@ export default async function ProductsPage({
           </details>
         </div>
 
-        <div>
+        {showList && (
           <h2 className="text-lg font-bold text-stone-900">{heading}</h2>
-          {!term && !showAll && (
-            <p className="mt-1 text-sm text-stone-500">
-              新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は検索するか、上のボタンで表示できます。
-            </p>
-          )}
-        </div>
+        )}
 
-        {productList.length === 0 ? (
+        {!showList ? null : productList.length === 0 ? (
           <p className="text-stone-500">
             {term ? "見つかりませんでした" : "まだ商品がありません。"}
           </p>

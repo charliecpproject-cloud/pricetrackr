@@ -59,7 +59,7 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - `components/ProductFields.tsx` holds the product fields (商品名, 英語名・別名, ブランド, カテゴリ, メモ) and is used by 商品を追加 and by 価格入力 > 新しい商品として登録 (prefix `np_`). Change fields there, never in one form only.
 
 ## Products page
-- Default view: the 3 most recently added products under the heading 最近追加した商品; the button すべての商品を表示 (`?all=1`) shows all (max 300); a search (`?q=`) shows up to 20 matches.
+- Default view: only the 商品を追加 section (open) is shown and no product list is loaded. The button すべての商品を表示 (`?all=1`) shows all products (max 300) and then reads 商品一覧を閉じる to go back; a search (`?q=`) shows up to 20 matches. The 商品を追加 section is collapsed while a list is shown and open in the default view (and after an unknown barcode scan).
 - On each card, the buttons バリエーションを追加 and 容量を追加 open ONE shared popup (`app/products/ProductDialogs.tsx`, provider around the list, `useProductDialogs()`), with the product preselected; the popup closes after a successful add. There are no product dropdown forms at the bottom of the page any more (only 商品を追加).
 
 ## Delete buttons
@@ -105,7 +105,7 @@ Next.js 16 (App Router), React 19, Tailwind 4, TypeScript strict, npm (not pnpm)
 - Price check: with no search and no filter only the 3 most recently added products are shown (heading 最近追加した商品); a search or a filter shows up to 20. Search, then one card per package with the latest price per chain (most recent first, tax badge on each price, 最安 only under the tax rules above). Each price row also shows its unit price line (same calculation as the product detail page), so sizes can be compared without opening a product; nothing is shown for a single piece (1個 / 1枚 / 1袋), where it would only repeat the price. A price with bulk tiers shows two unit price lines: 通常 and まとめ買い with the biggest discount tier (lib/prices/unitLines.ts).
 - Product detail: 最新価格 card and the price history, each with tax badge and unit price line, and delete for own entries.
 - Stores: a dropdown chooses one chain (`?chain=<id>`); only that chain's branches are loaded; the add-chain and add-branch forms are collapsed `<details>`.
-- Products: search first (`?q=`), 20 products at a time; the add forms (商品, バリエーション, 容量) are collapsed `<details>` below the list.
+- Products: search first (`?q=`), the 商品を追加 add section open by default (collapsed when a list is shown), the list only for a search or すべての商品を表示; variation and 容量 adds use the shared popup on each card.
 
 ## Notifications (toasts)
 - After a save or delete a toast appears at the top of the screen (`components/ToastProvider.tsx`, mounted in `app/layout.tsx`): green for success (3 s), red for an error (5 s), tap × to close, up to 3 stacked. The inline messages stay.
