@@ -13,6 +13,8 @@ import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
 import { isCheapest, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
+import { unitPriceText } from "@/lib/prices/unit";
+import UnitPriceLine from "@/components/UnitPriceLine";
 import {
   countActive,
   hasActivePeriod,
@@ -314,6 +316,8 @@ export default async function CheckPage({
           name: name as string,
           sub,
           size: packageLabel(pkg.package_size, pkg.package_unit),
+          sizeValue: Number(pkg.package_size),
+          unit: String(pkg.package_unit),
           variationLabel: variationText,
           taxRate: (product.tax_rate as number | null) ?? null,
           rows: Array.from(latest.get(pkg.id)?.values() ?? []).sort(
@@ -522,17 +526,23 @@ export default async function CheckPage({
                           ) : null}
                         </p>
                       </div>
-                      <PriceDisplay
-                        price={r.price}
-                        couponPercents={r.couponPercents}
-                        memberPercent={r.memberPercent}
-                        isMemberPrice={r.isMemberPrice}
-                        pointUseMultiplier={r.pointUseMultiplier}
-                        bulkTiers={r.bulkTiers}
-                        taxRate={card.taxRate}
-                        taxBasis={r.taxBasis}
-                        size="md"
-                      />
+                      <div className="flex flex-col items-end gap-1">
+                        <PriceDisplay
+                          price={r.price}
+                          couponPercents={r.couponPercents}
+                          memberPercent={r.memberPercent}
+                          isMemberPrice={r.isMemberPrice}
+                          pointUseMultiplier={r.pointUseMultiplier}
+                          bulkTiers={r.bulkTiers}
+                          taxRate={card.taxRate}
+                          taxBasis={r.taxBasis}
+                          size="md"
+                        />
+                        <UnitPriceLine
+                          text={unitPriceText(r.effective, card.sizeValue, card.unit)}
+                          taxBasis={r.taxBasis}
+                        />
+                      </div>
                     </li>
                   ))}
                 </ul>
