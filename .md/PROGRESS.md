@@ -197,6 +197,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 38a-38b (counter words, part 1: table counter_units (unit, label, enabled, sort_order) seeded with 個 枚 袋 本 玉 束 缶 パック 箱 切れ 丁 尾, readable by everyone, changed only by admins, 個 cannot be hidden or removed, delete_counter_unit() refuses words in use, counter_unit_usage(); lib/prices/unitWords.ts: every unit that is not ml/L/g/kg is a counter word shown as itself, used by packageLabel, unitPrice and the single-piece rule) done
 
 
+- Step 38c (counter words, part 2: the 単位 dropdowns on 価格入力 and the 容量 dialog on 商品 list the measures plus the enabled words of counter_units (fallback: 個, 枚, 袋); addPrice and addPackage refuse a unit that is neither a measure nor an enabled word; lib/prices/counterUnits.ts) done
+
+
 ## In Progress
 
 - (none)
