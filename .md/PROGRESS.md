@@ -191,6 +191,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 36b (login guard proxy.ts skips /themes/ so theme CSS files are served without a login check) done
 
 
+- Step 37 (products page: the 3 recent products are gone; the default view shows the open 商品を追加 section with no list and no list queries; すべての商品を表示 shows the full list with a 商品一覧を閉じる button back; the add section is collapsed while a list or search is shown; docs updated) done
+
+
 ## In Progress
 
 - (none)
