@@ -179,6 +179,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 35 (price check: every price row on the cards shows the unit price line, same calculation as the product detail page, so sizes can be compared without opening a product; docs updated) done
 
 
+- Step 35b (unit price lines: lib/prices/unitLines.ts with tests; price check cards hide the unit price for a single piece (1個 / 1枚 / 1袋); prices with bulk tiers show two unit price lines, 通常 and まとめ買い at the biggest discount, on the cards and the detail page) done
+
+
 ## In Progress
 
 - (none)
