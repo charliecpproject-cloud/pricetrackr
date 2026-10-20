@@ -10,6 +10,7 @@ import { getChainUsage } from "@/lib/stores/usage";
 import { arrangeChains } from "@/lib/stores/arrange";
 import { parseCategory } from "@/lib/stores/category";
 import type { SearchAlias } from "@/lib/search/aliases";
+import { loadCounterUnits } from "@/lib/prices/counterUnits";
 
 export default async function NewPricePage({
   searchParams,
@@ -24,7 +25,7 @@ export default async function NewPricePage({
   const supabase = await createSupabaseServerClient();
 
   // Everything the page needs is fetched at the same time.
-  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer] = await Promise.all([
+  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer, counterUnits] = await Promise.all([
     supabase
       .from("products")
       .select(
@@ -38,6 +39,7 @@ export default async function NewPricePage({
     supabase.from("shops").select("id, store_chain_id, name").order("name", { ascending: true }),
     supabase.from("search_aliases").select("alias, canonical").eq("enabled", true),
     getViewer(),
+    loadCounterUnits(supabase),
   ]);
 
   const { data: products, error: productsError } = productsResult;
@@ -191,6 +193,7 @@ export default async function NewPricePage({
         initialPackageId={initialPackageId}
         startNew={startNew}
         defaultProductId={focusProduct?.id ?? ""}
+        counterUnits={counterUnits}
       />
     </div>
   );

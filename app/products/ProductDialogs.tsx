@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
 import { addVariation } from "@/app/products/variationActions";
 import { addPackage } from "@/app/products/actions";
+import { unitDropdownOptions, type CounterUnitOption } from "@/lib/prices/unitWords";
 
 export type DialogProduct = {
   id: string;
@@ -29,15 +30,6 @@ export function useProductDialogs(): Api {
   return api;
 }
 
-const UNITS = [
-  { value: "ml", label: "ml" },
-  { value: "L", label: "L" },
-  { value: "g", label: "g" },
-  { value: "kg", label: "kg" },
-  { value: "count", label: "個" },
-  { value: "sheet", label: "枚" },
-  { value: "bag", label: "袋" },
-];
 
 // controlCls is full width; the unit dropdown must stay small.
 const unitCls = controlCls.replace("w-full", "w-24 shrink-0");
@@ -49,9 +41,11 @@ const packageInitial: PackageState = { error: null };
 
 function AddPackageForm({
   product,
+  counterUnits,
   onDone,
 }: {
   product: DialogProduct;
+  counterUnits: CounterUnitOption[];
   onDone: () => void;
 }) {
   const [state, formAction, pending] = useToastedActionState<PackageState, FormData>(
@@ -108,7 +102,7 @@ function AddPackageForm({
             className={unitCls}
           >
             <option value="">単位</option>
-            {UNITS.map((u) => (
+            {unitDropdownOptions(counterUnits).map((u) => (
               <option key={u.value} value={u.value}>
                 {u.label}
               </option>
@@ -208,9 +202,11 @@ function AddVariationForm({
 
 export function ProductDialogsProvider({
   attributeNames,
+  counterUnits,
   children,
 }: {
   attributeNames: string[];
+  counterUnits: CounterUnitOption[];
   children: ReactNode;
 }) {
   const [dialog, setDialog] = useState<Dialog>(null);
@@ -268,7 +264,12 @@ export function ProductDialogsProvider({
             </div>
 
             {dialog.kind === "package" ? (
-              <AddPackageForm key={dialog.product.id} product={dialog.product} onDone={close} />
+              <AddPackageForm
+                key={dialog.product.id}
+                product={dialog.product}
+                counterUnits={counterUnits}
+                onDone={close}
+              />
             ) : (
               <AddVariationForm
                 key={dialog.product.id}

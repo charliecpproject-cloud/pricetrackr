@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { loadAllowedUnits } from "@/lib/prices/counterUnits";
 
 /* ---------- 商品追加アクション ---------- */
 export async function addProduct(
@@ -166,6 +167,11 @@ export async function addPackage(
   }
 
   const supabase = await createSupabaseServerClient();
+
+  // ---- 単位が使える言葉か確認 ----
+  if (!(await loadAllowedUnits(supabase)).includes(parseResult.data.package_unit)) {
+    return { error: "単位を選んでください" };
+  }
 
   // ---- バリエーションが必要かチェック ----
   // 対象商品にバリエーションが存在するか確認

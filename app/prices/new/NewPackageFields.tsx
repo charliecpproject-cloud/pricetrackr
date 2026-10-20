@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Field, controlCls } from "@/components/FormParts";
 import ProductFields from "@/components/ProductFields";
+import { unitDropdownOptions, type CounterUnitOption } from "@/lib/prices/unitWords";
 
 export type ProductOption = {
   id: string;
@@ -10,15 +11,6 @@ export type ProductOption = {
   variations: { id: string; label: string }[];
 };
 
-const UNITS = [
-  { value: "ml", label: "ml" },
-  { value: "L", label: "L" },
-  { value: "g", label: "g" },
-  { value: "kg", label: "kg" },
-  { value: "count", label: "個" },
-  { value: "sheet", label: "枚" },
-  { value: "bag", label: "袋" },
-];
 
 // controlCls is full width; the unit dropdown must stay small.
 const unitCls = controlCls.replace("w-full", "w-24 shrink-0");
@@ -26,9 +18,11 @@ const unitCls = controlCls.replace("w-full", "w-24 shrink-0");
 export default function NewPackageFields({
   products,
   defaultProductId = "",
+  counterUnits,
 }: {
   products: ProductOption[];
   defaultProductId?: string;
+  counterUnits: CounterUnitOption[];
 }) {
   const [productId, setProductId] = useState(defaultProductId);
   const [variationId, setVariationId] = useState("");
@@ -108,7 +102,7 @@ export default function NewPackageFields({
             className={unitCls}
           >
             <option value="">単位</option>
-            {UNITS.map((u) => (
+            {unitDropdownOptions(counterUnits).map((u) => (
               <option key={u.value} value={u.value}>
                 {u.label}
               </option>

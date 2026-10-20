@@ -6,6 +6,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
 import { TAX_BASES } from "@/lib/prices/tax";
 import { parseBarcodes } from "@/lib/products/barcode";
+import { loadAllowedUnits } from "@/lib/prices/counterUnits";
+import { MAX_UNIT_LENGTH } from "@/lib/prices/unitWords";
 import { parseBulkTiers, type BulkTier } from "@/lib/prices/bulk";
 
 type State = {
@@ -16,7 +18,7 @@ type State = {
 type Supabase = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
 const SAVE_FAILED = "保存できませんでした。もう一度お試しください。";
-const UNITS = ["ml", "L", "g", "kg", "count", "sheet", "bag"] as const;
+const UNIT_ERROR = "単位を選んでください";
 
 const baseSchema = z.object({
   store_chain_id: z.string().uuid("チェーンを選んでください"),
@@ -42,7 +44,7 @@ const newPackageSchema = z.object({
     .string()
     .regex(/^(?:\d|[12]\d|30)$/, "税率が正しくありません")
     .nullable(),
-  unit: z.enum(UNITS, { error: "単位を選んでください" }),
+  unit: z.string().trim().min(1, UNIT_ERROR).max(MAX_UNIT_LENGTH, UNIT_ERROR),
 });
 
 // Returns the trimmed text value, or null when missing or empty.
@@ -89,6 +91,9 @@ async function resolveNewPackage(
   if (size === null) return { error: "容量は0より大きい数値で入力してください" };
 
   const { name, brand, unit, other_name, category, memo, tax_rate } = parsed.data;
+  // Only a measure or an enabled counter word may be used for a new 容量.
+  if (!(await loadAllowedUnits(supabase)).includes(unit)) return { error: UNIT_ERROR };
+
   const name_ja = name;
   const name_en: string | null = other_name;
   let productId = parsed.data.product_id;

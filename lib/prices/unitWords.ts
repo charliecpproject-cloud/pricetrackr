@@ -12,6 +12,16 @@ const LEGACY_COUNTER_LABELS: Record<string, string> = {
   bag: "袋",
 };
 
+/** A counter word as offered in a dropdown: unit = what is stored, label = what is shown. */
+export type CounterUnitOption = { unit: string; label: string };
+
+/** Offered when the table cannot be read: the three original counter words. */
+export const DEFAULT_COUNTER_OPTIONS: CounterUnitOption[] = [
+  { unit: "count", label: "個" },
+  { unit: "sheet", label: "枚" },
+  { unit: "bag", label: "袋" },
+];
+
 export function isMeasureUnit(unit: string): boolean {
   return (MEASURE_UNITS as readonly string[]).includes(unit);
 }
@@ -26,4 +36,14 @@ export function counterLabel(unit: string): string {
   return Object.prototype.hasOwnProperty.call(LEGACY_COUNTER_LABELS, unit)
     ? LEGACY_COUNTER_LABELS[unit]
     : unit;
+}
+
+/** The unit dropdown: the measures first, then the counter words. */
+export function unitDropdownOptions(
+  counters: readonly CounterUnitOption[]
+): { value: string; label: string }[] {
+  return [
+    ...MEASURE_UNITS.map((unit) => ({ value: unit as string, label: unit as string })),
+    ...counters.map((c) => ({ value: c.unit, label: c.label })),
+  ];
 }

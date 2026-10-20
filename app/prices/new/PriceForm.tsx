@@ -23,6 +23,7 @@ import BulkPriceFields, { emptyBulkRows, rowsFromTiers, type BulkRow } from "./B
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
 import { matchesSearchWithAliases, type SearchAlias } from "@/lib/search/aliases";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
+import type { CounterUnitOption } from "@/lib/prices/unitWords";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
 type Pkg = { id: string; label: string; search: string };
@@ -79,6 +80,7 @@ export default function PriceForm({
   initialPackageId = "",
   startNew = false,
   defaultProductId = "",
+  counterUnits,
 }: {
   packages: Pkg[];
   products: ProductOption[];
@@ -89,6 +91,7 @@ export default function PriceForm({
   initialPackageId?: string;
   startNew?: boolean;
   defaultProductId?: string;
+  counterUnits: CounterUnitOption[];
 }) {
   const [state, formAction, pending] = useToastedActionState(addPriceObservation, initialState);
   const [search, setSearch] = useState("");
@@ -255,7 +258,11 @@ export default function PriceForm({
             <span className={`${labelCls} mb-0`}>新しい商品・容量を登録</span>
             <NewToggle checked onChange={setIsNewPackage} />
           </div>
-          <NewPackageFields products={products} defaultProductId={defaultProductId} />
+          <NewPackageFields
+            products={products}
+            defaultProductId={defaultProductId}
+            counterUnits={counterUnits}
+          />
         </div>
       ) : (
         <>

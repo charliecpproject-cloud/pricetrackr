@@ -11,6 +11,8 @@ import ReadOnlyFieldset from "@/components/ReadOnlyFieldset";
 import { getViewer } from "@/lib/auth/viewer";
 import { normalizeBarcode } from "@/lib/products/barcode";
 import { searchProductIds } from "@/lib/search/products";
+import { loadCounterUnits } from "@/lib/prices/counterUnits";
+import type { CounterUnitOption } from "@/lib/prices/unitWords";
 
 const PAGE_SIZE = 20; // search results
 const ALL_LIMIT = 300; // すべての商品
@@ -83,11 +85,12 @@ export default async function ProductsPage({
 
   // The list and the (light) attribute-name data are fetched at the same time.
   // Nothing is loaded for the default view (only the add section is shown).
-  const [listResult, variationsResult] = await Promise.all([
+  const [listResult, variationsResult, counterUnits] = await Promise.all([
     showList ? listQuery : Promise.resolve({ data: [] as Product[], error: null }),
     showList
       ? supabase.from("product_variations").select("attributes")
       : Promise.resolve({ data: [] as { attributes: unknown }[], error: null }),
+    showList ? loadCounterUnits(supabase) : Promise.resolve([] as CounterUnitOption[]),
   ]);
 
   if (listResult.error) console.error("Products fetch error:", listResult.error);
@@ -137,7 +140,7 @@ export default async function ProductsPage({
   const heading = term ? `「${term}」の検索結果` : "すべての商品";
 
   return (
-    <ProductDialogsProvider attributeNames={attributeNames}>
+    <ProductDialogsProvider attributeNames={attributeNames} counterUnits={counterUnits}>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-stone-900">商品</h1>
 
