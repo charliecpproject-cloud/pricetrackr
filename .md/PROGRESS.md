@@ -209,6 +209,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 39b (the shadcn Input, used only by the login page, now uses bg-panel, border-line and shadow-sm instead of a transparent background) done
 
 
+- Step 39c (docs: PART2_GROWTH_FEATURES.md marks what is built, partly built and open; PART1_FOUNDATION.md built list brought up to date) done
+
+
 ## In Progress
 
 - (none)
