@@ -200,6 +200,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 38c (counter words, part 2: the 単位 dropdowns on 価格入力 and the 容量 dialog on 商品 list the measures plus the enabled words of counter_units (fallback: 個, 枚, 袋); addPrice and addPackage refuse a unit that is neither a measure nor an enabled word; lib/prices/counterUnits.ts) done
 
 
+- Step 38d-38e (counter words, part 3: /admin/units lists the words with usage counts, show/hide checkbox, remove for unused words, add form with validation (lib/prices/counterWord.ts), registered in the admin tool list; docs updated; Step 38 complete) done
+
+
 ## In Progress
 
 - (none)
