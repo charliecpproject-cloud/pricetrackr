@@ -203,6 +203,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 38d-38e (counter words, part 3: /admin/units lists the words with usage counts, show/hide checkbox, remove for unused words, add form with validation (lib/prices/counterWord.ts), registered in the admin tool list; docs updated; Step 38 complete) done
 
 
+- Step 39 (memo boxes: the shadcn Textarea now uses bg-panel, border-line and shadow-sm instead of a transparent background, so memo fields are visible in every theme) done
+
+
 ## In Progress
 
 - (none)
