@@ -94,15 +94,3 @@ export function parseStoredTiers(value: unknown): BulkTier[] {
 export function bulkTierPrice(price: number, percent: number): number {
   return couponPrice(price, percent);
 }
-
-/**
- * OLD (removed in Step 34e): the normal price calculated back from an already
- * discounted price.
- */
-export function originalPrice(discounted: number, percent: number): number | null {
-  if (!Number.isFinite(discounted) || discounted < 0) return null;
-  if (!Number.isInteger(percent) || percent < BULK_MIN_PERCENT || percent > BULK_MAX_PERCENT) {
-    return null;
-  }
-  return Math.ceil((discounted * 100) / (100 - percent) - 1e-9);
-}

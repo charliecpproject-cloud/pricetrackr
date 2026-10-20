@@ -1,31 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   bulkTierPrice,
-  originalPrice,
   parseBulkPercent,
   parseBulkQuantity,
   parseBulkTiers,
   parseStoredTiers,
 } from "./bulk";
 
-describe("originalPrice (old, removed in Step 34e)", () => {
-  it("reverses a clean discount", () => {
-    expect(originalPrice(800, 20)).toBe(1000);
-    expect(originalPrice(1200, 25)).toBe(1600);
-  });
-
-  it("rounds up", () => {
-    expect(originalPrice(2412, 15)).toBe(2838);
-    expect(originalPrice(790, 20)).toBe(988);
-  });
-
-  it("returns null for unusable input", () => {
-    expect(originalPrice(800, 100)).toBeNull();
-    expect(originalPrice(800, 0)).toBeNull();
-    expect(originalPrice(Number.NaN, 20)).toBeNull();
-    expect(originalPrice(-1, 20)).toBeNull();
-  });
-});
 
 describe("parseBulkPercent", () => {
   it("accepts 1 to 99, also full-width", () => {
