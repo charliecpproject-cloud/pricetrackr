@@ -4,6 +4,7 @@ import {
   couponPrice,
   couponPercentsFromShop,
   bestDiscount,
+  allDiscounts,
   effectivePrice,
 } from "./coupon";
 
@@ -57,6 +58,37 @@ describe("bestDiscount", () => {
   });
   it("uses membership alone", () => {
     expect(bestDiscount([], 3)).toEqual({ kind: "member", percent: 3 });
+  });
+});
+
+describe("allDiscounts", () => {
+  it("lists every coupon, smallest first", () => {
+    expect(allDiscounts([15, 5, 10], null)).toEqual([
+      { kind: "coupon", percent: 5 },
+      { kind: "coupon", percent: 10 },
+      { kind: "coupon", percent: 15 },
+    ]);
+  });
+  it("puts the membership percent in order", () => {
+    expect(allDiscounts([5, 10], 8)).toEqual([
+      { kind: "coupon", percent: 5 },
+      { kind: "member", percent: 8 },
+      { kind: "coupon", percent: 10 },
+    ]);
+  });
+  it("skips a membership percent that equals a coupon percent", () => {
+    expect(allDiscounts([5], 5)).toEqual([{ kind: "coupon", percent: 5 }]);
+  });
+  it("ignores unknown coupon percents, repeats and empty values", () => {
+    expect(allDiscounts([20, 5, 5], 0)).toEqual([{ kind: "coupon", percent: 5 }]);
+    expect(allDiscounts(null, null)).toEqual([]);
+    expect(allDiscounts([], undefined)).toEqual([]);
+  });
+  it("ends with the same discount as bestDiscount", () => {
+    for (const [coupons, member] of [[[5, 10], 8], [[5], 8], [[15, 10], 3], [[], 3]] as const) {
+      const list = allDiscounts(coupons, member);
+      expect(list[list.length - 1]).toEqual(bestDiscount(coupons, member));
+    }
   });
 });
 

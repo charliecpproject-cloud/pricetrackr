@@ -1,10 +1,12 @@
 import { bestBulkTier, bulkItemPrice, type BulkTier } from "./bulk";
 import { bestDiscount, couponPrice } from "./coupon";
 import { formatYen } from "./format";
-import { unitPriceText } from "./unit";
+import { unitPrice } from "./unit";
 import { isCounterUnit } from "./unitWords";
 
-export type UnitLine = { label: string | null; text: string };
+export type UnitSummaryItem = { label: string | null; amount: string };
+// per = "100mlあたり", "100gあたり", "1個あたり" ...; items = one or more prices per that amount.
+export type UnitSummary = { per: string; items: UnitSummaryItem[] };
 
 /** True for one single piece (1個, 1枚, 1袋, 1本, ...): the unit price would only repeat the price. */
 export function isSinglePiece(size: number, unit: string): boolean {
@@ -18,14 +20,15 @@ function bulkLabel(tier: BulkTier): string {
 }
 
 /**
- * The unit price lines of one price, all calculated from the entered (regular) price:
- * - 通常: the entered price, without any coupon (when the entered price is already a member
- *   price it is labeled 会員価格);
- * - the best coupon or membership percent of the chain applied, when there is one;
+ * One compact unit price summary, all calculated from the entered (regular) price:
+ * - 通常: the entered price without any coupon (会員価格 when the entered price is already a
+ *   member price);
+ * - the best coupon or membership percent of the chain, when there is one;
  * - まとめ買い: the tier with the lowest price per item, when the price has tiers.
- * With neither a discount nor tiers there is a single unlabeled line. The discounts never stack.
+ * With neither a discount nor tiers there is a single unlabeled item. Discounts never stack.
+ * Returns null when there is nothing to show (unknown unit, or a single piece when hidden).
  */
-export function unitPriceLines(options: {
+export function unitPriceSummary(options: {
   enteredPrice: number;
   couponPercents?: readonly number[] | null;
   memberPercent?: number | null;
@@ -34,7 +37,7 @@ export function unitPriceLines(options: {
   size: number;
   unit: string;
   hideSinglePiece?: boolean;
-}): UnitLine[] {
+}): UnitSummary | null {
   const {
     enteredPrice,
     couponPercents,
@@ -45,30 +48,31 @@ export function unitPriceLines(options: {
     unit,
     hideSinglePiece = false,
   } = options;
-  if (hideSinglePiece && isSinglePiece(size, unit)) return [];
+  if (hideSinglePiece && isSinglePiece(size, unit)) return null;
 
-  const regular = unitPriceText(enteredPrice, size, unit);
-  if (regular === null) return [];
+  const regular = unitPrice(enteredPrice, size, unit);
+  if (regular === null) return null;
+  const per = isCounterUnit(unit) ? `1${regular.label}あたり` : `${regular.label}あたり`;
 
   const discount = isMemberPrice ? null : bestDiscount(couponPercents, memberPercent);
-  const discountText = discount
-    ? unitPriceText(couponPrice(enteredPrice, discount.percent), size, unit)
-    : null;
+  const discounted = discount ? unitPrice(couponPrice(enteredPrice, discount.percent), size, unit) : null;
 
   const bestTier = bestBulkTier(enteredPrice, bulkTiers);
-  const bulkText = bestTier
-    ? unitPriceText(bulkItemPrice(enteredPrice, bestTier), size, unit)
-    : null;
+  const bulk = bestTier ? unitPrice(bulkItemPrice(enteredPrice, bestTier), size, unit) : null;
 
-  if (discountText === null && bulkText === null) return [{ label: null, text: regular }];
+  if (discounted === null && bulk === null) {
+    return { per, items: [{ label: null, amount: formatYen(regular.amount) }] };
+  }
 
-  const lines: UnitLine[] = [{ label: isMemberPrice ? "会員価格" : "通常", text: regular }];
-  if (discount && discountText !== null) {
-    lines.push({
+  const items: UnitSummaryItem[] = [
+    { label: isMemberPrice ? "会員価格" : "通常", amount: formatYen(regular.amount) },
+  ];
+  if (discount && discounted !== null) {
+    items.push({
       label: discount.kind === "coupon" ? `${discount.percent}%クーポン` : `会員${discount.percent}%引`,
-      text: discountText,
+      amount: formatYen(discounted.amount),
     });
   }
-  if (bestTier && bulkText !== null) lines.push({ label: bulkLabel(bestTier), text: bulkText });
-  return lines;
+  if (bestTier && bulk !== null) items.push({ label: bulkLabel(bestTier), amount: formatYen(bulk.amount) });
+  return { per, items };
 }

@@ -34,6 +34,25 @@ export function bestDiscount(
   return null;
 }
 
+/**
+ * Every discount a chain offers, for display: each enabled coupon percent, and the membership
+ * percent unless a coupon has the same percent. Smallest first, so the best one is the last.
+ * They never stack: only one applies (see bestDiscount).
+ */
+export function allDiscounts(
+  couponPercents: readonly number[] | null | undefined,
+  memberPercent: number | null | undefined
+): Discount[] {
+  const coupons = Array.from(
+    new Set((couponPercents ?? []).filter((p) => (COUPON_PERCENTS as readonly number[]).includes(p)))
+  );
+  const list = coupons.map((percent): Discount => ({ kind: "coupon", percent }));
+  if (typeof memberPercent === "number" && memberPercent > 0 && !coupons.includes(memberPercent)) {
+    list.push({ kind: "member", percent: memberPercent });
+  }
+  return list.sort((a, b) => a.percent - b.percent);
+}
+
 /** The price used to compare chains (cheapest first). */
 export function effectivePrice(
   price: number,

@@ -1,4 +1,4 @@
-import { bestDiscount, couponPrice } from "@/lib/prices/coupon";
+import { allDiscounts, bestDiscount, couponPrice } from "@/lib/prices/coupon";
 import type { BulkTier } from "@/lib/prices/bulk";
 import BulkTierLine from "@/components/BulkTierLine";
 import { formatYen } from "@/lib/prices/format";
@@ -19,65 +19,70 @@ type Props = {
   taxRate?: number | null;
   size?: "md" | "lg";
   taxBasis?: TaxBasis;
+  // Where the block leans: "end" (right, the price rows) or "start" (left, the detail header).
+  align?: "start" | "end";
+  className?: string;
 };
 
+// One block per price: a strip with a small label above each price (the regular price once,
+// then every coupon of the chain side by side), the tax badge once, and under it the まとめ買い
+// tiers and the ウェル活 points, which do not repeat the regular price or the tax badge.
 export default function PriceDisplay({
   taxBasis,
   taxRate,
   pointUseMultiplier,
   bulkTiers,
+  align = "end",
+  className = "",
   ...rest
 }: Props) {
-  const points = pointUseMultiplier
-    ? pointsNeeded(Number(rest.price), pointUseMultiplier)
-    : null;
+  const end = align === "end";
+  const price = Number(rest.price);
+  const points = pointUseMultiplier ? pointsNeeded(price, pointUseMultiplier) : null;
   const showTaxHint =
     !!taxBasis && taxBasis !== "incl" && taxRate !== null && taxRate !== undefined;
-  const tiers = Number.isFinite(Number(rest.price)) ? (bulkTiers ?? []) : [];
+  const tiers = Number.isFinite(price) ? (bulkTiers ?? []) : [];
 
   const main = (
-    <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
-      <PriceCore {...rest} />
+    <span
+      className={`inline-flex flex-wrap items-end gap-x-2 gap-y-1 ${
+        end ? "justify-end" : "justify-start"
+      } ${points === null && tiers.length === 0 ? className : ""}`}
+    >
+      <PriceStrip {...rest} end={end} />
       {taxBasis && <TaxBadge basis={taxBasis} />}
       {showTaxHint && (
-        <TaxHint
-          price={Number(rest.price)}
-          rate={taxRate as number}
-          basis={taxBasis as TaxBasis}
-        />
+        <TaxHint price={price} rate={taxRate as number} basis={taxBasis as TaxBasis} />
       )}
     </span>
   );
 
   if (points === null && tiers.length === 0) return main;
 
-  // Extra lines, not a replacement: the main price stays the regular price, so bulk
+  // Extra lines, not a replacement: the main price stays the regular (or coupon) price, so bulk
   // tiers and points never change the cheapest badge, sorting or the unit price.
+  const side = end ? "items-end" : "items-start";
   return (
-    <span className="inline-flex flex-col items-start gap-1.5">
+    <span className={`inline-flex flex-col gap-1.5 ${side} ${className}`}>
       {main}
       {tiers.length > 0 && (
-        <span className="inline-flex flex-col items-start gap-0.5">
+        <span className={`inline-flex flex-col gap-0.5 ${side}`}>
           <span className="inline-flex items-center rounded-md bg-rose-100 px-1.5 py-0.5 text-xs font-bold text-rose-700">
             まとめ買い
           </span>
           {tiers.map((tier) => (
-            <BulkTierLine key={tier.quantity} tier={tier} price={Number(rest.price)} />
+            <BulkTierLine key={tier.quantity} tier={tier} price={price} />
           ))}
         </span>
       )}
       {points !== null && (
-        <span className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <span className="inline-flex items-baseline gap-2">
           <span className="inline-flex items-center rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
             ウェル活
           </span>
-          <span className="text-xl font-bold tabular-nums text-amber-700">
+          <span className="text-sm font-bold tabular-nums text-amber-700">
             {points.toLocaleString("ja-JP")}ポイント
           </span>
-          <span className="text-sm tabular-nums text-stone-500">
-            （{rest.isMemberPrice ? "会員価格" : "通常価格"} {formatYen(rest.price)}）
-          </span>
-          {taxBasis && <TaxBadge basis={taxBasis} />}
         </span>
       )}
     </span>
@@ -91,64 +96,82 @@ function TaxBadge({ basis }: { basis: TaxBasis }) {
       : "bg-sky-100 text-sky-700";
   return (
     <span
-      className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-bold ${cls}`}
+      className={`mb-1 inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-bold ${cls}`}
     >
       {TAX_BADGE_LABEL[basis]}
     </span>
   );
 }
 
-function PriceCore({
+function PriceStrip({
   price,
   couponPercents,
   memberPercent,
   isMemberPrice,
   size = "md",
-}: Omit<Props, "taxBasis" | "taxRate" | "pointUseMultiplier" | "bulkTiers">) {
+  end,
+}: {
+  price: number | string;
+  couponPercents?: number[] | null;
+  memberPercent?: number | null;
+  isMemberPrice?: boolean;
+  size?: "md" | "lg";
+  end: boolean;
+}) {
   const normal = Number(price);
   const big = size === "lg" ? "text-4xl" : "text-2xl";
-  const wrap = "inline-flex flex-wrap items-baseline gap-x-2 gap-y-1";
+  const small = size === "lg" ? "text-xl" : "text-base";
+  const cell = `inline-flex flex-col ${end ? "items-end text-right" : "items-start text-left"}`;
 
   // The entered price is already the membership price: show it as it is.
   if (isMemberPrice) {
     return (
-      <span className={wrap}>
-        <span className="inline-flex items-center rounded-md bg-indigo-100 px-1.5 py-0.5 text-xs font-bold text-indigo-700">
-          会員価格
-        </span>
-        <span className={`${big} font-bold tabular-nums text-indigo-600`}>
-          {formatYen(price)}
-        </span>
+      <span className={cell}>
+        <span className="text-[11px] font-bold leading-tight text-indigo-600">会員価格</span>
+        <span className={`${big} font-bold tabular-nums text-indigo-600`}>{formatYen(price)}</span>
       </span>
     );
   }
 
-  const discount = bestDiscount(couponPercents, memberPercent);
-  if (discount === null || Number.isNaN(normal)) {
+  const discounts = allDiscounts(couponPercents, memberPercent);
+  if (discounts.length === 0 || Number.isNaN(normal)) {
     return (
-      <span className={`${big} font-bold tabular-nums text-stone-900`}>
-        {formatYen(price)}
-      </span>
+      <span className={`${big} font-bold tabular-nums text-stone-900`}>{formatYen(price)}</span>
     );
   }
 
-  const isCoupon = discount.kind === "coupon";
-  const badgeCls = isCoupon ? "bg-rose-100 text-rose-700" : "bg-indigo-100 text-indigo-700";
-  const priceCls = isCoupon ? "text-rose-600" : "text-indigo-600";
-
+  // The best (largest) discount is the big one; it is the price used for ranking.
+  const best = bestDiscount(couponPercents, memberPercent);
   return (
-    <span className={wrap}>
-      <span
-        className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-bold ${badgeCls}`}
-      >
-        {isCoupon ? `${discount.percent}%クーポン` : `会員${discount.percent}%引`}
+    <span
+      className={`inline-flex flex-wrap items-end gap-x-3 gap-y-1 ${
+        end ? "justify-end" : "justify-start"
+      }`}
+    >
+      <span className={cell}>
+        <span className="text-[11px] leading-tight text-stone-500">通常</span>
+        <span className={`${small} tabular-nums text-stone-500`}>{formatYen(normal)}</span>
       </span>
-      <span className={`${big} font-bold tabular-nums ${priceCls}`}>
-        {formatYen(couponPrice(normal, discount.percent))}
-      </span>
-      <span className="text-sm tabular-nums text-stone-500">
-        （通常価格 {formatYen(normal)}）
-      </span>
+      {discounts.map((d) => {
+        const isBest = best !== null && d.kind === best.kind && d.percent === best.percent;
+        const tone = d.kind === "coupon" ? "text-rose-600" : "text-indigo-600";
+        return (
+          <span key={`${d.kind}-${d.percent}`} className={cell}>
+            <span
+              className={`text-[11px] leading-tight ${isBest ? `font-bold ${tone}` : "text-stone-500"}`}
+            >
+              {d.kind === "coupon" ? `${d.percent}%クーポン` : `会員${d.percent}%引`}
+            </span>
+            <span
+              className={`tabular-nums ${
+                isBest ? `${big} font-bold ${tone}` : `${small} font-semibold text-stone-700`
+              }`}
+            >
+              {formatYen(couponPrice(normal, d.percent))}
+            </span>
+          </span>
+        );
+      })}
     </span>
   );
 }

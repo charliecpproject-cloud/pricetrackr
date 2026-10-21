@@ -13,8 +13,8 @@ import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
 import { isCheapest, parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
-import { unitPriceLines } from "@/lib/prices/unitLines";
-import UnitPriceLines from "@/components/UnitPriceLines";
+import { unitPriceSummary } from "@/lib/prices/unitLines";
+import UnitPriceSummary from "@/components/UnitPriceSummary";
 import {
   countActive,
   hasActivePeriod,
@@ -578,7 +578,7 @@ export default async function CheckPage({
                           ) : null}
                         </p>
                       </div>
-                      <div className="flex flex-col items-end gap-1">
+                      <div className="ml-auto flex max-w-full flex-col items-end gap-1">
                         <PriceDisplay
                           price={r.price}
                           couponPercents={r.couponPercents}
@@ -590,8 +590,8 @@ export default async function CheckPage({
                           taxBasis={r.taxBasis}
                           size="md"
                         />
-                        <UnitPriceLines
-                          lines={unitPriceLines({
+                        <UnitPriceSummary
+                          summary={unitPriceSummary({
                             enteredPrice: r.price,
                             couponPercents: r.couponPercents,
                             memberPercent: r.memberPercent,
@@ -601,7 +601,6 @@ export default async function CheckPage({
                             unit: card.unit,
                             hideSinglePiece: true,
                           })}
-                          taxBasis={r.taxBasis}
                         />
                       </div>
                     </li>

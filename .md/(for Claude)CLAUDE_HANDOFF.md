@@ -71,7 +71,7 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 - Themes: default, glass, sky, midnight, calm. Colour themes remap Tailwind colour variables (teal accent, stone greys, amber/rose/red tints) under html[data-theme="..."] in public/themes/*.css; dark themes share one block and set per-theme --tx-*, --ac-* and panel tokens. When a new colour class is introduced, add it to every theme block.
 
 ## Display rules
-- Coupons are per chain; the best of coupon and membership percent is shown (never stacked) as the discounted price with the normal price in brackets (`components/PriceDisplay.tsx`, helpers in `lib/prices/coupon.ts`). Membership checkbox on entry means "the entered price is already the membership price". Bonus points never change prices; small "+Nポイント" text only.
+- Coupons are per chain; all coupons and the membership percent are shown side by side in one price strip with the normal price once (never stacked; the best one is big and is used for ranking) (`components/PriceDisplay.tsx`, helpers in `lib/prices/coupon.ts`). Membership checkbox on entry means "the entered price is already the membership price". Bonus points never change prices; small "+Nポイント" text only.
 - Price check shows the latest price per chain, cheapest first (uses the discounted price). Branch is optional detail.
 - Products are always referenced by id; an exact duplicate (same normalized main name and brand) is refused, never merged.
 
