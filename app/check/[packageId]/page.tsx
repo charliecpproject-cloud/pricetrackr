@@ -6,7 +6,6 @@ import { formatJst, packageLabel } from "@/lib/prices/format";
 import PriceDisplay from "@/components/PriceDisplay";
 import { parseTaxBasis } from "@/lib/prices/tax";
 import { parseCategory, saleLabel } from "@/lib/stores/category";
-import { effectivePrice } from "@/lib/prices/coupon";
 import { parseStoredTiers } from "@/lib/prices/bulk";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { unitPriceLines } from "@/lib/prices/unitLines";
@@ -83,12 +82,10 @@ export default async function PackageDetailPage({
       bulkTiers: parseStoredTiers(obs.bulk_tiers),
       taxBasis: parseTaxBasis(obs.tax_basis),
       unitLines: unitPriceLines({
-        displayPrice: effectivePrice(Number(obs.price), {
-          couponPercents: chain?.coupon_percents ?? [],
-          memberPercent: chain?.member_discount_percent ?? null,
-          isMemberPrice: !!obs.is_member_price,
-        }),
         enteredPrice: Number(obs.price),
+        couponPercents: chain?.coupon_percents ?? [],
+        memberPercent: chain?.member_discount_percent ?? null,
+        isMemberPrice: !!obs.is_member_price,
         bulkTiers: parseStoredTiers(obs.bulk_tiers),
         size: Number(pkg.package_size),
         unit: pkg.package_unit,

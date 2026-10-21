@@ -3,14 +3,13 @@ import { isSinglePiece, unitPriceLines } from "./unitLines";
 import { unitPriceText } from "./unit";
 
 describe("isSinglePiece", () => {
-  it("is true for 1 of a piece unit", () => {
-    expect(isSinglePiece(1, "count")).toBe(true);
-    expect(isSinglePiece(1, "sheet")).toBe(true);
-    expect(isSinglePiece(1, "bag")).toBe(true);
-    expect(isSinglePiece(1, "本")).toBe(true);
+  it("is true for 1 of a counter word", () => {
+    for (const unit of ["count", "sheet", "bag", "本", "パック"]) {
+      expect(isSinglePiece(1, unit)).toBe(true);
+    }
   });
 
-  it("is false for other sizes and for weight or volume units", () => {
+  it("is false for other sizes and for measures", () => {
     expect(isSinglePiece(2, "count")).toBe(false);
     expect(isSinglePiece(1, "ml")).toBe(false);
     expect(isSinglePiece(1, "g")).toBe(false);
@@ -18,52 +17,96 @@ describe("isSinglePiece", () => {
 });
 
 describe("unitPriceLines", () => {
-  const base = { displayPrice: 396, enteredPrice: 396, bulkTiers: [], size: 1000, unit: "ml" };
+  const base = { enteredPrice: 1000, bulkTiers: [], size: 500, unit: "ml" };
+  const per = (price: number) => unitPriceText(price, 500, "ml");
 
-  it("gives one unlabeled line without bulk tiers", () => {
-    expect(unitPriceLines(base)).toEqual([
-      { label: null, text: unitPriceText(396, 1000, "ml") },
+  it("gives one unlabeled line without a discount or tiers", () => {
+    expect(unitPriceLines(base)).toEqual([{ label: null, text: per(1000) }]);
+  });
+
+  it("gives the same single line when the chain has no coupon or membership", () => {
+    expect(unitPriceLines({ ...base, couponPercents: [], memberPercent: null })).toEqual([
+      { label: null, text: per(1000) },
     ]);
   });
 
-  it("gives a regular line and a line for the biggest discount tier", () => {
+  it("adds a coupon line next to the line without the coupon", () => {
+    expect(unitPriceLines({ ...base, couponPercents: [5, 10] })).toEqual([
+      { label: "通常", text: per(1000) },
+      { label: "10%クーポン", text: per(900) },
+    ]);
+  });
+
+  it("uses the membership percent when it is larger than the coupon", () => {
+    expect(unitPriceLines({ ...base, couponPercents: [5], memberPercent: 8 })).toEqual([
+      { label: "通常", text: per(1000) },
+      { label: "会員8%引", text: per(920) },
+    ]);
+  });
+
+  it("adds no discount line when the entered price is already a member price", () => {
+    expect(unitPriceLines({ ...base, couponPercents: [10], isMemberPrice: true })).toEqual([
+      { label: null, text: per(1000) },
+    ]);
+  });
+
+  it("adds a line for the best percent tier", () => {
     const lines = unitPriceLines({
-      displayPrice: 1000,
-      enteredPrice: 1000,
+      ...base,
       bulkTiers: [
-        { quantity: 10, percent: 20 },
-        { quantity: 20, percent: 25 },
+        { kind: "percent", quantity: 10, percent: 20 },
+        { kind: "percent", quantity: 20, percent: 25 },
       ],
-      size: 500,
-      unit: "ml",
     });
     expect(lines).toEqual([
-      { label: "通常", text: unitPriceText(1000, 500, "ml") },
-      { label: "まとめ買い25%引", text: unitPriceText(750, 500, "ml") },
+      { label: "通常", text: per(1000) },
+      { label: "まとめ買い25%引", text: per(750) },
     ]);
   });
 
-  it("uses the biggest percent, not the biggest quantity", () => {
+  it("adds a line for a bundle price, per item", () => {
     const lines = unitPriceLines({
-      displayPrice: 1000,
-      enteredPrice: 1000,
-      bulkTiers: [
-        { quantity: 5, percent: 30 },
-        { quantity: 10, percent: 20 },
-      ],
-      size: 500,
-      unit: "ml",
+      ...base,
+      enteredPrice: 120,
+      bulkTiers: [{ kind: "total", quantity: 5, total: 550 }],
     });
-    expect(lines[1]).toEqual({ label: "まとめ買い30%引", text: unitPriceText(700, 500, "ml") });
+    expect(lines).toEqual([
+      { label: "通常", text: per(120) },
+      { label: "まとめ買い5個で¥550", text: per(110) },
+    ]);
+  });
+
+  it("picks the tier with the lowest price per item, whatever its kind", () => {
+    const lines = unitPriceLines({
+      ...base,
+      bulkTiers: [
+        { kind: "percent", quantity: 10, percent: 20 }, // 800 each
+        { kind: "total", quantity: 10, total: 7000 }, // 700 each
+      ],
+    });
+    expect(lines[1]).toEqual({ label: "まとめ買い10個で¥7,000", text: per(700) });
+  });
+
+  it("gives three lines with a coupon and a tier, each from the regular price", () => {
+    const lines = unitPriceLines({
+      ...base,
+      couponPercents: [10],
+      bulkTiers: [{ kind: "percent", quantity: 10, percent: 20 }],
+    });
+    expect(lines).toEqual([
+      { label: "通常", text: per(1000) },
+      { label: "10%クーポン", text: per(900) },
+      { label: "まとめ買い20%引", text: per(800) },
+    ]);
   });
 
   it("gives nothing for a single piece when hidden, and a line when not hidden", () => {
-    const single = { ...base, displayPrice: 298, enteredPrice: 298, size: 1, unit: "count" };
+    const single = { ...base, enteredPrice: 298, size: 1, unit: "count", couponPercents: [10] };
     expect(unitPriceLines({ ...single, hideSinglePiece: true })).toEqual([]);
-    expect(unitPriceLines(single)).toHaveLength(1);
+    expect(unitPriceLines(single)).toHaveLength(2);
   });
 
-  it("gives nothing for an unknown unit", () => {
+  it("gives nothing for an empty unit", () => {
     expect(unitPriceLines({ ...base, unit: "" })).toEqual([]);
   });
 });

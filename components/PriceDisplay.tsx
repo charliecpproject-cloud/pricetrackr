@@ -1,5 +1,6 @@
 import { bestDiscount, couponPrice } from "@/lib/prices/coupon";
-import { bulkTierPrice, type BulkTier } from "@/lib/prices/bulk";
+import type { BulkTier } from "@/lib/prices/bulk";
+import BulkTierLine from "@/components/BulkTierLine";
 import { formatYen } from "@/lib/prices/format";
 import { pointsNeeded } from "@/lib/prices/points";
 import { TAX_BADGE_LABEL, type TaxBasis } from "@/lib/prices/tax";
@@ -61,18 +62,7 @@ export default function PriceDisplay({
             まとめ買い
           </span>
           {tiers.map((tier) => (
-            <span
-              key={tier.quantity}
-              className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-0.5"
-            >
-              <span className="text-sm text-stone-600">
-                {tier.quantity}個以上 {tier.percent}%引
-              </span>
-              <span className="text-xl font-bold tabular-nums text-rose-600">
-                {formatYen(bulkTierPrice(Number(rest.price), tier.percent))}
-              </span>
-              <span className="text-xs text-stone-500">（1個あたり）</span>
-            </span>
+            <BulkTierLine key={tier.quantity} tier={tier} price={Number(rest.price)} />
           ))}
         </span>
       )}

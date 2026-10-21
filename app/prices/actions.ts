@@ -8,7 +8,7 @@ import { TAX_BASES } from "@/lib/prices/tax";
 import { parseBarcodes } from "@/lib/products/barcode";
 import { loadAllowedUnits } from "@/lib/prices/counterUnits";
 import { MAX_UNIT_LENGTH } from "@/lib/prices/unitWords";
-import { parseBulkTiers, type BulkTier } from "@/lib/prices/bulk";
+import { BULK_MAX_TIERS, bulkTiersToJson, parseBulkTiers, type BulkTier } from "@/lib/prices/bulk";
 
 type State = {
   error: string | null;
@@ -362,11 +362,19 @@ export async function addPriceObservation(
   // Bulk discount tiers: rows of quantity and percent. The entered price is the regular price.
   let bulkTiers: BulkTier[] | null = null;
   if (formData.get("is_bulk_price") === "on" && chainRow.bulk_enabled === true) {
-    const quantities = formData.getAll("bulk_quantity").map((v) => (typeof v === "string" ? v : ""));
-    const percents = formData.getAll("bulk_percent").map((v) => (typeof v === "string" ? v : ""));
-    const rows = quantities.map((quantity, i) => ({ quantity, percent: percents[i] ?? "" }));
+    // Fixed field names per row (bulk_quantity_0 ...), so the inputs of a row always belong together.
+    const rows = Array.from({ length: BULK_MAX_TIERS }, (_, i) => ({
+      quantity: text(formData, `bulk_quantity_${i}`) ?? "",
+      mode: text(formData, `bulk_mode_${i}`) ?? "percent",
+      percent: text(formData, `bulk_percent_${i}`) ?? "",
+      total: text(formData, `bulk_total_${i}`) ?? "",
+    }));
     const parsedTiers = parseBulkTiers(rows);
     if (!parsedTiers.ok) return { error: parsedTiers.error };
+    // A bundle price must really be cheaper than the same number of items at the regular price.
+    if (parsedTiers.tiers.some((t) => t.kind === "total" && t.total >= t.quantity * price)) {
+      return { error: "まとめ買いの合計金額は、個数×通常価格より安く入力してください" };
+    }
     bulkTiers = parsedTiers.tiers;
   }
 
@@ -413,7 +421,7 @@ export async function addPriceObservation(
     is_member_price: isMemberPrice,
     tax_basis: taxBasis,
     bonus_points: bonusPoints,
-    bulk_tiers: bulkTiers,
+    bulk_tiers: bulkTiers ? bulkTiersToJson(bulkTiers) : null,
 
     notes,
   });

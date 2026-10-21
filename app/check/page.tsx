@@ -592,8 +592,10 @@ export default async function CheckPage({
                         />
                         <UnitPriceLines
                           lines={unitPriceLines({
-                            displayPrice: r.effective,
                             enteredPrice: r.price,
+                            couponPercents: r.couponPercents,
+                            memberPercent: r.memberPercent,
+                            isMemberPrice: r.isMemberPrice,
                             bulkTiers: r.bulkTiers,
                             size: card.sizeValue,
                             unit: card.unit,
