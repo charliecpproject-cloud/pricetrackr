@@ -212,6 +212,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 39c (docs: PART2_GROWTH_FEATURES.md marks what is built, partly built and open; PART1_FOUNDATION.md built list brought up to date) done
 
 
+- Step 40 (favorites: table favorite_packages per account and exact 容量 with no access for demo visitors; heart button on 価格確認 cards and the detail header; other sizes of the same product and variation get a softer related look (computed, lib/prices/favorites.ts); favorite cards get a soft rose border and tint; お気に入りのみ filter; dark themes remap rose-200; docs updated) done
+
+
 ## In Progress
 
 - (none)
