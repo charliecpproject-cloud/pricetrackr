@@ -218,6 +218,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 41 (unit price lines now show up to three lines from the entered regular price: 通常 without coupon, the best coupon or membership percent, and the best まとめ買い tier (lowest price per item); まとめ買い tiers can be a percent off or a bundle price such as 5個で550円, chosen per row, stored in bulk_tiers as {quantity, percent} or {quantity, total} (no migration); BulkTierLine shows the bundle price with the price per item and the equivalent percent; docs updated) done
 
 
+- Step 42 (cleaner price block: PriceDisplay is one strip with the regular price once and every coupon of the chain side by side (allDiscounts), the best one big and used for ranking; the tax badge once; ウェル活 is a small line without the repeated regular price and badge; the unit price lines became one compact UnitPriceSummary line (unitPriceSummary) without the tax label; old UnitPriceLine components removed; docs updated) done
+
+
 ## In Progress
 
 - (none)
