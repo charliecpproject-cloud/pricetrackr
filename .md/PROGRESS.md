@@ -221,6 +221,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 42 (cleaner price block: PriceDisplay is one strip with the regular price once and every coupon of the chain side by side (allDiscounts), the best one big and used for ranking; the tax badge once; ウェル活 is a small line without the repeated regular price and badge; the unit price lines became one compact UnitPriceSummary line (unitPriceSummary) without the tax label; old UnitPriceLine components removed; docs updated) done
 
 
+- Step 43 (search suggestions: table search_suggestions (display_count 1-10 default 3, terms list), admin page /admin/suggestions with a count dropdown, a comma-separated terms box and a preview of shown and held-back terms (lib/search/suggestions.ts with tests); 価格確認 shows the first N terms as おすすめ chips under the scope buttons and tapping one searches that word; docs updated) done
+
+
 ## In Progress
 
 - (none)
