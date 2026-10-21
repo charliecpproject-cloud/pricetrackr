@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSearchScope, searchPlaceholder } from "./scope";
+import { SEARCH_SCOPES, parseSearchScope, searchPlaceholder } from "./scope";
 
 describe("parseSearchScope", () => {
   it("accepts the known scopes", () => {
@@ -19,5 +19,14 @@ describe("searchPlaceholder", () => {
   it("names the field that is searched", () => {
     expect(searchPlaceholder("category")).toContain("カテゴリ");
     expect(searchPlaceholder("all")).toContain("商品名");
+  });
+});
+
+describe("SEARCH_SCOPES", () => {
+  it("has a short hint for every scope, so it fits on one line", () => {
+    for (const scope of SEARCH_SCOPES) {
+      expect(scope.hint.length).toBeGreaterThan(0);
+      expect([...scope.hint].length).toBeLessThanOrEqual(24);
+    }
   });
 });

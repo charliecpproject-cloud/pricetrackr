@@ -1,8 +1,9 @@
 // What a search looks at. "all" (the default) looks at every field.
+// hint = a short explanation shown under the buttons in the 絞り込み panel.
 export const SEARCH_SCOPES = [
-  { key: "all", label: "すべて" },
-  { key: "name", label: "商品名" },
-  { key: "category", label: "カテゴリ" },
+  { key: "all", label: "すべて", hint: "名前・ブランド・カテゴリなど全体を検索" },
+  { key: "name", label: "商品名", hint: "商品名・英語名・別名だけを検索" },
+  { key: "category", label: "カテゴリ", hint: "カテゴリだけを検索" },
 ] as const;
 
 export type SearchScope = (typeof SEARCH_SCOPES)[number]["key"];

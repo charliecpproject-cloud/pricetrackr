@@ -109,7 +109,7 @@ export default async function CheckPage({
   // What to search: every field (default), or only the name, brand, category or barcode.
   const scope = parseSearchScope((rawParams as unknown as Record<string, unknown>).scope);
   const term = f.q;
-  const activeCount = countActive(f);
+  const activeCount = countActive(f) + (scope !== "all" ? 1 : 0);
 
   const supabase = await createSupabaseServerClient();
 
@@ -377,8 +377,6 @@ export default async function CheckPage({
       <h1 className="text-2xl font-bold text-stone-900">価格確認</h1>
 
       <form action="/check" className="space-y-3">
-        <SearchScopeChips key={scope} current={scope} />
-
         <SearchSuggestions terms={suggestions} active={term} />
 
         <div className="relative">
@@ -414,19 +412,21 @@ export default async function CheckPage({
           </summary>
 
           <div className="mt-4 space-y-5">
-            {loggedIn && (
-              <label className="flex w-fit cursor-pointer items-center gap-2 rounded-xl border border-line bg-panel px-3 py-2 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600">
-                <input
-                  type="checkbox"
-                  name="fav"
-                  value="1"
-                  defaultChecked={f.favorites}
-                  className="sr-only"
-                />
-                <Heart className="h-4 w-4" />
-                お気に入りのみ
-              </label>
-            )}
+            <SearchScopeChips key={scope} current={scope}>
+              {loggedIn && (
+                <label className="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-line bg-panel px-3 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600">
+                  <input
+                    type="checkbox"
+                    name="fav"
+                    value="1"
+                    defaultChecked={f.favorites}
+                    className="sr-only"
+                  />
+                  <Heart className="h-4 w-4" />
+                  お気に入りのみ
+                </label>
+              )}
+            </SearchScopeChips>
             <div>
               <label htmlFor="f_chain" className={labelCls}>
                 店舗（チェーン）
