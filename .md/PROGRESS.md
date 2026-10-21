@@ -215,6 +215,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 40 (favorites: table favorite_packages per account and exact 容量 with no access for demo visitors; heart button on 価格確認 cards and the detail header; other sizes of the same product and variation get a softer related look (computed, lib/prices/favorites.ts); favorite cards get a soft rose border and tint; お気に入りのみ filter; dark themes remap rose-200; docs updated) done
 
 
+- Step 41 (unit price lines now show up to three lines from the entered regular price: 通常 without coupon, the best coupon or membership percent, and the best まとめ買い tier (lowest price per item); まとめ買い tiers can be a percent off or a bundle price such as 5個で550円, chosen per row, stored in bulk_tiers as {quantity, percent} or {quantity, total} (no migration); BulkTierLine shows the bundle price with the price per item and the equivalent percent; docs updated) done
+
+
 ## In Progress
 
 - (none)
