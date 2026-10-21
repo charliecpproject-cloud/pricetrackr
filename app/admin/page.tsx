@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, GitMerge, Ruler, Tags } from "lucide-react";
+import { ChevronRight, Flame, GitMerge, Ruler, Tags } from "lucide-react";
 import { getViewer } from "@/lib/auth/viewer";
 
 // Add future admin tools (price approval, ...) to this list.
@@ -24,6 +24,13 @@ const tools = [
     title: "単位の言葉",
     description: "容量の単位に使う言葉（本・玉・パックなど）を表示・非表示・追加・削除する",
     Icon: Ruler,
+    ready: true,
+  },
+  {
+    href: "/admin/suggestions",
+    title: "検索のおすすめ",
+    description: "価格確認の検索ボックスの近くに出す、おすすめの言葉と表示する数を決める",
+    Icon: Flame,
     ready: true,
   },
 ];

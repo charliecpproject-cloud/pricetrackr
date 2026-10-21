@@ -7,6 +7,8 @@ import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
 import { searchProductIds } from "@/lib/search/products";
 import { parseSearchScope, searchPlaceholder } from "@/lib/search/scope";
 import SearchScopeChips from "./SearchScopeChips";
+import SearchSuggestions from "./SearchSuggestions";
+import { loadVisibleSuggestions } from "@/lib/search/loadSuggestions";
 import CategoryFilter from "./CategoryFilter";
 import PeriodFilter from "./PeriodFilter";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
@@ -111,6 +113,9 @@ export default async function CheckPage({
 
   const supabase = await createSupabaseServerClient();
 
+  // The admin's search suggestions, loaded while the other queries run.
+  const suggestionsPromise = loadVisibleSuggestions(supabase);
+
   // The account's favorite packages, loaded while the other queries run.
   const favoritesPromise = loggedIn
     ? loadFavorites(supabase)
@@ -132,6 +137,7 @@ export default async function CheckPage({
   const chainGroups = groupByCategory(chains);
 
   const favorites = await favoritesPromise;
+  const suggestions = await suggestionsPromise;
   const onlyFavorites = f.favorites;
   const since = rangeStart(f);
   const until = rangeEnd(f);
@@ -372,6 +378,8 @@ export default async function CheckPage({
 
       <form action="/check" className="space-y-3">
         <SearchScopeChips key={scope} current={scope} />
+
+        <SearchSuggestions terms={suggestions} active={term} />
 
         <div className="relative">
           <input
