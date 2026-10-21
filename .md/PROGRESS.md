@@ -224,6 +224,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 43 (search suggestions: table search_suggestions (display_count 1-10 default 3, terms list), admin page /admin/suggestions with a count dropdown, a comma-separated terms box and a preview of shown and held-back terms (lib/search/suggestions.ts with tests); 価格確認 shows the first N terms as おすすめ chips under the scope buttons and tapping one searches that word; docs updated) done
 
 
+- Step 44 (price check layout: the search scope buttons are one connected group inside the 絞り込み panel on the same line as お気に入りのみ, with a short hint line (hint field in lib/search/scope.ts); a scope other than すべて counts as an active filter; the おすすめ chips wrap and are width-guarded; docs updated) done
+
+
 ## In Progress
 
 - (none)
