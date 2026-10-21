@@ -28,8 +28,8 @@ Built: the 最近の更新 list on the home page (see above). Still open: bigges
 ## Shopping list (not built)
 User types an item; app suggests matches. Generic request ("hand soap") → a few options/price ranges, not one answer. Specific request (named brand+size) → resolve concretely. Purpose: trip-cost estimation, not a hard recommendation.
 
-## Favorites / restock (being built next, Step 40)
-Pin a product the user likes or buys repeatedly, so it gets extra attention on the price check page (a heart next to the name and a slightly different card) and its current price is a tap away. Favorites belong to the account. The design is written into PART1 when it is built.
+## Favorites / restock (built, Step 40)
+Pin a product the user likes or buys repeatedly, so it gets extra attention on the price check page (a heart next to the name and a slightly different card) and its current price is a tap away. Favorites belong to the account and are per exact 容量; the other sizes of the same variation get a softer "related" look. There is a お気に入りのみ filter. Not built yet: favorites first in lists, a favorites shortcut on the home page, restock hints. Details are in PART1, "Favorites".
 
 ## Alerts, lowest priority here (not built)
 Price-below-target, new low, product gone stale. Low value while you're the only data source; worth more once Part 3's multi-source data exists.
