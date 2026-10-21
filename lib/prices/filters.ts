@@ -17,6 +17,7 @@ export type Filters = {
   period: Period;
   from: string | null; // YYYY-MM-DD (Japan date), only used with period "all"
   to: string | null;
+  favorites: boolean; // only the favorite packages (needs a login)
 };
 
 export type RawParams = Record<string, string | string[] | undefined>;
@@ -91,6 +92,7 @@ export function parseFilters(params: RawParams): Filters {
     period,
     from,
     to,
+    favorites: one(params.fav) === "1",
   };
 }
 
@@ -123,5 +125,6 @@ export function countActive(f: Filters): number {
   if (f.sale !== "all") n++;
   if (f.min !== null || f.max !== null) n++;
   if (hasActivePeriod(f)) n++;
+  if (f.favorites) n++;
   return n;
 }

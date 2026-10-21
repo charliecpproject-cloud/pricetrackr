@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Heart, Search, SlidersHorizontal } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatJst, packageLabel } from "@/lib/prices/format";
 import { effectivePrice } from "@/lib/prices/coupon";
@@ -33,8 +33,20 @@ import {
   type StoreCategory,
 } from "@/lib/stores/category";
 import { variationLabel, parseAttributes } from "@/lib/products/variation";
+import { getViewer } from "@/lib/auth/viewer";
+import FavoriteButton from "@/components/FavoriteButton";
+import { loadFavorites } from "@/lib/prices/loadFavorites";
+import { favoriteLevel, type FavoriteLevel } from "@/lib/prices/favorites";
 
 const RECENT_COUNT = 3; // products shown when there is no search and no filter
+
+// How a card looks: a favorite gets a soft rose border and a faint tint; a related package
+// (another size of the same variation as a favorite) gets half of that tint.
+const CARD_TONE: Record<FavoriteLevel, string> = {
+  favorite: "border-rose-200 bg-gradient-to-r from-rose-50 to-transparent",
+  related: "border-line bg-gradient-to-r from-rose-50/50 to-transparent",
+  none: "border-line",
+};
 
 type ChainPrice = {
   chainId: string;
@@ -87,13 +99,22 @@ export default async function CheckPage({
   searchParams: Promise<RawParams>;
 }) {
   const rawParams = await searchParams;
-  const f = parseFilters(rawParams);
+  const viewer = await getViewer();
+  const loggedIn = viewer.loggedIn;
+  const parsedFilters = parseFilters(rawParams);
+  // The favorites filter needs an account: visitors have no favorites.
+  const f = loggedIn ? parsedFilters : { ...parsedFilters, favorites: false };
   // What to search: every field (default), or only the name, brand, category or barcode.
   const scope = parseSearchScope((rawParams as unknown as Record<string, unknown>).scope);
   const term = f.q;
   const activeCount = countActive(f);
 
   const supabase = await createSupabaseServerClient();
+
+  // The account's favorite packages, loaded while the other queries run.
+  const favoritesPromise = loggedIn
+    ? loadFavorites(supabase)
+    : Promise.resolve({ ids: new Set<string>(), groups: new Set<string>() });
 
   // Chains for the store and category filters (a small list).
   const { data: chainRows, error: chainsError } = await supabase
@@ -110,6 +131,8 @@ export default async function CheckPage({
   }));
   const chainGroups = groupByCategory(chains);
 
+  const favorites = await favoritesPromise;
+  const onlyFavorites = f.favorites;
   const since = rangeStart(f);
   const until = rangeEnd(f);
   const categoryChainIds = f.categories.length > 0
@@ -210,7 +233,7 @@ export default async function CheckPage({
   let products: any[] = [];
   let latest: LatestMap = new Map();
 
-  const isDefaultView = !term && !hasPriceFilter;
+  const isDefaultView = !term && !hasPriceFilter && !onlyFavorites;
 
   if (isDefaultView) {
     // No search and no filter: only the most recently added products.
@@ -239,10 +262,15 @@ export default async function CheckPage({
     if (recentPackageIds.length > 0) {
       latest = buildLatest(await fetchObservations(recentPackageIds));
     }
-  } else if (hasPriceFilter) {
+  } else if (hasPriceFilter || onlyFavorites) {
     // Find the matching prices first, then load only the packages they belong to.
-    latest = buildLatest(await fetchObservations(null));
-    const ids = Array.from(latest.keys()).slice(0, 200);
+    // With the favorites filter the packages are the favorites, so a favorite without
+    // a matching price is still listed.
+    const favoriteIdList = Array.from(favorites.ids).slice(0, 200);
+    if (!onlyFavorites || favoriteIdList.length > 0) {
+      latest = buildLatest(await fetchObservations(onlyFavorites ? favoriteIdList : null));
+    }
+    const ids = onlyFavorites ? favoriteIdList : Array.from(latest.keys()).slice(0, 200);
     if (ids.length > 0) {
       let query = supabase
         .from("products")
@@ -258,7 +286,7 @@ export default async function CheckPage({
         )
         .in("product_packages.id", ids)
         .order("name_en", { ascending: true })
-        .limit(20);
+        .limit(onlyFavorites ? 100 : 20);
       if (term) query = query.or(nameFilter);
       const { data, error } = await query;
       if (error) {
@@ -320,6 +348,13 @@ export default async function CheckPage({
           unit: String(pkg.package_unit),
           variationLabel: variationText,
           taxRate: (product.tax_rate as number | null) ?? null,
+          favorite: favoriteLevel(
+            pkg.id as string,
+            product.id as string,
+            pkg.variation_id as string | null,
+            favorites.ids,
+            favorites.groups
+          ),
           rows: Array.from(latest.get(pkg.id)?.values() ?? []).sort(
             (a, b) =>
               new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime()
@@ -371,6 +406,19 @@ export default async function CheckPage({
           </summary>
 
           <div className="mt-4 space-y-5">
+            {loggedIn && (
+              <label className="flex w-fit cursor-pointer items-center gap-2 rounded-xl border border-line bg-panel px-3 py-2 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600">
+                <input
+                  type="checkbox"
+                  name="fav"
+                  value="1"
+                  defaultChecked={f.favorites}
+                  className="sr-only"
+                />
+                <Heart className="h-4 w-4" />
+                お気に入りのみ
+              </label>
+            )}
             <div>
               <label htmlFor="f_chain" className={labelCls}>
                 店舗（チェーン）
@@ -471,18 +519,22 @@ export default async function CheckPage({
 
       {cards.length === 0 ? (
         <p className="text-stone-500">
-          {hasPriceFilter ? "条件に合う価格がありません" : "見つかりませんでした"}
+          {onlyFavorites && favorites.ids.size === 0
+            ? "お気に入りがまだありません。商品名の横のハートをタップして登録できます。"
+            : hasPriceFilter
+              ? "条件に合う価格がありません"
+              : "見つかりませんでした"}
         </p>
       ) : (
         <div className="space-y-4">
           {cards.map((card) => (
+            <div key={card.id} className="relative">
             <Link
-              key={card.id}
               href={`/check/${card.id}`}
-              className="block rounded-2xl border border-line bg-panel p-4 shadow-sm transition hover:shadow-md"
+              className={`block rounded-2xl border bg-panel p-4 shadow-sm transition hover:shadow-md ${CARD_TONE[card.favorite]}`}
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
+                <div className={`min-w-0 ${loggedIn ? "pl-9" : ""}`}>
                   <p className="text-lg font-bold text-stone-900">{card.name}</p>
                   {card.sub && <p className="text-sm text-stone-500">{card.sub}</p>}
                   {card.variationLabel && (
@@ -555,6 +607,12 @@ export default async function CheckPage({
                 </ul>
               )}
             </Link>
+            {loggedIn && (
+              <div className="absolute left-2 top-2 z-10">
+                <FavoriteButton packageId={card.id} level={card.favorite} />
+              </div>
+            )}
+            </div>
           ))}
         </div>
       )}

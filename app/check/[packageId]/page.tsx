@@ -14,6 +14,9 @@ import UnitPriceLines from "@/components/UnitPriceLines";
 import DeleteObservationButton from "@/components/DeleteObservationButton";
 import { deletePriceObservation } from "./actions";
 import { getViewer } from "@/lib/auth/viewer";
+import FavoriteButton from "@/components/FavoriteButton";
+import { loadFavorites } from "@/lib/prices/loadFavorites";
+import { favoriteLevel } from "@/lib/prices/favorites";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
 
 export default async function PackageDetailPage({
@@ -32,7 +35,7 @@ export default async function PackageDetailPage({
   const { data: pkg, error: pkgError } = await supabase
     .from("product_packages")
     .select(
-      "id, package_size, package_unit, products (name_en, name_ja, brand, memo, tax_rate), product_variations (attributes)"
+      "id, product_id, variation_id, package_size, package_unit, products (name_en, name_ja, brand, memo, tax_rate), product_variations (attributes)"
     )
     .eq("id", packageId)
     .single();
@@ -103,6 +106,18 @@ export default async function PackageDetailPage({
   });
   const latest = rows[0];
 
+  // The heart in the header (visitors have no favorites and see no heart).
+  const favorites = readOnly ? null : await loadFavorites(supabase);
+  const favoriteState = favorites
+    ? favoriteLevel(
+        pkg.id as string,
+        pkg.product_id as string,
+        pkg.variation_id as string | null,
+        favorites.ids,
+        favorites.groups
+      )
+    : null;
+
   return (
     <div className="space-y-6">
       <Link href="/check" className="inline-block text-sm font-medium text-teal-700">
@@ -110,7 +125,14 @@ export default async function PackageDetailPage({
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-stone-900">{name}</h1>
+        <div className="flex items-center gap-1">
+          {favoriteState && (
+            <span className="-ml-2.5 shrink-0">
+              <FavoriteButton packageId={pkg.id as string} level={favoriteState} />
+            </span>
+          )}
+          <h1 className="min-w-0 text-2xl font-bold text-stone-900">{name}</h1>
+        </div>
         {variationText && (
           <p className="text-sm text-stone-500">{variationText}</p>
         )}

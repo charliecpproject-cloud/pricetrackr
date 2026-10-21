@@ -49,6 +49,17 @@ describe("parseFilters", () => {
   });
 });
 
+describe("favorites filter", () => {
+  it("is off by default and on with fav=1", () => {
+    expect(parseFilters({}).favorites).toBe(false);
+    expect(parseFilters({ fav: "1" }).favorites).toBe(true);
+    expect(parseFilters({ fav: "0" }).favorites).toBe(false);
+  });
+  it("counts as one active filter", () => {
+    expect(countActive(parseFilters({ fav: "1" }))).toBe(1);
+  });
+});
+
 describe("date range", () => {
   const now = new Date("2026-10-16T00:00:00Z");
   it("uses 3か月 by default", () => {
