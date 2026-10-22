@@ -230,6 +230,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 45 (polish: every page sets its own browser title, the page name or the product name on the detail page, via metadata exports, generateMetadata and app/login/layout.tsx; one date helper formatDateTime in lib/dateTime.ts (今日 / 昨日 / M/D / YYYY/M/D, Japan time) replaces formatJst and formatActivityTime on home, 価格確認 and the detail page; the label above the entered price and in the unit price line is 特売価格 / セール価格 when the sale flag is on, 通常 otherwise via the regularLabel prop) done
 
 
+- Step 46a (price entry: the native 商品・容量 select is replaced by PackagePicker, a type-to-search list with the 20 best matches, the 10 most recently priced packages first and shown when the box is empty; the chosen package shows as a card with 変更; Save stays disabled until one is chosen; same search rules and aliases) done
+
+
 ## In Progress
 
 - (none)
