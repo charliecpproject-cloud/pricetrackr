@@ -18,6 +18,24 @@ import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel } from "@/lib/prices/favorites";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ packageId: string }>;
+}) {
+  const { packageId } = await params;
+  if (!z.string().uuid().safeParse(packageId).success) return { title: "価格確認" };
+
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("product_packages")
+    .select("products (name_ja, name_en)")
+    .eq("id", packageId)
+    .maybeSingle();
+  const product: any = [data?.products].flat()[0] ?? {};
+  return { title: product.name_ja || product.name_en || "価格確認" };
+}
+
 export default async function PackageDetailPage({
   params,
 }: {

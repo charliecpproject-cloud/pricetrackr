@@ -35,6 +35,8 @@ const tools = [
   },
 ];
 
+export const metadata = { title: "管理者ツール" };
+
 export default async function AdminPage() {
   const viewer = await getViewer();
   if (!viewer.isAdmin) redirect("/");

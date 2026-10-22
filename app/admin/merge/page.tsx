@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/auth/viewer";
 
+export const metadata = { title: "商品の統合" };
+
 export default async function ProductMergePage() {
   const viewer = await getViewer();
   if (!viewer.isAdmin) redirect("/");

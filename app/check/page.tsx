@@ -95,6 +95,8 @@ function Chip({
   );
 }
 
+export const metadata = { title: "価格確認" };
+
 export default async function CheckPage({
   searchParams,
 }: {

@@ -5,6 +5,8 @@ import ThemePicker from "./ThemePicker";
 import ProfileNameForm from "./ProfileNameForm";
 import { parseTheme } from "@/lib/themes/themes";
 
+export const metadata = { title: "設定" };
+
 export default async function SettingsPage() {
   const supabase = await createSupabaseServerClient();
   const {

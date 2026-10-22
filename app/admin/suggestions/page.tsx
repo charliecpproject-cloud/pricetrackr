@@ -9,6 +9,8 @@ import SuggestionForm from "./SuggestionForm";
 const chipCls =
   "inline-flex h-8 items-center rounded-full border border-line bg-panel px-3 text-sm text-stone-600";
 
+export const metadata = { title: "検索のおすすめ" };
+
 export default async function SuggestionsPage() {
   const viewer = await getViewer();
   if (!viewer.isAdmin) redirect("/");

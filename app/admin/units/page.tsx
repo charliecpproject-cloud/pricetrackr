@@ -8,6 +8,8 @@ import UnitRow from "./UnitRow";
 
 type UnitRecord = { unit: string; label: string; enabled: boolean };
 
+export const metadata = { title: "単位の言葉" };
+
 export default async function UnitsPage() {
   const viewer = await getViewer();
   if (!viewer.isAdmin) redirect("/");

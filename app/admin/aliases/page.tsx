@@ -8,6 +8,8 @@ import AliasRow from "./AliasRow";
 
 type AliasRecord = { id: string; canonical: string; alias: string; enabled: boolean };
 
+export const metadata = { title: "検索の別名" };
+
 export default async function AliasesPage() {
   const viewer = await getViewer();
   if (!viewer.isAdmin) redirect("/");

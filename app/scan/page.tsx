@@ -1,5 +1,7 @@
 import ScanClient from "./ScanClient";
 
+export const metadata = { title: "バーコード読み取り" };
+
 export default function ScanPage() {
   return (
     <div className="space-y-6">

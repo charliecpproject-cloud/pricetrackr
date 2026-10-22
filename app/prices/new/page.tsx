@@ -12,6 +12,8 @@ import { parseCategory } from "@/lib/stores/category";
 import type { SearchAlias } from "@/lib/search/aliases";
 import { loadCounterUnits } from "@/lib/prices/counterUnits";
 
+export const metadata = { title: "価格入力" };
+
 export default async function NewPricePage({
   searchParams,
 }: {

@@ -52,6 +52,8 @@ const summaryCls = "cursor-pointer text-base font-semibold text-stone-900";
 const linkBtnCls =
   "flex h-12 items-center justify-center rounded-xl border border-line bg-panel text-base font-medium text-stone-700 hover:bg-panel-soft";
 
+export const metadata = { title: "商品" };
+
 export default async function ProductsPage({
   searchParams,
 }: {

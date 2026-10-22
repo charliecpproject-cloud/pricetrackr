@@ -10,6 +10,8 @@ import ChainPicker from "./ChainPicker";
 import { ChainDeleteButton, ChainEditor, ShopRow } from "./ManageForms";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
+export const metadata = { title: "店舗" };
+
 export default async function StoresPage({
   searchParams,
 }: {
