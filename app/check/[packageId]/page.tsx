@@ -107,6 +107,7 @@ export default async function PackageDetailPage({
         isMemberPrice: !!obs.is_member_price,
         bulkTiers: parseStoredTiers(obs.bulk_tiers),
         size: Number(pkg.package_size),
+        regularLabel: obs.is_sale ? `${saleLabel(parseCategory(chain?.category))}価格` : undefined,
         unit: pkg.package_unit,
       }),
       memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
@@ -169,7 +170,7 @@ export default async function PackageDetailPage({
         <div className="rounded-2xl border border-line bg-panel p-5 shadow-sm">
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
-            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} pointUseMultiplier={latest.pointUseMultiplier} bulkTiers={latest.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={latest.taxBasis} size="lg" align="start" />
+            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} regularLabel={latest.isSale ? `${saleLabel(latest.category)}価格` : undefined} pointUseMultiplier={latest.pointUseMultiplier} bulkTiers={latest.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={latest.taxBasis} size="lg" align="start" />
             <UnitPriceSummary summary={latest.unitSummary} align="start" />
           </div>
           <p className="mt-2 text-sm text-stone-500">
@@ -202,7 +203,7 @@ export default async function PackageDetailPage({
                       <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">{saleLabel(r.category)}</span>
                     )}
                   </p>
-                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} pointUseMultiplier={r.pointUseMultiplier} bulkTiers={r.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={r.taxBasis} size="md" className="ml-auto" />
+                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} regularLabel={r.isSale ? `${saleLabel(r.category)}価格` : undefined} pointUseMultiplier={r.pointUseMultiplier} bulkTiers={r.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={r.taxBasis} size="md" className="ml-auto" />
                 </div>
                 <p className="mt-1 text-xs text-stone-500">{formatDateTime(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
                 <UnitPriceSummary summary={r.unitSummary} align="start" />

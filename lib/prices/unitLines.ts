@@ -37,6 +37,7 @@ export function unitPriceSummary(options: {
   size: number;
   unit: string;
   hideSinglePiece?: boolean;
+  regularLabel?: string;
 }): UnitSummary | null {
   const {
     enteredPrice,
@@ -47,6 +48,7 @@ export function unitPriceSummary(options: {
     size,
     unit,
     hideSinglePiece = false,
+    regularLabel = "通常",
   } = options;
   if (hideSinglePiece && isSinglePiece(size, unit)) return null;
 
@@ -65,7 +67,7 @@ export function unitPriceSummary(options: {
   }
 
   const items: UnitSummaryItem[] = [
-    { label: isMemberPrice ? "会員価格" : "通常", amount: formatYen(regular.amount) },
+    { label: isMemberPrice ? "会員価格" : regularLabel, amount: formatYen(regular.amount) },
   ];
   if (discount && discounted !== null) {
     items.push({

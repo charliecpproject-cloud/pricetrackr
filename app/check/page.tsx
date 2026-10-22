@@ -595,6 +595,7 @@ export default async function CheckPage({
                           couponPercents={r.couponPercents}
                           memberPercent={r.memberPercent}
                           isMemberPrice={r.isMemberPrice}
+                          regularLabel={r.isSale ? `${saleLabel(r.category)}価格` : undefined}
                           pointUseMultiplier={r.pointUseMultiplier}
                           bulkTiers={r.bulkTiers}
                           taxRate={card.taxRate}
@@ -611,6 +612,7 @@ export default async function CheckPage({
                             size: card.sizeValue,
                             unit: card.unit,
                             hideSinglePiece: true,
+                            regularLabel: r.isSale ? `${saleLabel(r.category)}価格` : undefined,
                           })}
                         />
                       </div>

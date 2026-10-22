@@ -11,6 +11,8 @@ type Props = {
   couponPercents?: number[] | null;
   memberPercent?: number | null;
   isMemberPrice?: boolean;
+  // Label above the entered price when coupons are shown (default 通常; 特売価格 for a sale).
+  regularLabel?: string;
   // まとめ買い: tiers applied on top of the entered (regular, 1-item) price.
   bulkTiers?: BulkTier[] | null;
   // ウェル活: on the point-use day 1 point is worth this many yen. null = not enabled.
@@ -109,6 +111,7 @@ function PriceStrip({
   memberPercent,
   isMemberPrice,
   size = "md",
+  regularLabel = "通常",
   end,
 }: {
   price: number | string;
@@ -116,6 +119,7 @@ function PriceStrip({
   memberPercent?: number | null;
   isMemberPrice?: boolean;
   size?: "md" | "lg";
+  regularLabel?: string;
   end: boolean;
 }) {
   const normal = Number(price);
@@ -149,7 +153,7 @@ function PriceStrip({
       }`}
     >
       <span className={cell}>
-        <span className="text-[11px] leading-tight text-stone-500">通常</span>
+        <span className="text-[11px] leading-tight text-stone-500">{regularLabel}</span>
         <span className={`${small} tabular-nums text-stone-500`}>{formatYen(normal)}</span>
       </span>
       {discounts.map((d) => {
