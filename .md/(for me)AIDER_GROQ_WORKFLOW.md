@@ -75,3 +75,52 @@ Aider has this built in — it's not something you need to hand-roll by copy-pas
 In architect mode, one model reasons about *how* to solve the task and writes a plan; a second (can be the same or a different model) turns that plan into actual file edits. This maps directly onto your "ask it to plan first, then build" instinct — you don't need a separate manual copy-paste step, though doing it as two distinct sessions (plan → you review → build) is still worth doing for anything schema/auth/security-related, per `CONVENTIONS.md`'s "plan in ask mode first" rule. Aider's plain `/ask` mode (no code changes at all, just discussion) is the right tool for that first pass; `--architect` is more for "plan and then immediately apply it" within one flow.
 
 For a free Groq-only setup, using the same model as both architect and editor still gives you the "reason first, then edit" quality bump the split is designed for — you don't need two different providers.
+
+
+
+
+
+
+
+
+
+
+
+## 7. Claude hand off
+
+Start a new chat. A very long conversation makes me slower, hits usage limits sooner, and makes small mistakes more likely. The new chat can pick up where we left off with a short briefing. 
+CLAUDE_HANDOFF.md: covers the setup and how Claude work, the database tables and display rules, the main files, and what’s done and still to do.
+
+What to do
+
+Save the briefing. Put CLAUDE_HANDOFF.md in .md folder. Don’t add it to .aider.conf.yml.
+
+Get a list of your files. This one command replaces the code-mapping files. It prints every tracked file name:
+git ls-files | Set-Clipboard
+
+That copies the list to your clipboard, so you can paste it as text. Your codebase-visualizer map isn’t needed, because a plain file list plus the specific files I ask for is smaller and enough.
+
+Start a new chat and attach these three files: CLAUDE_HANDOFF.md, PROGRESS.md, and PART1_FOUNDATION.md. Then paste the file list and send something like this:
+
+This is a continuation of my price tracker project. Please read the attached handoff, progress log and foundation notes first. I just finished Step 14k. Next I’d like to [what you want to do, for example: finish housekeeping, the live deploy test and Phase 1 close-out]. Ask me for any file you need to see, and don’t guess what is in my files.
+
+Sharing files is quicker and cheaper for me. In the new chat I’ll ask for specific files before changing anything, and I won’t write replacements for files I haven’t seen. That is the better way to work, and it would have avoided several of the problems we had when Aider’s edits didn’t match what I expected. You can share files in either of these ways:
+
+Attach the file to the chat.
+Or copy several at once to the clipboard and paste them. Replace the file names inside the quotes with the ones I ask for:
+$files = 'app\check\page.tsx','app\prices\actions.ts'
+$files | ForEach-Object { "=== $_ ==="; Get-Content $_ -Encoding UTF8 } | Set-Clipboard
+
+(-Encoding UTF8 keeps the Japanese text readable.)
+
+To keep chats short from now on
+
+Use one chat per batch of work, for example one feature or one step group. Start a fresh one when it gets long.
+At the end of each chat, have Aider update PROGRESS.md as usual. It’s the record of where you are.
+If something big changes, such as a new table or a new rule, ask me to update CLAUDE_HANDOFF.md before you close the chat.
+
+
+
+
+
+

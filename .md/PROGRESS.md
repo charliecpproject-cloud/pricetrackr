@@ -227,6 +227,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 44 (price check layout: the search scope buttons are one connected group inside the 絞り込み panel on the same line as お気に入りのみ, with a short hint line (hint field in lib/search/scope.ts); a scope other than すべて counts as an active filter; the おすすめ chips wrap and are width-guarded; docs updated) done
 
 
+- Step 45 (polish: every page sets its own browser title, the page name or the product name on the detail page, via metadata exports, generateMetadata and app/login/layout.tsx; one date helper formatDateTime in lib/dateTime.ts (今日 / 昨日 / M/D / YYYY/M/D, Japan time) replaces formatJst and formatActivityTime on home, 価格確認 and the detail page; the label above the entered price and in the unit price line is 特売価格 / セール価格 when the sale flag is on, 通常 otherwise via the regularLabel prop) done
+
+
 ## In Progress
 
 - (none)
