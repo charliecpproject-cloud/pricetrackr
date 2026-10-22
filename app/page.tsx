@@ -7,7 +7,7 @@ import PriceDisplay from "@/components/PriceDisplay";
 import { packageLabel } from "@/lib/prices/format";
 import { parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
 import { parseCategory, saleLabel } from "@/lib/stores/category";
-import { formatActivityTime } from "@/lib/home/format";
+import { formatDateTime } from "@/lib/dateTime";
 import { greetingText } from "@/lib/home/greeting";
 import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
 
@@ -162,7 +162,7 @@ export default async function HomePage() {
                         )}
                       </p>
                       <p className="mt-0.5 text-xs text-stone-500">
-                        {a.chainName} ・ {formatActivityTime(a.at)}
+                        {a.chainName} ・ {formatDateTime(a.at)}
                         {a.isSale && (
                           <span className="ml-2 rounded-md bg-amber-100 px-1.5 py-0.5 font-bold text-amber-700">
                             {a.saleText}
@@ -189,7 +189,7 @@ export default async function HomePage() {
                         {a.name}
                       </p>
                       <p className="mt-0.5 text-xs text-stone-500">
-                        商品を追加 ・ {formatActivityTime(a.at)}
+                        商品を追加 ・ {formatDateTime(a.at)}
                       </p>
                     </div>
                     <ChevronRight className="h-5 w-5 shrink-0 text-stone-400" />

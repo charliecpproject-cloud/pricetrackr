@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { formatJst, packageLabel } from "@/lib/prices/format";
+import { packageLabel } from "@/lib/prices/format";
+import { formatDateTime } from "@/lib/dateTime";
 import PriceDisplay from "@/components/PriceDisplay";
 import { parseTaxBasis } from "@/lib/prices/tax";
 import { parseCategory, saleLabel } from "@/lib/stores/category";
@@ -173,7 +174,7 @@ export default async function PackageDetailPage({
           </div>
           <p className="mt-2 text-sm text-stone-500">
             {latest.chainName}
-            {latest.branchName ? `（${latest.branchName}）` : ""} ・ {formatJst(latest.observedAt)}{latest.bonusPoints ? <span className="ml-2 text-amber-700">+{latest.bonusPoints}ポイント</span> : null}
+            {latest.branchName ? `（${latest.branchName}）` : ""} ・ {formatDateTime(latest.observedAt)}{latest.bonusPoints ? <span className="ml-2 text-amber-700">+{latest.bonusPoints}ポイント</span> : null}
           </p>
         </div>
       ) : (
@@ -203,7 +204,7 @@ export default async function PackageDetailPage({
                   </p>
                   <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} pointUseMultiplier={r.pointUseMultiplier} bulkTiers={r.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={r.taxBasis} size="md" className="ml-auto" />
                 </div>
-                <p className="mt-1 text-xs text-stone-500">{formatJst(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
+                <p className="mt-1 text-xs text-stone-500">{formatDateTime(r.observedAt)}{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
                 <UnitPriceSummary summary={r.unitSummary} align="start" />
                 {r.notes && <p className="mt-2 text-sm text-stone-700">{r.notes}</p>}
                 <div className="mt-2">

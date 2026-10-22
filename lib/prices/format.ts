@@ -17,38 +17,6 @@ export function formatYen(amount: number | string): string {
 }
 
 /**
- * ISO 8601 文字列を Asia/Tokyo タイムゾーンで
- * "YYYY/MM/DD HH:mm" 形式に変換します。
- */
-export function formatJst(iso: string): string {
-  const date = new Date(iso);
-  const parts = new Intl.DateTimeFormat("en", {
-    timeZone: "Asia/Tokyo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(date);
-
-  const lookup: Record<string, string> = {};
-  for (const part of parts) {
-    if (part.type !== "literal") {
-      lookup[part.type] = part.value;
-    }
-  }
-
-  const year = lookup["year"];
-  const month = lookup["month"];
-  const day = lookup["day"];
-  const hour = lookup["hour"];
-  const minute = lookup["minute"];
-
-  return `${year}/${month}/${day} ${hour}:${minute}`;
-}
-
-/**
  * パッケージサイズと単位からラベル文字列を作ります。
  * ml, L, g, kg は数字とスペースのあとに単位を付けます。例: (500, "ml") => "500 ml"
  * 数える単位（個・枚・袋・本・玉・パックなど）はスペースなしでその言葉を付けます。

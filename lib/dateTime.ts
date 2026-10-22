@@ -18,8 +18,9 @@ function jstParts(date: Date) {
   };
 }
 
-// 「今日 14:30」「昨日 19:00」「10/10 09:00」 in Japan time.
-export function formatActivityTime(iso: string, now: Date = new Date()): string {
+// The one way to show a date and time in the app, always in Japan time:
+// 「今日 14:30」「昨日 19:00」「10/20 19:18」(this year) or 「2025/12/20 19:18」(another year).
+export function formatDateTime(iso: string, now: Date = new Date()): string {
   const at = new Date(iso);
   if (Number.isNaN(at.getTime())) return "";
   const a = jstParts(at);
@@ -30,5 +31,6 @@ export function formatActivityTime(iso: string, now: Date = new Date()): string 
   const time = `${a.hh}:${a.mm}`;
   if (diff === 0) return `今日 ${time}`;
   if (diff === 1) return `昨日 ${time}`;
-  return `${a.m}/${a.d} ${time}`;
+  if (a.y === b.y) return `${a.m}/${a.d} ${time}`;
+  return `${a.y}/${a.m}/${a.d} ${time}`;
 }
