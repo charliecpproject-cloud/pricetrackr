@@ -27,7 +27,7 @@ export default async function NewPricePage({
   const supabase = await createSupabaseServerClient();
 
   // Everything the page needs is fetched at the same time.
-  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer, counterUnits] = await Promise.all([
+  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer, counterUnits, recentResult] = await Promise.all([
     supabase
       .from("products")
       .select(
@@ -42,12 +42,24 @@ export default async function NewPricePage({
     supabase.from("search_aliases").select("alias, canonical").eq("enabled", true),
     getViewer(),
     loadCounterUnits(supabase),
+    supabase
+      .from("price_observations")
+      .select("product_package_id")
+      .order("created_at", { ascending: false })
+      .limit(60),
   ]);
 
   const { data: products, error: productsError } = productsResult;
   const { data: chains, error: chainsError } = chainsResult;
   const { data: shops, error: shopsError } = shopsResult;
   const aliases = (aliasesResult.data ?? []) as SearchAlias[];
+
+  // The 10 packages priced most recently (newest first), for the product picker.
+  const recentIds: string[] = [];
+  for (const row of (recentResult.data ?? []) as { product_package_id: string }[]) {
+    if (!recentIds.includes(row.product_package_id)) recentIds.push(row.product_package_id);
+    if (recentIds.length >= 10) break;
+  }
 
   if (productsError) console.error("Products fetch error:", productsError.message, productsError.code);
   if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
@@ -192,6 +204,7 @@ export default async function NewPricePage({
         branches={branchOptions}
         readOnly={readOnly}
         aliases={aliases}
+        recentIds={recentIds}
         initialPackageId={initialPackageId}
         startNew={startNew}
         defaultProductId={focusProduct?.id ?? ""}

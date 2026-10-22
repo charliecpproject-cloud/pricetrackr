@@ -21,7 +21,8 @@ import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
 import BulkPriceFields, { emptyBulkRows, rowsFromTiers, type BulkRow } from "./BulkPriceFields";
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
-import { matchesSearchWithAliases, type SearchAlias } from "@/lib/search/aliases";
+import type { SearchAlias } from "@/lib/search/aliases";
+import PackagePicker from "./PackagePicker";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import type { CounterUnitOption } from "@/lib/prices/unitWords";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
@@ -77,6 +78,7 @@ export default function PriceForm({
   branches,
   readOnly = false,
   aliases = [],
+  recentIds = [],
   initialPackageId = "",
   startNew = false,
   defaultProductId = "",
@@ -88,6 +90,7 @@ export default function PriceForm({
   branches: Branch[];
   readOnly?: boolean;
   aliases?: SearchAlias[];
+  recentIds?: string[];
   initialPackageId?: string;
   startNew?: boolean;
   defaultProductId?: string;
@@ -182,11 +185,7 @@ export default function PriceForm({
     return () => clearTimeout(id);
   }, [state]);
 
-  const keyword = search.trim();
-  const filtered = keyword
-    ? packages.filter((p) => matchesSearchWithAliases(`${p.label} ${p.search}`, keyword, aliases))
-    : packages;
-  const selectedPackage = filtered.some((p) => p.id === packageId) ? packageId : "";
+  const selectedPackage = packages.some((p) => p.id === packageId) ? packageId : "";
 
   const branchOptions = branches.filter((b) => b.chainId === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
@@ -243,7 +242,7 @@ export default function PriceForm({
   };
 
   const saveDisabled =
-    readOnly || pending || (!isNewPackage && filtered.length === 0);
+    readOnly || pending || (!isNewPackage && !selectedPackage);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -266,44 +265,25 @@ export default function PriceForm({
         </div>
       ) : (
         <>
-          <Field label="商品を検索" kind="optional" htmlFor="search">
-            <input
-              id="search"
-              ref={searchRef}
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="商品名・ブランド・カテゴリなどで絞り込み"
-              className={controlCls}
-            />
-          </Field>
-
           <Field
             label="商品・容量"
             kind="required"
-            htmlFor="product_package_id"
-            hint={
-              filtered.length === 0
-                ? "該当する商品がありません。右の「新規」から登録できます。"
-                : "リストにない場合は「新規」で商品・容量を登録できます。"
-            }
+            htmlFor="package_search"
+            hint="リストにない場合は「新規」で商品・容量を登録できます。"
           >
-            <div className="flex gap-2">
-              <select
-                id="product_package_id"
-                name="product_package_id"
-                required
-                value={selectedPackage}
-                onChange={(e) => setPackageId(e.target.value)}
-                className={controlCls}
-              >
-                <option value="">商品・容量を選択</option>
-                {filtered.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
+            <div className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">
+                <PackagePicker
+                  packages={packages}
+                  aliases={aliases}
+                  recentIds={recentIds}
+                  selectedId={selectedPackage}
+                  onSelect={setPackageId}
+                  search={search}
+                  onSearchChange={setSearch}
+                  inputRef={searchRef}
+                />
+              </div>
               <NewToggle checked={false} onChange={setIsNewPackage} />
             </div>
           </Field>
