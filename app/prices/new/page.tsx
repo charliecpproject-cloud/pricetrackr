@@ -31,7 +31,7 @@ export default async function NewPricePage({
     supabase
       .from("products")
       .select(
-        "id, name_en, name_ja, brand, category, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code)"
+        "id, name_en, name_ja, brand, category, tax_rate, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code)"
       )
       .order("name_en", { ascending: true }),
     supabase
@@ -65,7 +65,7 @@ export default async function NewPricePage({
   if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
   if (shopsError) console.error("Shops fetch error:", shopsError.message, shopsError.code);
 
-  const packages: { id: string; productId: string; label: string; search: string }[] = [];
+  const packages: { id: string; productId: string; label: string; search: string; taxRate: number | null }[] = [];
   const productOptions: {
     id: string;
     label: string;
@@ -83,6 +83,7 @@ export default async function NewPricePage({
       .map((b) => b.code as string)
       .join(" ");
 
+    const taxRate: number | null = product.tax_rate == null ? null : Number(product.tax_rate);
     productOptions.push({ id: product.id as string, label: title, variations });
 
     const searchText = (variationText?: string) =>
@@ -99,6 +100,7 @@ export default async function NewPricePage({
           .filter(Boolean)
           .join(" — "),
         search: searchText(variation?.label),
+        taxRate,
       });
     }
 
@@ -119,6 +121,7 @@ export default async function NewPricePage({
         productId: product.id as string,
         label: [title, target.label, packageLabel(1, "count")].filter(Boolean).join(" — "),
         search: searchText(target.label),
+        taxRate,
       });
     }
   }

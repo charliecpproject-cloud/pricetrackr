@@ -25,6 +25,8 @@ import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
 import { lookupPreviousPrices } from "@/app/prices/previousPrice";
 import { parsePriceInput, type PreviousPrices } from "@/lib/prices/previous";
 import { suspiciousPrice } from "@/lib/prices/suspicious";
+import { taxIncludedEstimate } from "@/lib/prices/taxHint";
+import { formatYen } from "@/lib/prices/format";
 import PriceWarnings from "./PriceWarnings";
 import PreviousPriceLine from "./PreviousPriceLine";
 import type { SearchAlias } from "@/lib/search/aliases";
@@ -33,7 +35,7 @@ import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import type { CounterUnitOption } from "@/lib/prices/unitWords";
 import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
 
-type Pkg = { id: string; label: string; search: string };
+type Pkg = { id: string; label: string; search: string; taxRate?: number | null };
 type Chain = {
   id: string;
   name: string;
@@ -201,6 +203,13 @@ export default function PriceForm({
   const branchOptions = branches.filter((b) => b.chainId === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
   const selectedChain = chains.find((c) => c.id === chainId);
+
+  // 税抜き chosen and the product has a tax rate: show the 税込 estimate live under the price box.
+  const selectedRate = packages.find((p) => p.id === selectedPackage)?.taxRate ?? null;
+  const taxEstimate =
+    !isNewPackage && taxBasis === "excl" && selectedRate !== null && selectedRate > 0
+      ? taxIncludedEstimate(parsePriceInput(price) ?? NaN, selectedRate)
+      : null;
 
   // The previous price of this 容量 (any chain, and at the chosen chain), fetched when the
   // 容量 or the chain changes and again after each save. Shown only while the key still matches.
@@ -452,6 +461,12 @@ export default function PriceForm({
             </label>
           </div>
         </Field>
+        {taxEstimate !== null && selectedRate !== null && (
+          <p className="text-sm text-stone-600">
+            税込の目安 <span className="font-bold tabular-nums">{formatYen(taxEstimate)}</span>
+            （{selectedRate}%・未確認）
+          </p>
+        )}
         {!isNewPackage && previousPrices && (
           <PreviousPriceLine
             prices={previousPrices}

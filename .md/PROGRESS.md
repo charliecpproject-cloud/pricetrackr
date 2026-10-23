@@ -248,6 +248,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 47 (price entry: the chain of the newest price entry is preselected for logged-in users; a ?chain= link still wins; no extra query, the page reads store_chain_id from the recent-entries query) done
 
 
+- Step 48 (price entry: with 税抜き chosen and a product 税率 above 0, a live 税込の目安 line under the price box (taxIncludedEstimate, rounded down, 未確認); the package list carries taxRate; not shown in the 新規 mode) done
+
+
 ## In Progress
 
 - (none)
