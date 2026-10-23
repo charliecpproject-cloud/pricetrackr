@@ -59,6 +59,9 @@ AI/photo extraction, freshness/trust scoring, translation-approval workflow, int
 - Category suggestions: `components/CategoryField.tsx` asks `suggestCategoryNames()` (`app/products/categoryActions.ts`); matching is in `lib/products/category.ts` (whole-term and single-kanji matches, up to 10, shown as name (number of products)).
 - `components/ProductFields.tsx` holds the product fields (商品名, 英語名・別名, ブランド, カテゴリ, メモ) and is used by 商品を追加 and by 価格入力 > 新しい商品として登録 (prefix `np_`). Change fields there, never in one form only.
 
+## Empty search
+- A search with no result (価格確認 and 商品) shows components/SearchEmptyHelp.tsx: 「もしかして：」 chips with similar product names (lib/search/similar.ts findSimilarProducts; the loose words come from lib/search/variants.ts: each word alone plus the first 3 characters of longer words; ranked by how many tries hit, up to 5 names) and, for logged-in accounts, a 「この名前で商品を追加」 button that opens /products?name=<text> (商品を追加 open, 商品名 filled in).
+
 ## Products page
 - Default view: only the 商品を追加 section (open) is shown and no product list is loaded. The button すべての商品を表示 (`?all=1`) shows all products (max 300) and then reads 商品一覧を閉じる to go back; a search (`?q=`) shows up to 20 matches. The 商品を追加 section is collapsed while a list is shown and open in the default view (and after an unknown barcode scan).
 - On each card, the buttons バリエーションを追加 and 容量を追加 open ONE shared popup (`app/products/ProductDialogs.tsx`, provider around the list, `useProductDialogs()`), with the product preselected; the popup closes after a successful add. There are no product dropdown forms at the bottom of the page any more (only 商品を追加).

@@ -257,6 +257,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 50a (empty search: lib/search/variants.ts (similarSearchVariants, with tests) and lib/search/similar.ts (findSimilarProducts: loose retries, ranked) feed components/SearchEmptyHelp.tsx, which shows もしかして chips and 「この名前で商品を追加」 (links to /products?name=...) on 価格確認 and 商品; visitors get no add button) done
 
 
+- Step 50b (/products?name=<text> opens 商品を追加 with 商品名 filled in: ProductFields and ProductForm take defaultName; used by the 「この名前で商品を追加」 button; Step 50 complete) done
+
+
 ## In Progress
 
 - (none)

@@ -59,11 +59,13 @@ export const metadata = { title: "商品" };
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; all?: string; barcode?: string }>;
+  searchParams: Promise<{ q?: string; all?: string; barcode?: string; name?: string }>;
 }) {
-  const { q, all, barcode } = await searchParams;
+  const { q, all, barcode, name } = await searchParams;
   // A barcode that was scanned but not found: the add form opens with it filled in.
   const newBarcode = normalizeBarcode(barcode ?? "") ?? "";
+  // A name typed in a search that found nothing (「この名前で商品を追加」): fills 商品名.
+  const newName = (name ?? "").trim().slice(0, 100);
   // Keep the search term short and free of characters that break the filter.
   const term = (q ?? "").trim().slice(0, 50).replace(/[,()%_*\\]/g, "");
   const showAll = all === "1" && !term;
@@ -179,11 +181,11 @@ export default async function ProductsPage({
             </Link>
           )}
 
-          <details open={newBarcode !== "" || !showList} className={sectionCls}>
+          <details open={newBarcode !== "" || newName !== "" || !showList} className={sectionCls}>
             <summary className={summaryCls}>商品を追加</summary>
             <div className="mt-4">
               <ReadOnlyFieldset readOnly={readOnly}>
-                <ProductForm defaultBarcode={newBarcode} />
+                <ProductForm key={`${newBarcode}|${newName}`} defaultBarcode={newBarcode} defaultName={newName} />
               </ReadOnlyFieldset>
             </div>
           </details>

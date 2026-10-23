@@ -12,9 +12,11 @@ import { MAX_BARCODES_PER_PRODUCT } from "@/lib/products/barcode";
 export default function ProductFields({
   prefix = "",
   defaultBarcode = "",
+  defaultName = "",
 }: {
   prefix?: string;
   defaultBarcode?: string;
+  defaultName?: string;
 }) {
   const id = (key: string) => `${prefix}${key}`;
   const [barcodeRows, setBarcodeRows] = useState<number[]>([0]);
@@ -33,6 +35,7 @@ export default function ProductFields({
           name={id("name")}
           required
           maxLength={100}
+          defaultValue={defaultName}
           placeholder="例：超熟 食パン"
           className={controlCls}
         />

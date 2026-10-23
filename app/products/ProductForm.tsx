@@ -14,7 +14,13 @@ const initialState: { error: string | null; message?: string | null; productId?:
     productId: null,
   };
 
-export default function ProductForm({ defaultBarcode = "" }: { defaultBarcode?: string }) {
+export default function ProductForm({
+  defaultBarcode = "",
+  defaultName = "",
+}: {
+  defaultBarcode?: string;
+  defaultName?: string;
+}) {
   const router = useRouter();
   const [state, formAction, pending] = useToastedActionState(createProduct, initialState);
 
@@ -27,7 +33,7 @@ export default function ProductForm({ defaultBarcode = "" }: { defaultBarcode?: 
 
   return (
     <form action={formAction} className="space-y-4">
-      <ProductFields defaultBarcode={defaultBarcode} />
+      <ProductFields defaultBarcode={defaultBarcode} defaultName={defaultName} />
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
