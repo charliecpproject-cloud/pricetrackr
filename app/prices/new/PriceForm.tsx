@@ -22,7 +22,9 @@ import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
 import BulkPriceFields, { emptyBulkRows, rowsFromTiers, type BulkRow } from "./BulkPriceFields";
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
 import { lookupPreviousPrices } from "@/app/prices/previousPrice";
-import type { PreviousPrices } from "@/lib/prices/previous";
+import { parsePriceInput, type PreviousPrices } from "@/lib/prices/previous";
+import { suspiciousPrice } from "@/lib/prices/suspicious";
+import PriceWarnings from "./PriceWarnings";
 import PreviousPriceLine from "./PreviousPriceLine";
 import type { SearchAlias } from "@/lib/search/aliases";
 import PackagePicker from "./PackagePicker";
@@ -110,6 +112,8 @@ export default function PriceForm({
   const [isNewBranch, setIsNewBranch] = useState(false);
   const [newBranch, setNewBranch] = useState("");
   const [price, setPrice] = useState("");
+  // The price warnings appear once the price field has been left (not while typing).
+  const [priceDone, setPriceDone] = useState(false);
   const [isSale, setIsSale] = useState(false);
   const [showAllChains, setShowAllChains] = useState(false);
   const [observedAt, setObservedAt] = useState("");
@@ -213,6 +217,12 @@ export default function PriceForm({
     };
   }, [selectedPackage, chainId, previousKey, state]);
   const previousPrices = previous && previous.key === previousKey ? previous.data : null;
+  // The price to compare with: the newest at the chosen chain, else the newest at any chain.
+  const reference = previousPrices ? (previousPrices.atChain ?? previousPrices.latest) : null;
+  const priceWarnings =
+    !isNewPackage && priceDone && reference
+      ? suspiciousPrice(parsePriceInput(price), taxBasis, reference)
+      : [];
 
   // Chains with the bulk option: fill the percent and quantity used last
   // (same product first, then the chain), unless the user already typed something.
@@ -412,7 +422,11 @@ export default function PriceForm({
                 inputMode="decimal"
                 required
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => {
+                  setPrice(e.target.value);
+                  setPriceDone(false);
+                }}
+                onBlur={() => setPriceDone(true)}
                 placeholder="例：198"
                 className={controlCls}
               />
@@ -443,6 +457,9 @@ export default function PriceForm({
             basis={taxBasis}
             chainId={chainId}
           />
+        )}
+        {reference && priceWarnings.length > 0 && (
+          <PriceWarnings warnings={priceWarnings} previous={reference} />
         )}
         <MemberPriceCheck
           chain={selectedChain}
