@@ -123,3 +123,10 @@ Next.js 16 (App Router), React 19, Tailwind 4, TypeScript strict, npm (not pnpm)
 
 ## UI language
 Japanese only, hardcoded strings, no i18n library, polite です/ます tone. Show `name_ja` first, falling back to `name_en`. A product has ONE main name field (商品名, any language, no language detection), stored in the `name_ja` column, plus an optional 英語名・別名 alias stored in `name_en` and used in searches. The column names are historical. Products are always referenced by id, so renaming never breaks prices. Never translate code identifiers, form field names, database columns, or stored values (source, status, currency, tax_basis). Terms: ホーム, 価格入力, 価格確認, 店舗, チェーン, 支店, 商品, 容量, 価格, 特売, 日時, メモ, 保存, 削除, 検索, ログイン, ログアウト, メールアドレス, パスワード, クーポン, 通常価格, 会員価格, 最安, 税抜き, 税込み, 不明 (radio), 税抜 / 税込 / 税不明 (badges), 商品バリエーション, パッケージ. Unit `count` displays as 個.
+
+## Price entry helpers (steps 46a to 46e)
+- Product choice on 価格入力: PackagePicker (app/prices/new/PackagePicker.tsx), a type-to-search list with the 20 best matches, recently priced packages first (the page loads the 10 newest from price_observations); no native select; Save is disabled until a package is chosen.
+- 価格を追加: components/AddPriceButton.tsx opens /prices/new?package=<id>&chain=<id>; the page reads package and chain on their own and ignores unknown ids; on the detail page and at the bottom left of every 価格確認 card; greyed out for visitors.
+- 前回 line: lookupPreviousPrices (app/prices/previousPrice.ts) returns the newest price of the 容量 at any chain and at the chosen chain; rules and tests in lib/prices/previous.ts (percent only when the tax basis is the same); dates only through formatDate / formatDateTime (lib/dateTime.ts).
+- Warnings: lib/prices/suspicious.ts (5x or more, 1/5 or less, 8% / 10% tax mix-up); shown by PriceWarnings after the price field is left; advice only, never blocks saving.
+- After saving: the action returns toastLink to /check/<packageId>; the toast and the message above Save show it.

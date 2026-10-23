@@ -242,6 +242,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 46d (price entry: advice-only warnings under the 前回 line, shown after the price field is left: 5x or more or 1/5 or less of the previous price, or a difference that matches the 8% / 10% consumption tax when the tax choice does not explain it; rules and tests in lib/prices/suspicious.ts, box in app/prices/new/PriceWarnings.tsx; compared with the newest price at the chosen chain, else at any chain; never blocks saving) done
 
 
+- Step 46e (after saving a price, the toast and the message above Save show 商品ページを見る, a link to /check/<packageId>; the action returns toastLink, useToastedActionState passes it to showToast(text, kind, link), a toast with a link stays 7 seconds; other forms unchanged) done
+
+
 ## In Progress
 
 - (none)
