@@ -44,7 +44,7 @@ export default async function NewPricePage({
     loadCounterUnits(supabase),
     supabase
       .from("price_observations")
-      .select("product_package_id")
+      .select("product_package_id, store_chain_id")
       .order("created_at", { ascending: false })
       .limit(60),
   ]);
@@ -165,10 +165,19 @@ export default async function NewPricePage({
   }));
 
   const wantedChain = z.string().uuid().safeParse(chainParam);
-  const initialChainId =
+  const linkedChainId =
     wantedChain.success && chainOptions.some((c) => c.id === wantedChain.data)
       ? wantedChain.data
       : "";
+
+  // Last-used chain: the chain of the newest price entry (logged-in users only).
+  const lastRow = ((recentResult.data ?? []) as { store_chain_id: string | null }[])[0];
+  const lastChainId =
+    !readOnly && lastRow?.store_chain_id && chainOptions.some((c) => c.id === lastRow.store_chain_id)
+      ? lastRow.store_chain_id
+      : "";
+  // A chain in the link (?chain=) wins over the last-used chain.
+  const initialChainId = linkedChainId || lastChainId;
 
   const branchOptions = (shops ?? []).map((shop: any) => ({
     id: shop.id as string,

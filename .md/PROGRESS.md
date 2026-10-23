@@ -245,6 +245,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 46e (after saving a price, the toast and the message above Save show 商品ページを見る, a link to /check/<packageId>; the action returns toastLink, useToastedActionState passes it to showToast(text, kind, link), a toast with a link stays 7 seconds; other forms unchanged) done
 
 
+- Step 47 (price entry: the chain of the newest price entry is preselected for logged-in users; a ?chain= link still wins; no extra query, the page reads store_chain_id from the recent-entries query) done
+
+
 ## In Progress
 
 - (none)
