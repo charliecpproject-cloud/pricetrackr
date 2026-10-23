@@ -79,6 +79,7 @@ export default function PriceForm({
   readOnly = false,
   aliases = [],
   recentIds = [],
+  initialChainId = "",
   initialPackageId = "",
   startNew = false,
   defaultProductId = "",
@@ -91,6 +92,7 @@ export default function PriceForm({
   readOnly?: boolean;
   aliases?: SearchAlias[];
   recentIds?: string[];
+  initialChainId?: string;
   initialPackageId?: string;
   startNew?: boolean;
   defaultProductId?: string;
@@ -100,7 +102,7 @@ export default function PriceForm({
   const [search, setSearch] = useState("");
   const [packageId, setPackageId] = useState(initialPackageId);
   const [isNewPackage, setIsNewPackage] = useState(startNew);
-  const [chainId, setChainId] = useState("");
+  const [chainId, setChainId] = useState(initialChainId);
   const [branchId, setBranchId] = useState("");
   const [isNewBranch, setIsNewBranch] = useState(false);
   const [newBranch, setNewBranch] = useState("");

@@ -17,9 +17,9 @@ export const metadata = { title: "価格入力" };
 export default async function NewPricePage({
   searchParams,
 }: {
-  searchParams: Promise<{ product?: string; package?: string }>;
+  searchParams: Promise<{ product?: string; package?: string; chain?: string }>;
 }) {
-  const { product: productParam, package: packageParam } = await searchParams;
+  const { product: productParam, package: packageParam, chain: chainParam } = await searchParams;
   // A product chosen by a barcode scan (must be a valid id).
   const parsedProductId = z.string().uuid().safeParse(productParam);
   const focusProductId = parsedProductId.success ? parsedProductId.data : null;
@@ -133,12 +133,11 @@ export default async function NewPricePage({
   const wantedPackage = z.string().uuid().safeParse(packageParam);
   const wantedPackageId = wantedPackage.success ? wantedPackage.data : null;
   const initialPackageId =
-    focusProduct && wantedPackageId && listedPackages.some((p) => p.id === wantedPackageId)
+    wantedPackageId && listedPackages.some((p) => p.id === wantedPackageId)
       ? wantedPackageId
       : focusProduct && listedPackages.length === 1
         ? listedPackages[0].id
-        : "";
-  const startNew = !!focusProduct && listedPackages.length === 0;
+        : "";  const startNew = !!focusProduct && listedPackages.length === 0;
 
   const readOnly = !viewer.loggedIn;
   const usage = await getChainUsage(supabase, !readOnly);
@@ -164,6 +163,12 @@ export default async function NewPricePage({
     hasBonusPoints: c.hasBonusPoints,
     bulkEnabled: bulkById.get(c.id) ?? false,
   }));
+
+  const wantedChain = z.string().uuid().safeParse(chainParam);
+  const initialChainId =
+    wantedChain.success && chainOptions.some((c) => c.id === wantedChain.data)
+      ? wantedChain.data
+      : "";
 
   const branchOptions = (shops ?? []).map((shop: any) => ({
     id: shop.id as string,
@@ -197,7 +202,7 @@ export default async function NewPricePage({
       )}
 
       <PriceForm
-        key={`${focusProduct?.id ?? "all"}-${initialPackageId}`}
+        key={`${focusProduct?.id ?? "all"}-${initialPackageId}-${initialChainId}`}
         packages={listedPackages}
         products={productOptions}
         chains={chainOptions}
@@ -205,6 +210,7 @@ export default async function NewPricePage({
         readOnly={readOnly}
         aliases={aliases}
         recentIds={recentIds}
+        initialChainId={initialChainId}
         initialPackageId={initialPackageId}
         startNew={startNew}
         defaultProductId={focusProduct?.id ?? ""}

@@ -38,6 +38,7 @@ import {
 import { variationLabel, parseAttributes } from "@/lib/products/variation";
 import { getViewer } from "@/lib/auth/viewer";
 import FavoriteButton from "@/components/FavoriteButton";
+import AddPriceButton from "@/components/AddPriceButton";
 import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel, type FavoriteLevel } from "@/lib/prices/favorites";
 
@@ -540,9 +541,17 @@ export default async function CheckPage({
         <div className="space-y-4">
           {cards.map((card) => (
             <div key={card.id} className="relative">
+            <div className="absolute bottom-3 left-4 z-10">
+              <AddPriceButton
+                packageId={card.id}
+                chainId={card.rows[0]?.chainId ?? null}
+                disabled={!loggedIn}
+                compact
+              />
+            </div>
             <Link
               href={`/check/${card.id}`}
-              className={`block rounded-2xl border bg-panel p-4 shadow-sm transition hover:shadow-md ${CARD_TONE[card.favorite]}`}
+              className={`block rounded-2xl border bg-panel p-4 pb-14 shadow-sm transition hover:shadow-md ${CARD_TONE[card.favorite]}`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className={`min-w-0 ${loggedIn ? "pl-9" : ""}`}>

@@ -15,6 +15,7 @@ import DeleteObservationButton from "@/components/DeleteObservationButton";
 import { deletePriceObservation } from "./actions";
 import { getViewer } from "@/lib/auth/viewer";
 import FavoriteButton from "@/components/FavoriteButton";
+import AddPriceButton from "@/components/AddPriceButton";
 import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel } from "@/lib/prices/favorites";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
@@ -77,7 +78,7 @@ export default async function PackageDetailPage({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, bulk_tiers, notes, store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier), shops (name)"
+      "id, store_chain_id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, bulk_tiers, notes, store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier), shops (name)"
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -92,6 +93,7 @@ export default async function PackageDetailPage({
     const branch = [obs.shops].flat()[0];
     return {
       id: obs.id as string,
+      chainId: (obs.store_chain_id as string | null) ?? null,
       price: obs.price as number | string,
       observedAt: obs.observed_at as string,
       isSale: !!obs.is_sale,
@@ -165,6 +167,8 @@ export default async function PackageDetailPage({
           </div>
         )}
       </div>
+
+      <AddPriceButton packageId={packageId} chainId={latest?.chainId ?? null} disabled={readOnly} />
 
       {latest ? (
         <div className="rounded-2xl border border-line bg-panel p-5 shadow-sm">
