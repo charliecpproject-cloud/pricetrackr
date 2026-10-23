@@ -11,6 +11,8 @@ import { parseSearchScope, searchPlaceholder } from "@/lib/search/scope";
 import SearchScopeChips from "./SearchScopeChips";
 import SearchSuggestions from "./SearchSuggestions";
 import { loadVisibleSuggestions } from "@/lib/search/loadSuggestions";
+import { findSimilarProducts } from "@/lib/search/similar";
+import SearchEmptyHelp from "@/components/SearchEmptyHelp";
 import CategoryFilter from "./CategoryFilter";
 import PeriodFilter from "./PeriodFilter";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
@@ -375,6 +377,10 @@ export default async function CheckPage({
     })
     .filter((card) => !hasPriceFilter || card.rows.length > 0);
 
+  // A search that matched no product name at all: offer similar names and 「この名前で商品を追加」.
+  const noMatch = term !== "" && matchedIds.length === 0;
+  const similar = noMatch ? await findSimilarProducts(supabase, term, scope) : [];
+
   const clearHref = term ? `/check?q=${encodeURIComponent(term)}` : "/check";
 
   return (
@@ -530,7 +536,9 @@ export default async function CheckPage({
         </div>
       )}
 
-      {cards.length === 0 ? (
+      {cards.length === 0 && noMatch ? (
+        <SearchEmptyHelp term={term} similar={similar} canAdd={loggedIn} searchPath="/check" />
+      ) : cards.length === 0 ? (
         <p className="text-stone-500">
           {onlyFavorites && favorites.ids.size === 0
             ? "お気に入りがまだありません。商品名の横のハートをタップして登録できます。"

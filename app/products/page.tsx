@@ -11,6 +11,8 @@ import ReadOnlyFieldset from "@/components/ReadOnlyFieldset";
 import { getViewer } from "@/lib/auth/viewer";
 import { normalizeBarcode } from "@/lib/products/barcode";
 import { searchProductIds } from "@/lib/search/products";
+import { findSimilarProducts } from "@/lib/search/similar";
+import SearchEmptyHelp from "@/components/SearchEmptyHelp";
 import { loadCounterUnits } from "@/lib/prices/counterUnits";
 import type { CounterUnitOption } from "@/lib/prices/unitWords";
 
@@ -139,6 +141,9 @@ export default async function ProductsPage({
   });
   const attributeNames = Array.from(attributeNameSet).sort();
 
+  // A search with no result: similar names and a button to add the typed name.
+  const similar = term && productList.length === 0 ? await findSimilarProducts(supabase, term) : [];
+
   const heading = term ? `「${term}」の検索結果` : "すべての商品";
 
   return (
@@ -188,7 +193,9 @@ export default async function ProductsPage({
           <h2 className="text-lg font-bold text-stone-900">{heading}</h2>
         )}
 
-        {!showList ? null : productList.length === 0 ? (
+        {!showList ? null : productList.length === 0 && term ? (
+          <SearchEmptyHelp term={term} similar={similar} canAdd={!readOnly} searchPath="/products" />
+        ) : productList.length === 0 ? (
           <p className="text-stone-500">
             {term ? "見つかりませんでした" : "まだ商品がありません。"}
           </p>

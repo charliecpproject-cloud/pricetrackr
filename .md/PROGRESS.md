@@ -254,6 +254,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 49 (price age: priceAge() in lib/dateTime.ts with tests (今日, 昨日, N日前, Nか月前, N年前, counted in Japan calendar days) and components/PriceAge.tsx; grey up to 30 days, amber 31 to 90 days, red over 90 days; shown after the date on 価格確認 rows and on the detail page (latest card and history); a light preview of Phase 2 freshness) done
 
 
+- Step 50a (empty search: lib/search/variants.ts (similarSearchVariants, with tests) and lib/search/similar.ts (findSimilarProducts: loose retries, ranked) feed components/SearchEmptyHelp.tsx, which shows もしかして chips and 「この名前で商品を追加」 (links to /products?name=...) on 価格確認 and 商品; visitors get no add button) done
+
+
 ## In Progress
 
 - (none)
