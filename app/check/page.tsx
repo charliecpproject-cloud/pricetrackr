@@ -3,6 +3,7 @@ import { ChevronDown, Heart, Search, SlidersHorizontal } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { packageLabel } from "@/lib/prices/format";
 import { formatDateTime } from "@/lib/dateTime";
+import PriceAge from "@/components/PriceAge";
 import { effectivePrice } from "@/lib/prices/coupon";
 import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
 import { searchProductIds } from "@/lib/search/products";
@@ -590,7 +591,7 @@ export default async function CheckPage({
                           )}
                         </p>
                         <p className="text-xs text-stone-500">
-                          {formatDateTime(r.observedAt)}
+                          {formatDateTime(r.observedAt)}<PriceAge iso={r.observedAt} className="ml-1.5" />
                           {r.bonusPoints ? (
                             <span className="ml-2 text-amber-700">
                               +{r.bonusPoints}ポイント

@@ -34,6 +34,31 @@ export function formatDateTime(iso: string, now: Date = new Date()): string {
   if (a.y === b.y) return `${a.m}/${a.d} ${time}`;
   return `${a.y}/${a.m}/${a.d} ${time}`;
 }
+export type PriceAgeLevel = "fresh" | "aging" | "old";
+
+// How old a price is, counted in Japan calendar days: 「今日」「昨日」「3日前」「2か月前」「1年前」,
+// with a level for the colour: fresh (up to 30 days), aging (31 to 90 days), old (over 90 days).
+export function priceAge(
+  iso: string,
+  now: Date = new Date()
+): { label: string; level: PriceAgeLevel } | null {
+  const at = new Date(iso);
+  if (Number.isNaN(at.getTime())) return null;
+  const a = jstParts(at);
+  const b = jstParts(now);
+  const dayNumber = (p: { y: number; m: number; d: number }) =>
+    Date.UTC(p.y, p.m - 1, p.d) / 86_400_000;
+  const days = Math.max(0, dayNumber(b) - dayNumber(a));
+  let label: string;
+  if (days === 0) label = "今日";
+  else if (days === 1) label = "昨日";
+  else if (days < 30) label = `${days}日前`;
+  else if (days < 365) label = `${Math.min(11, Math.floor(days / 30))}か月前`;
+  else label = `${Math.floor(days / 365)}年前`;
+  const level: PriceAgeLevel = days <= 30 ? "fresh" : days <= 90 ? "aging" : "old";
+  return { label, level };
+}
+
 // The same without the time: 「今日」「昨日」「10/20」「2025/12/20」 in Japan time.
 export function formatDate(iso: string, now: Date = new Date()): string {
   const at = new Date(iso);

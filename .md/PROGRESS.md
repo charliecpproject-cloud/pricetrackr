@@ -251,6 +251,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 48 (price entry: with 税抜き chosen and a product 税率 above 0, a live 税込の目安 line under the price box (taxIncludedEstimate, rounded down, 未確認); the package list carries taxRate; not shown in the 新規 mode) done
 
 
+- Step 49 (price age: priceAge() in lib/dateTime.ts with tests (今日, 昨日, N日前, Nか月前, N年前, counted in Japan calendar days) and components/PriceAge.tsx; grey up to 30 days, amber 31 to 90 days, red over 90 days; shown after the date on 価格確認 rows and on the detail page (latest card and history); a light preview of Phase 2 freshness) done
+
+
 ## In Progress
 
 - (none)
