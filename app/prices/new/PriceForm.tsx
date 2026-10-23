@@ -49,6 +49,7 @@ const initialState: {
   error: string | null;
   message?: string | null;
   packageId?: string | null;
+  toastLink?: { href: string; label: string } | null;
 } = { error: null, message: null, packageId: null };
 
 const TAX_ICON: Record<TaxBasis, LucideIcon> = {
