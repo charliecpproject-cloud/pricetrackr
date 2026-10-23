@@ -236,6 +236,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 46b (a 価格を追加 button, components/AddPriceButton.tsx, on the product detail page and at the bottom left of every 価格確認 card; it opens /prices/new?package=<id>&chain=<id> with the 商品・容量 and the chain of the newest price chosen; 価格入力 reads package and chain from the link on their own, an unknown id is ignored; greyed out for visitors) done
 
 
+- Step 46c (price entry: a 前回 line under the price field, fed by the server action lookupPreviousPrices in app/prices/previousPrice.ts: the newest price of the chosen 容量 at any chain, plus the newest at the chosen chain when it differs; comparison rules in lib/prices/previous.ts (priceChange: ▲/▼ with one decimal, only when the tax basis is the same, otherwise a short note); dates via formatDate in lib/dateTime.ts; refreshed after every save; info only, never blocks saving) done
+
+
 ## In Progress
 
 - (none)
