@@ -233,6 +233,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 46a (price entry: the native 商品・容量 select is replaced by PackagePicker, a type-to-search list with the 20 best matches, the 10 most recently priced packages first and shown when the box is empty; the chosen package shows as a card with 変更; Save stays disabled until one is chosen; same search rules and aliases) done
 
 
+- Step 46b (a 価格を追加 button, components/AddPriceButton.tsx, on the product detail page and at the bottom left of every 価格確認 card; it opens /prices/new?package=<id>&chain=<id> with the 商品・容量 and the chain of the newest price chosen; 価格入力 reads package and chain from the link on their own, an unknown id is ignored; greyed out for visitors) done
+
+
 ## In Progress
 
 - (none)
