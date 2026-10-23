@@ -34,3 +34,17 @@ export function formatDateTime(iso: string, now: Date = new Date()): string {
   if (a.y === b.y) return `${a.m}/${a.d} ${time}`;
   return `${a.y}/${a.m}/${a.d} ${time}`;
 }
+// The same without the time: 「今日」「昨日」「10/20」「2025/12/20」 in Japan time.
+export function formatDate(iso: string, now: Date = new Date()): string {
+  const at = new Date(iso);
+  if (Number.isNaN(at.getTime())) return "";
+  const a = jstParts(at);
+  const b = jstParts(now);
+  const dayNumber = (p: { y: number; m: number; d: number }) =>
+    Date.UTC(p.y, p.m - 1, p.d) / 86_400_000;
+  const diff = dayNumber(b) - dayNumber(a);
+  if (diff === 0) return "今日";
+  if (diff === 1) return "昨日";
+  if (a.y === b.y) return `${a.m}/${a.d}`;
+  return `${a.y}/${a.m}/${a.d}`;
+}

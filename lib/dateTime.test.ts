@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDateTime } from "./dateTime";
+import { formatDate, formatDateTime } from "./dateTime";
 
 const now = new Date("2026-10-18T05:00:00Z"); // 14:00 JST on the 18th
 
@@ -26,5 +26,23 @@ describe("formatDateTime", () => {
 
   it("returns an empty text for a bad date", () => {
     expect(formatDateTime("nope", now)).toBe("");
+  });
+});
+describe("formatDate", () => {
+  it("today and yesterday", () => {
+    expect(formatDate("2026-10-18T01:30:00Z", now)).toBe("今日");
+    expect(formatDate("2026-10-17T10:00:00Z", now)).toBe("昨日");
+  });
+
+  it("older in the same year has no year", () => {
+    expect(formatDate("2026-10-10T00:00:00Z", now)).toBe("10/10");
+  });
+
+  it("another year shows the year", () => {
+    expect(formatDate("2025-12-20T10:19:00Z", now)).toBe("2025/12/20");
+  });
+
+  it("returns an empty text for a bad date", () => {
+    expect(formatDate("nope", now)).toBe("");
   });
 });

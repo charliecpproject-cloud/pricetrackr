@@ -21,6 +21,9 @@ import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
 import BulkPriceFields, { emptyBulkRows, rowsFromTiers, type BulkRow } from "./BulkPriceFields";
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
+import { lookupPreviousPrices } from "@/app/prices/previousPrice";
+import type { PreviousPrices } from "@/lib/prices/previous";
+import PreviousPriceLine from "./PreviousPriceLine";
 import type { SearchAlias } from "@/lib/search/aliases";
 import PackagePicker from "./PackagePicker";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
@@ -192,6 +195,24 @@ export default function PriceForm({
   const branchOptions = branches.filter((b) => b.chainId === chainId);
   const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
   const selectedChain = chains.find((c) => c.id === chainId);
+
+  // The previous price of this 容量 (any chain, and at the chosen chain), fetched when the
+  // 容量 or the chain changes and again after each save. Shown only while the key still matches.
+  const [previous, setPrevious] = useState<{ key: string; data: PreviousPrices } | null>(null);
+  const previousKey = `${selectedPackage}|${chainId}`;
+  useEffect(() => {
+    if (!selectedPackage || selectedPackage.startsWith("default:")) return;
+    let cancelled = false;
+    lookupPreviousPrices(selectedPackage, chainId)
+      .then((data) => {
+        if (!cancelled) setPrevious({ key: previousKey, data });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedPackage, chainId, previousKey, state]);
+  const previousPrices = previous && previous.key === previousKey ? previous.data : null;
 
   // Chains with the bulk option: fill the percent and quantity used last
   // (same product first, then the chain), unless the user already typed something.
@@ -415,6 +436,14 @@ export default function PriceForm({
             </label>
           </div>
         </Field>
+        {!isNewPackage && previousPrices && (
+          <PreviousPriceLine
+            prices={previousPrices}
+            priceText={price}
+            basis={taxBasis}
+            chainId={chainId}
+          />
+        )}
         <MemberPriceCheck
           chain={selectedChain}
           checked={isMember}
