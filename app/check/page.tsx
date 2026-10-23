@@ -42,12 +42,14 @@ import { variationLabel, parseAttributes } from "@/lib/products/variation";
 import { getViewer } from "@/lib/auth/viewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import AddPriceButton from "@/components/AddPriceButton";
+import VariationTabs from "@/components/VariationTabs";
+import { defaultGroupIndex, groupByVariation } from "@/lib/prices/groupCards";
 import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel, type FavoriteLevel } from "@/lib/prices/favorites";
 
 const RECENT_COUNT = 3; // products shown when there is no search and no filter
 
-// How a card looks: a favorite gets a soft rose border and a faint tint; a related package
+// How a 容量 block looks: a favorite gets a soft rose border and a faint tint; a related package
 // (another size of the same variation as a favorite) gets half of that tint.
 const CARD_TONE: Record<FavoriteLevel, string> = {
   favorite: "border-rose-200 bg-gradient-to-r from-rose-50 to-transparent",
@@ -74,6 +76,22 @@ type ChainPrice = {
 
 type LatestMap = Map<string, Map<string, ChainPrice>>;
 
+// One 容量 (size) of a product with its latest price per chain.
+type SizeCard = {
+  id: string;
+  productId: string;
+  name: string;
+  sub: string;
+  size: string;
+  sizeValue: number;
+  unit: string;
+  variationId: string | null;
+  variationLabel: string | null;
+  taxRate: number | null;
+  favorite: FavoriteLevel;
+  rows: ChainPrice[];
+};
+
 // A small round choice (radio) used in the filter panel.
 function Chip({
   name,
@@ -97,6 +115,109 @@ function Chip({
       />
       {label}
     </label>
+  );
+}
+
+// One 容量 inside a product card: the size, the heart, 価格を追加 and the latest price per chain.
+// The block is a link to the detail page; the heart and the button sit on top of it, never inside.
+function SizeBlock({
+  card,
+  loggedIn,
+  emptyText,
+}: {
+  card: SizeCard;
+  loggedIn: boolean;
+  emptyText: string;
+}) {
+  return (
+    <div className="relative">
+      <div className="absolute bottom-3 left-4 z-10">
+        <AddPriceButton
+          packageId={card.id}
+          chainId={card.rows[0]?.chainId ?? null}
+          disabled={!loggedIn}
+          compact
+        />
+      </div>
+      <Link
+        href={`/check/${card.id}`}
+        className={`block rounded-xl border bg-panel p-3 pb-14 shadow-sm transition hover:shadow-md ${CARD_TONE[card.favorite]}`}
+      >
+        <div className={`flex items-center ${loggedIn ? "pl-9" : ""}`}>
+          <span className="rounded-full bg-chip px-2.5 py-1 text-sm font-medium text-stone-700">
+            {card.size}
+          </span>
+        </div>
+
+        {card.rows.length === 0 ? (
+          <p className="mt-3 text-sm text-stone-500">{emptyText}</p>
+        ) : (
+          <ul className="mt-2 divide-y divide-stone-100">
+            {card.rows.map((r) => (
+              <li
+                key={r.chainId}
+                className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="flex flex-wrap items-center gap-2 font-medium text-stone-900">
+                    {r.chainName}
+                    {r.isSale && (
+                      <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
+                        {saleLabel(r.category)}
+                      </span>
+                    )}
+                    {isCheapest(r, card.rows) && (
+                      <span className="rounded-md bg-teal-100 px-1.5 py-0.5 text-xs font-bold text-teal-700">
+                        最安
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-xs text-stone-500">
+                    {formatDateTime(r.observedAt)}
+                    <PriceAge iso={r.observedAt} className="ml-1.5" />
+                    {r.bonusPoints ? (
+                      <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span>
+                    ) : null}
+                  </p>
+                </div>
+                <div className="ml-auto flex max-w-full flex-col items-end gap-1">
+                  <PriceDisplay
+                    price={r.price}
+                    couponPercents={r.couponPercents}
+                    memberPercent={r.memberPercent}
+                    isMemberPrice={r.isMemberPrice}
+                    regularLabel={r.isSale ? `${saleLabel(r.category)}価格` : undefined}
+                    pointUseMultiplier={r.pointUseMultiplier}
+                    bulkTiers={r.bulkTiers}
+                    taxRate={card.taxRate}
+                    taxBasis={r.taxBasis}
+                    size="md"
+                  />
+                  <UnitPriceSummary
+                    summary={unitPriceSummary({
+                      enteredPrice: r.price,
+                      couponPercents: r.couponPercents,
+                      memberPercent: r.memberPercent,
+                      isMemberPrice: r.isMemberPrice,
+                      bulkTiers: r.bulkTiers,
+                      size: card.sizeValue,
+                      unit: card.unit,
+                      hideSinglePiece: true,
+                      regularLabel: r.isSale ? `${saleLabel(r.category)}価格` : undefined,
+                    })}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Link>
+      {loggedIn && (
+        <div className="absolute left-1.5 top-2 z-10">
+          <FavoriteButton packageId={card.id} level={card.favorite} />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -158,7 +279,6 @@ export default async function CheckPage({
     f.categories.length > 0 ||
     f.sale !== "all" ||
     hasActivePeriod(f) ||
-    
     f.min !== null ||
     f.max !== null;
 
@@ -337,14 +457,15 @@ export default async function CheckPage({
     }
   }
 
-  const cards = products
+  // One entry per 容量 ...
+  const cards: SizeCard[] = products
     .flatMap((product: any) => {
       const name = product.name_ja || product.name_en || "名称未設定";
       const sub = [product.name_ja ? product.name_en : null, product.brand]
         .filter(Boolean)
         .join(" ・ ");
       const pkgs = [product.product_packages].flat().filter(Boolean) as any[];
-      return pkgs.map((pkg) => {
+      return pkgs.map((pkg): SizeCard => {
         const variationObj = Array.isArray(pkg.product_variations)
           ? pkg.product_variations[0]
           : pkg.product_variations ?? null;
@@ -354,11 +475,13 @@ export default async function CheckPage({
 
         return {
           id: pkg.id as string,
+          productId: product.id as string,
           name: name as string,
           sub,
           size: packageLabel(pkg.package_size, pkg.package_unit),
           sizeValue: Number(pkg.package_size),
           unit: String(pkg.package_unit),
+          variationId: (pkg.variation_id as string | null) ?? null,
           variationLabel: variationText,
           taxRate: (product.tax_rate as number | null) ?? null,
           favorite: favoriteLevel(
@@ -376,6 +499,21 @@ export default async function CheckPage({
       });
     })
     .filter((card) => !hasPriceFilter || card.rows.length > 0);
+
+  // ... and the 容量 of one product are shown together in one card (variation chips inside).
+  const productMap = new Map<string, { id: string; name: string; sub: string; items: SizeCard[] }>();
+  for (const card of cards) {
+    const entry = productMap.get(card.productId) ?? {
+      id: card.productId,
+      name: card.name,
+      sub: card.sub,
+      items: [],
+    };
+    entry.items.push(card);
+    productMap.set(card.productId, entry);
+  }
+  const productCards = Array.from(productMap.values());
+  const emptyPriceText = f.period === "all" ? "まだ価格がありません" : "この期間の価格がありません";
 
   // A search that matched no product name at all: offer similar names and 「この名前で商品を追加」.
   const noMatch = term !== "" && matchedIds.length === 0;
@@ -411,243 +549,4 @@ export default async function CheckPage({
           open={activeCount > 0}
           className="rounded-2xl border border-line bg-panel p-4 shadow-sm"
         >
-          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-medium text-stone-700 [&::-webkit-details-marker]:hidden">
-            <SlidersHorizontal className="h-4 w-4" />
-            絞り込み
-            {activeCount > 0 && (
-              <span className="rounded-full bg-teal-600 px-2 py-0.5 text-xs font-bold text-white">
-                {activeCount}
-              </span>
-            )}
-            <ChevronDown className="ml-auto h-4 w-4 text-stone-400" />
-          </summary>
-
-          <div className="mt-4 space-y-5">
-            <SearchScopeChips key={scope} current={scope}>
-              {loggedIn && (
-                <label className="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-line bg-panel px-3 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600">
-                  <input
-                    type="checkbox"
-                    name="fav"
-                    value="1"
-                    defaultChecked={f.favorites}
-                    className="sr-only"
-                  />
-                  <Heart className="h-4 w-4" />
-                  お気に入りのみ
-                </label>
-              )}
-            </SearchScopeChips>
-            <div>
-              <label htmlFor="f_chain" className={labelCls}>
-                店舗（チェーン）
-              </label>
-              <select
-                id="f_chain"
-                name="chain"
-                defaultValue={f.chainId ?? ""}
-                className={controlCls}
-              >
-                <option value="">すべて</option>
-                {chainGroups.map((g) => (
-                  <optgroup key={g.key} label={g.label}>
-                    {g.items.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-            </div>
-
-            <CategoryFilter key={f.categories.join(",")} selected={f.categories} />
-
-            <fieldset className="min-w-0">
-              <legend className={labelCls}>価格の種類</legend>
-              <div className="grid grid-cols-3 gap-2">
-                <Chip name="sale" value="all" label="すべて" checked={f.sale === "all"} />
-                <Chip
-                  name="sale"
-                  value="regular"
-                  label="通常"
-                  checked={f.sale === "regular"}
-                />
-                <Chip
-                  name="sale"
-                  value="sale"
-                  label="特売・セール"
-                  checked={f.sale === "sale"}
-                />
-              </div>
-            </fieldset>
-
-            <div>
-              <p className={labelCls}>価格帯（円）</p>
-              <div className="flex items-center gap-2">
-                <input
-                  name="min"
-                  inputMode="numeric"
-                  aria-label="価格の下限"
-                  placeholder="下限"
-                  defaultValue={f.min ?? ""}
-                  className={controlCls}
-                />
-                <span className="text-stone-500">〜</span>
-                <input
-                  name="max"
-                  inputMode="numeric"
-                  aria-label="価格の上限"
-                  placeholder="上限"
-                  defaultValue={f.max ?? ""}
-                  className={controlCls}
-                />
-              </div>
-              <p className="mt-1.5 text-xs text-stone-500">
-                クーポン・会員価格の適用後の価格で絞り込みます。税抜・税込は区別しません。
-              </p>
-            </div>
-
-            <PeriodFilter key={`${f.period}-${f.from}-${f.to}`} period={f.period} from={f.from} to={f.to} />
-
-            <div className="flex items-center gap-3">
-              <button
-                type="submit"
-                className="h-12 flex-1 rounded-xl bg-teal-600 text-base font-medium text-white"
-              >
-                この条件で検索
-              </button>
-              {activeCount > 0 && (
-                <Link href={clearHref} className="shrink-0 text-sm font-medium text-teal-700">
-                  条件をクリア
-                </Link>
-              )}
-            </div>
-          </div>
-        </details>
-      </form>
-
-      {isDefaultView && (
-        <div>
-          <h2 className="text-lg font-bold text-stone-900">最近追加した商品</h2>
-          <p className="mt-1 text-sm text-stone-500">
-            新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は、検索か絞り込みで探せます。
-          </p>
-        </div>
-      )}
-
-      {cards.length === 0 && noMatch ? (
-        <SearchEmptyHelp term={term} similar={similar} canAdd={loggedIn} searchPath="/check" />
-      ) : cards.length === 0 ? (
-        <p className="text-stone-500">
-          {onlyFavorites && favorites.ids.size === 0
-            ? "お気に入りがまだありません。商品名の横のハートをタップして登録できます。"
-            : hasPriceFilter
-              ? "条件に合う価格がありません"
-              : "見つかりませんでした"}
-        </p>
-      ) : (
-        <div className="space-y-4">
-          {cards.map((card) => (
-            <div key={card.id} className="relative">
-            <div className="absolute bottom-3 left-4 z-10">
-              <AddPriceButton
-                packageId={card.id}
-                chainId={card.rows[0]?.chainId ?? null}
-                disabled={!loggedIn}
-                compact
-              />
-            </div>
-            <Link
-              href={`/check/${card.id}`}
-              className={`block rounded-2xl border bg-panel p-4 pb-14 shadow-sm transition hover:shadow-md ${CARD_TONE[card.favorite]}`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className={`min-w-0 ${loggedIn ? "pl-9" : ""}`}>
-                  <p className="text-lg font-bold text-stone-900">{card.name}</p>
-                  {card.sub && <p className="text-sm text-stone-500">{card.sub}</p>}
-                  {card.variationLabel && (
-                    <p className="text-sm text-stone-500">{card.variationLabel}</p>
-                  )}
-                </div>
-                <span className="shrink-0 rounded-full bg-chip px-2.5 py-1 text-sm font-medium text-stone-700">
-                  {card.size}
-                </span>
-              </div>
-
-              {card.rows.length === 0 ? (
-                <p className="mt-3 text-sm text-stone-500">{f.period === "all" ? "まだ価格がありません" : "この期間の価格がありません"}</p>
-              ) : (
-                <ul className="mt-3 divide-y divide-stone-100">
-                  {card.rows.map((r) => (
-                    <li
-                      key={r.chainId}
-                      className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-3"
-                    >
-                      <div className="min-w-0">
-                        <p className="flex flex-wrap items-center gap-2 font-medium text-stone-900">
-                          {r.chainName}
-                          {r.isSale && (
-                            <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
-                              {saleLabel(r.category)}
-                            </span>
-                          )}
-                          {isCheapest(r, card.rows) && (
-                            <span className="rounded-md bg-teal-100 px-1.5 py-0.5 text-xs font-bold text-teal-700">
-                              最安
-                            </span>
-                          )}
-                        </p>
-                        <p className="text-xs text-stone-500">
-                          {formatDateTime(r.observedAt)}<PriceAge iso={r.observedAt} className="ml-1.5" />
-                          {r.bonusPoints ? (
-                            <span className="ml-2 text-amber-700">
-                              +{r.bonusPoints}ポイント
-                            </span>
-                          ) : null}
-                        </p>
-                      </div>
-                      <div className="ml-auto flex max-w-full flex-col items-end gap-1">
-                        <PriceDisplay
-                          price={r.price}
-                          couponPercents={r.couponPercents}
-                          memberPercent={r.memberPercent}
-                          isMemberPrice={r.isMemberPrice}
-                          regularLabel={r.isSale ? `${saleLabel(r.category)}価格` : undefined}
-                          pointUseMultiplier={r.pointUseMultiplier}
-                          bulkTiers={r.bulkTiers}
-                          taxRate={card.taxRate}
-                          taxBasis={r.taxBasis}
-                          size="md"
-                        />
-                        <UnitPriceSummary
-                          summary={unitPriceSummary({
-                            enteredPrice: r.price,
-                            couponPercents: r.couponPercents,
-                            memberPercent: r.memberPercent,
-                            isMemberPrice: r.isMemberPrice,
-                            bulkTiers: r.bulkTiers,
-                            size: card.sizeValue,
-                            unit: card.unit,
-                            hideSinglePiece: true,
-                            regularLabel: r.isSale ? `${saleLabel(r.category)}価格` : undefined,
-                          })}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Link>
-            {loggedIn && (
-              <div className="absolute left-2 top-2 z-10">
-                <FavoriteButton packageId={card.id} level={card.favorite} />
-              </div>
-            )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+          <summary
