@@ -260,6 +260,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 50b (/products?name=<text> opens 商品を追加 with 商品名 filled in: ProductFields and ProductForm take defaultName; used by the 「この名前で商品を追加」 button; Step 50 complete) done
 
 
+- Step 50b (/products?name=<text> opens 商品を追加 with 商品名 filled in: ProductFields and ProductForm take defaultName; used by the 「この名前で商品を追加」 button; Step 50 complete) done
+
+
 ## In Progress
 
 - (none)
