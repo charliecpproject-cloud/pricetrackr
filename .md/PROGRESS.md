@@ -239,6 +239,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 46c (price entry: a 前回 line under the price field, fed by the server action lookupPreviousPrices in app/prices/previousPrice.ts: the newest price of the chosen 容量 at any chain, plus the newest at the chosen chain when it differs; comparison rules in lib/prices/previous.ts (priceChange: ▲/▼ with one decimal, only when the tax basis is the same, otherwise a short note); dates via formatDate in lib/dateTime.ts; refreshed after every save; info only, never blocks saving) done
 
 
+- Step 46d (price entry: advice-only warnings under the 前回 line, shown after the price field is left: 5x or more or 1/5 or less of the previous price, or a difference that matches the 8% / 10% consumption tax when the tax choice does not explain it; rules and tests in lib/prices/suspicious.ts, box in app/prices/new/PriceWarnings.tsx; compared with the newest price at the chosen chain, else at any chain; never blocks saving) done
+
+
 ## In Progress
 
 - (none)
