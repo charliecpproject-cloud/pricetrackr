@@ -10,14 +10,17 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import Link from "next/link";
 import { AlertCircle, CheckCircle2, X } from "lucide-react";
 
 type Kind = "success" | "error";
-type Toast = { id: number; text: string; kind: Kind };
-type Api = { showToast: (text: string, kind?: Kind) => void };
+export type ToastLink = { href: string; label: string };
+type Toast = { id: number; text: string; kind: Kind; link?: ToastLink };
+type Api = { showToast: (text: string, kind?: Kind, link?: ToastLink) => void };
 
 const SUCCESS_MS = 3000;
 const ERROR_MS = 5000; // errors take longer to read
+const LINK_MS = 7000; // a toast with a link stays long enough to tap
 const MAX_TOASTS = 3;
 
 // Outside the provider this does nothing instead of crashing.
@@ -40,12 +43,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const showToast = useCallback(
-    (text: string, kind: Kind = "success") => {
+    (text: string, kind: Kind = "success", link?: ToastLink) => {
       const id = nextId.current++;
-      setToasts((current) => [...current, { id, text, kind }].slice(-MAX_TOASTS));
+      setToasts((current) => [...current, { id, text, kind, link }].slice(-MAX_TOASTS));
       timers.current.set(
         id,
-        setTimeout(() => dismiss(id), kind === "error" ? ERROR_MS : SUCCESS_MS)
+        setTimeout(() => dismiss(id), kind === "error" ? ERROR_MS : link ? LINK_MS : SUCCESS_MS)
       );
     },
     [dismiss]
@@ -81,7 +84,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             ) : (
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
             )}
-            <span className="min-w-0 flex-1 break-words">{t.text}</span>
+            <span className="min-w-0 flex-1 break-words">
+              {t.text}
+              {t.link && (
+                <Link
+                  href={t.link.href}
+                  onClick={() => dismiss(t.id)}
+                  className="ml-2 inline-block font-bold underline"
+                >
+                  {t.link.label}
+                </Link>
+              )}
+            </span>
             <button
               type="button"
               aria-label="閉じる"

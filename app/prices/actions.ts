@@ -14,6 +14,7 @@ type State = {
   error: string | null;
   message?: string | null;
   packageId?: string | null;
+  toastLink?: { href: string; label: string } | null;
 };
 type Supabase = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
@@ -439,5 +440,10 @@ export async function addPriceObservation(
   revalidatePath("/check", "layout");
   revalidatePath("/prices/new");
   revalidatePath("/products");
-  return { error: null, message: "保存しました", packageId };
+  return {
+    error: null,
+    message: "保存しました",
+    packageId,
+    toastLink: { href: `/check/${packageId}`, label: "商品ページを見る" },
+  };
 }

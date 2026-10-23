@@ -13,6 +13,7 @@ import {
   Tag,
   type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Collapsible from "@/components/Collapsible";
 import { CATEGORY_LABEL, parseCategory, saleLabel } from "@/lib/stores/category";
@@ -551,7 +552,16 @@ export default function PriceForm({
         </p>
       )}
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+      {state.message && (
+        <p className="text-sm text-teal-700">
+          {state.message}
+          {state.toastLink && (
+            <Link href={state.toastLink.href} className="ml-2 font-bold underline">
+              {state.toastLink.label}
+            </Link>
+          )}
+        </p>
+      )}
 
       <div ref={saveRef}>
         <Button type="submit" disabled={saveDisabled} className="h-12 w-full text-base">

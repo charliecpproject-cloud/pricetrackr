@@ -1,7 +1,7 @@
 import { useActionState, useEffect, useRef } from "react";
-import { useToast } from "@/components/ToastProvider";
+import { useToast, type ToastLink } from "@/components/ToastProvider";
 
-type ToastableState = { error: string | null; message?: string | null };
+type ToastableState = { error: string | null; message?: string | null; toastLink?: ToastLink | null };
 
 // The same as React's useActionState, and it also shows a toast when the action
 // returns a result: red for an error, green for a message (or 保存しました).
@@ -19,7 +19,7 @@ export function useToastedActionState<State extends ToastableState, Payload = Fo
     if ((state as unknown) === initialRef.current) return; // no result yet
     const s = state as ToastableState;
     if (s.error) showToast(s.error, "error");
-    else showToast(s.message || "保存しました", "success");
+    else showToast(s.message || "保存しました", "success", s.toastLink ?? undefined);
   }, [state, showToast]);
 
   return result;
