@@ -320,6 +320,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 60b (admin: /admin/merge replaces the placeholder: search and pick the old and the new product, preview of 容量, price entries and barcodes, merge through merge_products(); the tool is switched on in /admin; migration adds legacy_observations() because price entries of an archived product are hidden by RLS) done
 
 
+- Step 60c (detail page: 旧価格 section under 価格の履歴 for logged-in users, one card per legacy 容量 with the latest price per chain (components/LegacyPrices.tsx, lib/prices/loadLegacy.ts); admins also get 新しい商品に移す (move_legacy_package) and アーカイブ (archive_legacy_package) per 容量 (components/LegacyAdminButtons.tsx, app/check/legacyActions.ts); regular users never get the buttons) done
+
+
 ## In Progress
 
 - (none)
