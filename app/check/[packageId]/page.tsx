@@ -20,6 +20,8 @@ import AddPriceButton from "@/components/AddPriceButton";
 import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel } from "@/lib/prices/favorites";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
+import { loadLegacyPrices } from "@/lib/prices/loadLegacy";
+import LegacyPrices from "@/components/LegacyPrices";
 
 export async function generateMetadata({
   params,
@@ -50,7 +52,8 @@ export default async function PackageDetailPage({
   }
 
   const supabase = await createSupabaseServerClient();
-  const readOnly = !(await getViewer()).loggedIn;
+  const viewer = await getViewer();
+  const readOnly = !viewer.loggedIn;
 
   const { data: pkg, error: pkgError } = await supabase
     .from("product_packages")
@@ -125,6 +128,8 @@ export default async function PackageDetailPage({
     };
   });
   const latest = rows[0];
+  // Prices of products that were merged into this one (visitors see none).
+  const legacy = readOnly ? [] : await loadLegacyPrices(supabase, pkg.product_id as string);
 
   // The heart in the header (visitors have no favorites and see no heart).
   const favorites = readOnly ? null : await loadFavorites(supabase);
@@ -226,6 +231,8 @@ export default async function PackageDetailPage({
           </ul>
         </section>
       )}
+
+      <LegacyPrices items={legacy} taxRate={product.tax_rate ?? null} isAdmin={viewer.isAdmin} />
     </div>
   );
 }
