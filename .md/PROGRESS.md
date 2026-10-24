@@ -281,6 +281,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 55a (speed: 価格入力 starts the chain usage lookup together with its other queries; 店舗 loads the login check, the chain list and the branches of the chosen chain in one Promise.all) done
 
 
+- Step 55c (speed: proxy.ts and lib/auth/viewer.ts check the login with getClaims() instead of getUser(); the JWT signing key is ECC P-256; a revoked session is accepted until the token expires; the theme-in-a-cookie idea was dropped because the display name is also needed in the layout) done
+
+
 ## In Progress
 
 - (none)

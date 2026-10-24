@@ -25,10 +25,9 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  // getUser() verifies the token with Supabase; getSession() does not
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() verifies the token signature locally (the project uses an asymmetric ECC key); getSession() does not verify
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const user = claimsData?.claims ?? null;
 
   const isLoginPage = request.nextUrl.pathname === "/login";
 
