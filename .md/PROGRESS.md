@@ -272,6 +272,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 53 (home feed: 最近の更新 price rows are two lines; the name truncates, the まとめ買い block is replaced by one line with the best tier and +N for the other tiers; lib/home/bulkSummary.ts with tests; docs updated) done
 
 
+- Step 54 (home page: search box that opens 価格確認 with the typed word, and the おすすめ chips under it, reusing SearchSuggestions and loadVisibleSuggestions; docs updated) done
+
+
 ## In Progress
 
 - (none)

@@ -10,6 +10,8 @@ import { parseCategory, saleLabel } from "@/lib/stores/category";
 import { formatDateTime } from "@/lib/dateTime";
 import { greetingText } from "@/lib/home/greeting";
 import { bulkFeedSummary, type BulkFeedSummary } from "@/lib/home/bulkSummary";
+import SearchSuggestions from "@/app/check/SearchSuggestions";
+import { loadVisibleSuggestions } from "@/lib/search/loadSuggestions";
 import { parseStoredTiers } from "@/lib/prices/bulk";
 
 const shortcuts = [
@@ -43,8 +45,9 @@ export default async function HomePage() {
   const supabase = await createSupabaseServerClient();
 
   // Everything the page needs is fetched at the same time.
-  const [viewer, observationsResult, productsResult] = await Promise.all([
+  const [viewer, suggestions, observationsResult, productsResult] = await Promise.all([
     getViewer(),
+    loadVisibleSuggestions(supabase),
     supabase
       .from("price_observations")
       .select(
@@ -125,6 +128,26 @@ export default async function HomePage() {
           )}
         </div>
       </div>
+
+      <form action="/check" className="space-y-3">
+        <div className="relative">
+          <input
+            name="q"
+            type="search"
+            aria-label="商品を検索"
+            placeholder="商品名・ブランド・カテゴリで検索"
+            className="h-12 w-full rounded-xl border border-line bg-panel pl-11 pr-24 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+          />
+          <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-stone-400" />
+          <button
+            type="submit"
+            className="absolute right-1.5 top-1.5 h-9 rounded-lg bg-teal-600 px-4 text-sm font-medium text-white"
+          >
+            検索
+          </button>
+        </div>
+        <SearchSuggestions terms={suggestions} active="" />
+      </form>
 
       <div className="grid grid-cols-3 gap-3">
         {shortcuts.map(({ href, label, Icon }) => (
