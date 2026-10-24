@@ -299,6 +299,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 58 (price check default view: the heading is now 最近価格が更新された商品 and it shows the 3 products with the newest price entries, by price_observations.created_at, instead of the 3 newest products; docs updated) done
 
 
+- Step 59a (database: brand_aliases(brand, alias) with RLS (everyone reads, demo read, only admins write); admin-only merge_brand(from, to) renames the brand of all matching products, repoints aliases and keeps the old spelling as an alias) done
+
+
 ## In Progress
 
 - (none)
