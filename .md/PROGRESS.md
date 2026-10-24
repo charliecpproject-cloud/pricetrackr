@@ -323,6 +323,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 60c (detail page: 旧価格 section under 価格の履歴 for logged-in users, one card per legacy 容量 with the latest price per chain (components/LegacyPrices.tsx, lib/prices/loadLegacy.ts); admins also get 新しい商品に移す (move_legacy_package) and アーカイブ (archive_legacy_package) per 容量 (components/LegacyAdminButtons.tsx, app/check/legacyActions.ts); regular users never get the buttons) done
 
 
+- Step 60d (価格確認: 旧価格あり badge for products with open legacy prices newer than 6 months (lib/prices/legacyBadge.ts with tests, legacy_summary()); old /check/<id> links of merged products forward to the new product's matching 容量 (merged_package_target()); PART1_FOUNDATION.md documents the merge and legacy price design; Step 60 complete) done
+
+
 ## In Progress
 
 - (none)

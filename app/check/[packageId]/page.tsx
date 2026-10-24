@@ -1,5 +1,5 @@
 import BackToSearchLink from "@/components/BackToSearchLink";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { packageLabel } from "@/lib/prices/format";
@@ -66,6 +66,13 @@ export default async function PackageDetailPage({
     console.error("Package fetch error:", pkgError.message, pkgError.code);
   }
   if (!pkg) {
+    // An old link to a 容量 of a product that was merged into another: go to the new product.
+    if (viewer.loggedIn) {
+      const { data: target } = await supabase.rpc("merged_package_target", {
+        p_package: packageId,
+      });
+      if (typeof target === "string") redirect(`/check/${target}`);
+    }
     notFound();
   }
 

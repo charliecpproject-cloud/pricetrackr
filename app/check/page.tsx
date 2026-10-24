@@ -47,6 +47,7 @@ import CheckScrollMemory from "@/components/CheckScrollMemory";
 import { defaultGroupIndex, groupByVariation } from "@/lib/prices/groupCards";
 import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel, type FavoriteLevel } from "@/lib/prices/favorites";
+import { loadLegacyBadgeIds } from "@/lib/prices/legacyBadge";
 
 const RECENT_COUNT = 3; // products shown when there is no search and no filter
 const PAGE_SIZE = 20; // products shown at first, and added by each 「もっと見る」
@@ -548,6 +549,10 @@ export default async function CheckPage({
     productMap.set(card.productId, entry);
   }
   const productCards = Array.from(productMap.values());
+  // 旧価格あり: products with open legacy prices newer than 6 months (logged-in users only).
+  const legacyBadgeSet = loggedIn
+    ? await loadLegacyBadgeIds(supabase, productCards.map((pc) => pc.id))
+    : new Set<string>();
   const emptyPriceText = f.period === "all" ? "まだ価格がありません" : "この期間の価格がありません";
 
   // A search that matched no product name at all: offer similar names and 「この名前で商品を追加」.
@@ -757,7 +762,14 @@ export default async function CheckPage({
                 key={pc.id}
                 className="rounded-2xl border border-line bg-panel p-4 shadow-sm"
               >
-                <p className="text-lg font-bold text-stone-900">{pc.name}</p>
+                <p className="flex flex-wrap items-center gap-2 text-lg font-bold text-stone-900">
+                  {pc.name}
+                  {legacyBadgeSet.has(pc.id) && (
+                    <span className="rounded-md bg-chip px-1.5 py-0.5 text-xs font-bold text-stone-600">
+                      旧価格あり
+                    </span>
+                  )}
+                </p>
                 {pc.sub && <p className="text-sm text-stone-500">{pc.sub}</p>}
                 {onlyVariation && <p className="text-sm text-stone-500">{onlyVariation}</p>}
                 <div className="mt-3">
