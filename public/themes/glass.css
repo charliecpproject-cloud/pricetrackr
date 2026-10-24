@@ -1,10 +1,20 @@
 /* ===== Theme: glass (cosmetic only) ===== */
 html[data-theme="glass"] {
-  --panel: rgb(255 255 255 / 0.5);
+  --panel: rgb(255 255 255 / 0.62);
   --panel-soft: rgb(255 255 255 / 0.3);
   --chip: rgb(255 255 255 / 0.4);
   --line: rgb(255 255 255 / 0.7);
-  --card: rgb(255 255 255 / 0.5);
+  --card: rgb(255 255 255 / 0.62);
+  --primary: #0f6d66;
+
+  /* darker text colours so text stays readable on the blurred coloured background */
+  --color-stone-500: #5f5a55;
+  --color-stone-600: #4d4944;
+  --color-rose-600: #be123c;
+  --color-amber-700: #92400e;
+  --color-red-600: #b91c1c;
+  --color-teal-600: #0f6d66;
+  --color-teal-700: #115e59;
 }
 html[data-theme="glass"] body {
   background:

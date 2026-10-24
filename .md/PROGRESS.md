@@ -287,6 +287,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 55d (speed: 価格確認 starts the login check, favorites, search suggestions, chain list and product search at the same time in one Promise.all instead of one after another) done
 
 
+- Step 56a (theme contrast audit: scripts/contrast-audit.mjs checks 29 text/background pairs per theme with the real colours from the theme files, run with node scripts/contrast-audit.mjs; glass, midnight and calm adjusted until every pair except disabled buttons reaches 4.5:1 (3:1 for large bold text); dark themes now remap sky-100/sky-700, rose, red and indigo text; the default theme's teal (3.66:1) is still open) done
+
+
 ## In Progress
 
 - (none)

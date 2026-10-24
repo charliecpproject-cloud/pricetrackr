@@ -35,9 +35,11 @@ html[data-theme="calm"] {
   --color-rose-50: rgb(244 63 94 / 0.12);
   --color-rose-100: rgb(244 63 94 / 0.22);
   --color-rose-200: rgb(244 63 94 / 0.4);
-  --color-rose-600: #fb7185;
-  --color-rose-700: #fda4af;
-  --color-red-600: #f87171;
+  --color-rose-600: #fda4af;
+  --color-rose-700: #fecdd3;
+  --color-red-600: #fca5a5;
+  --color-sky-100: rgb(56 189 248 / 0.18);
+  --color-sky-700: #bae6fd;
   --color-gray-50: transparent;
   --color-indigo-50: var(--ac-tint-1);
   --color-indigo-600: var(--ac-600);
@@ -46,6 +48,11 @@ html[data-theme="calm"] {
 /* Text that used the accent colour must be light on dark panels */
 html[data-theme="midnight"] .text-teal-600,
 html[data-theme="calm"] .text-teal-600 {
+  color: var(--ac-text);
+}
+/* Member price text (indigo) uses the light accent text colour too */
+html[data-theme="midnight"] .text-indigo-600,
+html[data-theme="calm"] .text-indigo-600 {
   color: var(--ac-text);
 }
 /* Solid accent backgrounds that carry white text stay dark enough */
