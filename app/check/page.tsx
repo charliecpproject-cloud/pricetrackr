@@ -43,6 +43,7 @@ import { getViewer } from "@/lib/auth/viewer";
 import FavoriteButton from "@/components/FavoriteButton";
 import AddPriceButton from "@/components/AddPriceButton";
 import VariationTabs from "@/components/VariationTabs";
+import CheckScrollMemory from "@/components/CheckScrollMemory";
 import { defaultGroupIndex, groupByVariation } from "@/lib/prices/groupCards";
 import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel, type FavoriteLevel } from "@/lib/prices/favorites";
@@ -543,6 +544,7 @@ export default async function CheckPage({
 
   return (
     <div className="space-y-6">
+      <CheckScrollMemory />
       <h1 className="text-2xl font-bold text-stone-900">価格確認</h1>
 
       <form action="/check" className="space-y-3">
@@ -736,7 +738,7 @@ export default async function CheckPage({
                 {pc.sub && <p className="text-sm text-stone-500">{pc.sub}</p>}
                 {onlyVariation && <p className="text-sm text-stone-500">{onlyVariation}</p>}
                 <div className="mt-3">
-                  <VariationTabs groups={tabs} initialIndex={defaultGroupIndex(groups)} />
+                  <VariationTabs groups={tabs} initialIndex={defaultGroupIndex(groups)} memoryKey={pc.id} />
                 </div>
               </div>
             );

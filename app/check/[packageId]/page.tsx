@@ -1,4 +1,4 @@
-import Link from "next/link";
+import BackToSearchLink from "@/components/BackToSearchLink";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -140,9 +140,9 @@ export default async function PackageDetailPage({
 
   return (
     <div className="space-y-6">
-      <Link href="/check" className="inline-block text-sm font-medium text-teal-700">
+      <BackToSearchLink>
         ← 検索に戻る
-      </Link>
+      </BackToSearchLink>
 
       <div>
         <div className="flex items-center gap-1">
