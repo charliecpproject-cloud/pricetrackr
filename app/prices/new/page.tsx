@@ -26,8 +26,11 @@ export default async function NewPricePage({
 
   const supabase = await createSupabaseServerClient();
 
-  // Everything the page needs is fetched at the same time.
-  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer, counterUnits, recentResult] = await Promise.all([
+  // Everything the page needs is fetched at the same time. The chain usage needs to know
+  // whether anyone is logged in, so it starts as soon as the login check is done.
+  const viewerPromise = getViewer();
+  const usagePromise = viewerPromise.then((v) => getChainUsage(supabase, v.loggedIn));
+  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer, counterUnits, recentResult, usage] = await Promise.all([
     supabase
       .from("products")
       .select(
@@ -40,13 +43,14 @@ export default async function NewPricePage({
       .order("name", { ascending: true }),
     supabase.from("shops").select("id, store_chain_id, name").order("name", { ascending: true }),
     supabase.from("search_aliases").select("alias, canonical").eq("enabled", true),
-    getViewer(),
+    viewerPromise,
     loadCounterUnits(supabase),
     supabase
       .from("price_observations")
       .select("product_package_id, store_chain_id")
       .order("created_at", { ascending: false })
       .limit(60),
+    usagePromise,
   ]);
 
   const { data: products, error: productsError } = productsResult;
@@ -143,7 +147,7 @@ export default async function NewPricePage({
         : "";  const startNew = !!focusProduct && listedPackages.length === 0;
 
   const readOnly = !viewer.loggedIn;
-  const usage = await getChainUsage(supabase, !readOnly);
+
   const { sorted, topIds } = arrangeChains(
     (chains ?? []).map((chain: any) => ({
       id: chain.id as string,

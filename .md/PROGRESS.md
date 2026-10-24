@@ -275,6 +275,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 54 (home page: search box that opens 価格確認 with the typed word, and the おすすめ chips under it, reusing SearchSuggestions and loadVisibleSuggestions; docs updated) done
 
 
+- Step 55a (speed: 価格入力 starts the chain usage lookup together with its other queries; 店舗 loads the login check, the chain list and the branches of the chosen chain in one Promise.all) done
+
+
 ## In Progress
 
 - (none)

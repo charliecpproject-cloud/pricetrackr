@@ -20,29 +20,34 @@ export default async function StoresPage({
   const { chain: chainParam } = await searchParams;
 
   const supabase = await createSupabaseServerClient();
-  const readOnly = !(await getViewer()).loggedIn;
-
-  // All chains (small list), used for the dropdown and the add-branch form
-  const { data: chains, error: chainsError } = await supabase
-    .from("store_chains")
-    .select("id, name, category, coupon_percents")
-    .order("name", { ascending: true });
-
-  // The chain chosen in the dropdown (the id must be a valid UUID and exist)
+  // The chain chosen in the dropdown (must be a valid UUID). Its branches load at the same time
+  // as the chain list and the login check; an unknown id simply finds no branches.
   const parsedId = z.string().uuid().safeParse(chainParam);
+
+  const [viewer, chainsResult, shopsResult] = await Promise.all([
+    getViewer(),
+    // All chains (small list), used for the dropdown and the add-branch form
+    supabase
+      .from("store_chains")
+      .select("id, name, category, coupon_percents")
+      .order("name", { ascending: true }),
+    parsedId.success
+      ? supabase
+          .from("shops")
+          .select("id, name, region, address")
+          .eq("store_chain_id", parsedId.data)
+          .order("name", { ascending: true })
+      : Promise.resolve({ data: null, error: null }),
+  ]);
+  const readOnly = !viewer.loggedIn;
+  const { data: chains, error: chainsError } = chainsResult;
+  const { data: shops, error: shopsError } = shopsResult;
+
+  // The chain must exist; its branches were already loaded above
   const selected = parsedId.success
     ? (chains ?? []).find((c) => c.id === parsedId.data)
     : undefined;
   const category = selected ? parseCategory(selected.category) : null;
-
-  // Branches are loaded only for the chosen chain
-  const { data: shops, error: shopsError } = selected
-    ? await supabase
-        .from("shops")
-        .select("id, name, region, address")
-        .eq("store_chain_id", selected.id)
-        .order("name", { ascending: true })
-    : { data: null, error: null };
 
   return (
     <div>
