@@ -278,6 +278,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 55a (speed: 価格入力 starts the chain usage lookup together with its other queries; 店舗 loads the login check, the chain list and the branches of the chosen chain in one Promise.all) done
 
 
+- Step 55a (speed: 価格入力 starts the chain usage lookup together with its other queries; 店舗 loads the login check, the chain list and the branches of the chosen chain in one Promise.all) done
+
+
 ## In Progress
 
 - (none)
