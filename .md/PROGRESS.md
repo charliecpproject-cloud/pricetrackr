@@ -326,6 +326,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 60d (価格確認: 旧価格あり badge for products with open legacy prices newer than 6 months (lib/prices/legacyBadge.ts with tests, legacy_summary()); old /check/<id> links of merged products forward to the new product's matching 容量 (merged_package_target()); PART1_FOUNDATION.md documents the merge and legacy price design; Step 60 complete) done
 
 
+- Steps 59-60 tested in the browser (brand conversion and /admin/brands, product merge, legacy prices: view, move to a new and an existing 容量, archive, regular user and visitor views, old-link forwarding); test products removed
+
+
 ## In Progress
 
 - (none)
