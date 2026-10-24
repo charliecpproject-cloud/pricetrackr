@@ -232,36 +232,47 @@ export default async function CheckPage({
   searchParams: Promise<RawParams>;
 }) {
   const rawParams = await searchParams;
-  const viewer = await getViewer();
-  const loggedIn = viewer.loggedIn;
+  const viewerPromise = getViewer();
   const parsedFilters = parseFilters(rawParams);
-  // The favorites filter needs an account: visitors have no favorites.
-  const f = loggedIn ? parsedFilters : { ...parsedFilters, favorites: false };
   // What to search: every field (default), or only the name, brand, category or barcode.
   const scope = parseSearchScope((rawParams as unknown as Record<string, unknown>).scope);
-  const term = f.q;
   // 「もっと見る」: how many products to show (20 more with each tap, up to 100).
   const limitRaw = Number(Array.isArray(rawParams.limit) ? rawParams.limit[0] : rawParams.limit);
   const limit = Number.isFinite(limitRaw)
     ? Math.min(MAX_LIMIT, Math.max(PAGE_SIZE, Math.floor(limitRaw)))
     : PAGE_SIZE;
-  const activeCount = countActive(f) + (scope !== "all" ? 1 : 0);
 
   const supabase = await createSupabaseServerClient();
 
-  // The admin's search suggestions, loaded while the other queries run.
-  const suggestionsPromise = loadVisibleSuggestions(supabase);
+  // Everything that does not depend on another result starts at the same time: the login check,
+  // the favorites (as soon as the login is known; visitors have none), the admin's search
+  // suggestions, the chains for the filters, and the product search (name, alias, brand,
+  // category, memo, variations, barcodes and sizes: search_products).
+  const favoritesPromise = viewerPromise.then((v) =>
+    v.loggedIn
+      ? loadFavorites(supabase)
+      : { ids: new Set<string>(), groups: new Set<string>() }
+  );
+  const matchedIdsPromise = parsedFilters.q
+    ? searchProductIds(supabase, parsedFilters.q, Math.max(50, limit + 1), scope)
+    : Promise.resolve([] as Awaited<ReturnType<typeof searchProductIds>>);
 
-  // The account's favorite packages, loaded while the other queries run.
-  const favoritesPromise = loggedIn
-    ? loadFavorites(supabase)
-    : Promise.resolve({ ids: new Set<string>(), groups: new Set<string>() });
+  const [viewer, favorites, suggestions, chainsResult, matchedIds] = await Promise.all([
+    viewerPromise,
+    favoritesPromise,
+    loadVisibleSuggestions(supabase),
+    // Chains for the store and category filters (a small list).
+    supabase.from("store_chains").select("id, name, category").order("name", { ascending: true }),
+    matchedIdsPromise,
+  ]);
 
-  // Chains for the store and category filters (a small list).
-  const { data: chainRows, error: chainsError } = await supabase
-    .from("store_chains")
-    .select("id, name, category")
-    .order("name", { ascending: true });
+  const loggedIn = viewer.loggedIn;
+  // The favorites filter needs an account: visitors have no favorites.
+  const f = loggedIn ? parsedFilters : { ...parsedFilters, favorites: false };
+  const term = f.q;
+  const activeCount = countActive(f) + (scope !== "all" ? 1 : 0);
+
+  const { data: chainRows, error: chainsError } = chainsResult;
   if (chainsError) {
     console.error("Chains fetch error:", chainsError.message, chainsError.code);
   }
@@ -271,9 +282,6 @@ export default async function CheckPage({
     category: parseCategory(c.category),
   }));
   const chainGroups = groupByCategory(chains);
-
-  const favorites = await favoritesPromise;
-  const suggestions = await suggestionsPromise;
   const onlyFavorites = f.favorites;
   const since = rangeStart(f);
   const until = rangeEnd(f);
@@ -368,7 +376,7 @@ export default async function CheckPage({
   }
 
   // Search: name, alias, brand, category, memo, variations, barcodes and sizes (search_products).
-  const matchedIds = term ? await searchProductIds(supabase, term, Math.max(50, limit + 1), scope) : [];
+  // matchedIds was loaded together with the other queries at the top of the page.
   const nameFilter = `id.in.(${matchedIds.join(",") || "00000000-0000-0000-0000-000000000000"})`;
 
   let products: any[] = [];

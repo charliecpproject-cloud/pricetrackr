@@ -284,6 +284,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 55c (speed: proxy.ts and lib/auth/viewer.ts check the login with getClaims() instead of getUser(); the JWT signing key is ECC P-256; a revoked session is accepted until the token expires; the theme-in-a-cookie idea was dropped because the display name is also needed in the layout) done
 
 
+- Step 55d (speed: 価格確認 starts the login check, favorites, search suggestions, chain list and product search at the same time in one Promise.all instead of one after another) done
+
+
 ## In Progress
 
 - (none)
