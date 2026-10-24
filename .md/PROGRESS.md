@@ -314,6 +314,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 59e (brands: /admin/brands with the brand list and counts, the まとめる form and button (merge_brand), alias add and delete, and a warning for products that look the same; migration adds the missing update policy on brand_aliases; registered in the admin tool list; docs updated; Step 59 complete) done
 
 
+- Step 60a (database: deleted_records.merged_into; admin-only merge_products() archives the old product with a pointer to the new one and moves up to 10 barcodes; move_legacy_package() moves a legacy 容量's price entries to the matching 容量 of the new product (created when missing) and logs them in price_move_log; archive_legacy_package() hides a legacy 容量 with the package tombstone; legacy_packages() and legacy_summary() let logged-in users read open legacy prices) done
+
+
 ## In Progress
 
 - (none)
