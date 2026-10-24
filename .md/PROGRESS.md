@@ -293,6 +293,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 56b (docs: the contrast rule and the accepted exceptions are written into PART1_FOUNDATION.md; the default theme keeps its current teal) done
 
 
+- Step 57 (价格入力: the product list floats over the form instead of pushing the fields down; it opens when the search box is tapped, gets shorter while typing, and closes after a choice, a tap outside or Escape; opaque layer behind it for the see-through themes; docs updated) done
+
+
 ## In Progress
 
 - (none)

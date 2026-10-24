@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { X } from "lucide-react";
 import { matchesSearchWithAliases, type SearchAlias } from "@/lib/search/aliases";
 import { controlCls } from "@/components/FormParts";
@@ -33,6 +33,26 @@ export default function PackagePicker({
 }) {
   const rank = useMemo(() => new Map(recentIds.map((id, i) => [id, i])), [recentIds]);
   const keyword = search.trim();
+
+  // The list floats over the form while the field is in use. It closes after a choice, a tap
+  // outside the field and the list, or Escape.
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   const matches = useMemo(() => {
     let list: Pkg[];
@@ -77,50 +97,64 @@ export default function PackagePicker({
       : "商品";
 
   return (
-    <div className="space-y-2">
+    <div ref={boxRef} className="relative">
       <input
         id="package_search"
         ref={inputRef}
         type="search"
         value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
+        onChange={(e) => {
+          onSearchChange(e.target.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
         placeholder="商品名・ブランド・カテゴリなどで検索"
         autoComplete="off"
         className={controlCls}
       />
-      <div className="overflow-hidden rounded-xl border border-line bg-panel">
-        <p className="bg-panel-soft px-3 py-1.5 text-xs font-medium text-stone-500">{heading}</p>
-        {shown.length === 0 ? (
-          <p className="px-3 py-3 text-sm text-stone-500">
-            該当する商品がありません。右の「新規」から登録できます。
-          </p>
-        ) : (
-          <ul role="listbox" aria-label="商品・容量" className="max-h-72 divide-y divide-stone-100 overflow-y-auto">
-            {shown.map((p) => (
-              <li key={p.id} role="option" aria-selected={false}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onSelect(p.id);
-                    onSearchChange("");
-                  }}
-                  className="block w-full px-3 py-3 text-left text-sm text-stone-900 hover:bg-panel-soft active:bg-chip"
-                >
-                  {p.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        {matches.length > MAX_SHOWN && (
-          <p className="px-3 py-2 text-xs text-stone-500">
-            ほかに{matches.length - MAX_SHOWN}件あります。言葉を足して絞り込んでください。
-          </p>
-        )}
-        {!keyword && shown.length > 0 && (
-          <p className="px-3 py-2 text-xs text-stone-500">ほかの商品は名前を入力して検索できます。</p>
-        )}
-      </div>
+      {open && (
+        <div className="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-line bg-background shadow-lg">
+          {/* The opaque layer above keeps the form text behind the list from showing through the theme's see-through panel colour. */}
+          <div className="bg-panel">
+            <p className="bg-panel-soft px-3 py-1.5 text-xs font-medium text-stone-500">{heading}</p>
+            {shown.length === 0 ? (
+              <p className="px-3 py-3 text-sm text-stone-500">
+                該当する商品がありません。右の「新規」から登録できます。
+              </p>
+            ) : (
+              <ul
+                role="listbox"
+                aria-label="商品・容量"
+                className="max-h-[min(18rem,45dvh)] divide-y divide-stone-100 overflow-y-auto"
+              >
+                {shown.map((p) => (
+                  <li key={p.id} role="option" aria-selected={false}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onSelect(p.id);
+                        onSearchChange("");
+                        setOpen(false);
+                      }}
+                      className="block w-full px-3 py-3 text-left text-sm text-stone-900 hover:bg-panel-soft active:bg-chip"
+                    >
+                      {p.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {matches.length > MAX_SHOWN && (
+              <p className="px-3 py-2 text-xs text-stone-500">
+                ほかに{matches.length - MAX_SHOWN}件あります。言葉を足して絞り込んでください。
+              </p>
+            )}
+            {!keyword && shown.length > 0 && (
+              <p className="px-3 py-2 text-xs text-stone-500">ほかの商品は名前を入力して検索できます。</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
