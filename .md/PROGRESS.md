@@ -305,6 +305,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 59b (lib/products/brand.ts: suggestBrands() (category matching plus alias matches first) and resolveBrand() (alias to brand, other spelling to the existing spelling); normalize() exported from category.ts; tests) done
 
 
+- Step 59c (brands: components/BrandField.tsx with tap-to-fill suggestions (suggestBrandNames in app/products/brandActions.ts) in 商品を追加, 新しい商品として登録 and 商品を編集; a typed alias or another spelling is converted to the known brand before the duplicate check (resolveBrandText in lib/products/loadBrands.ts) in createProduct, updateProduct and the inline new product of 価格入力) done
+
+
 ## In Progress
 
 - (none)
