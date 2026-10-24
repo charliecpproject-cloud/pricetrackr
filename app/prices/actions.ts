@@ -1,5 +1,7 @@
 "use server";
 
+import { resolveBrandText } from "@/lib/products/loadBrands";
+
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -91,7 +93,8 @@ async function resolveNewPackage(
   const size = parseSize(text(formData, "np_size"));
   if (size === null) return { error: "容量は0より大きい数値で入力してください" };
 
-  const { name, brand, unit, other_name, category, memo, tax_rate } = parsed.data;
+  const { name, unit, other_name, category, memo, tax_rate } = parsed.data;
+  const brand = (await resolveBrandText(supabase, parsed.data.brand)) || null;
   // Only a measure or an enabled counter word may be used for a new 容量.
   if (!(await loadAllowedUnits(supabase)).includes(unit)) return { error: UNIT_ERROR };
 

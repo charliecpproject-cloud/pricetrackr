@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
 import CategoryField from "@/components/CategoryField";
+import BrandField from "@/components/BrandField";
 import { updateProduct, updateVariation } from "@/app/products/productActions";
 import { deletePackage, deleteProduct, deleteVariation } from "@/app/products/deleteActions";
 import { useProductDialogs } from "@/app/products/ProductDialogs";
@@ -99,12 +100,10 @@ function ProductEditForm({ product }: { product: Product }) {
         />
       </Field>
       <Field label="ブランド" kind="optional" htmlFor={`brand-${product.id}`}>
-        <input
+        <BrandField
           id={`brand-${product.id}`}
           name="brand"
-          maxLength={100}
           defaultValue={product.brand ?? ""}
-          className={controlCls}
         />
       </Field>
       <Field label="カテゴリ" kind="optional" htmlFor={`category-${product.id}`}>

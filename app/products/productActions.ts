@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseBarcodes } from "@/lib/products/barcode";
+import { resolveBrandText } from "@/lib/products/loadBrands";
 import { BARCODE_TAKEN_HIDDEN, takenBarcodeMessage } from "@/lib/products/barcodeDb";
 
 import {
@@ -104,10 +105,12 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
   if (!barcodeResult.ok) return { error: barcodeResult.error };
   const codes = barcodeResult.codes;
 
-  const { name, other_name, brand, category, memo } = parsed.data;
+  const { name, other_name, category, memo } = parsed.data;
+  let brand = parsed.data.brand;
   const names = { name_ja: name, name_en: other_name || null };
 
   const supabase = await createSupabaseServerClient();
+  brand = await resolveBrandText(supabase, brand);
   const check = await checkDuplicate(supabase, names, brand || null);
   if (check === "failed") return { error: SAVE_FAILED };
   if (check === "duplicate") return { error: "同じ商品がすでに登録されています" };
@@ -158,12 +161,14 @@ export async function updateProduct(_prevState: State, formData: FormData): Prom
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const { id, name, other_name, brand, category } = parsed.data;
+  const { id, name, other_name, category } = parsed.data;
+  let brand = parsed.data.brand;
   const taxResult = parseTaxRate(get(formData, "tax_rate"));
   if (!taxResult.ok) return { error: "税率が正しくありません" };
   const names = { name_ja: name, name_en: other_name || null };
 
   const supabase = await createSupabaseServerClient();
+  brand = await resolveBrandText(supabase, brand);
   const check = await checkDuplicate(supabase, names, brand || null, id);
   if (check === "failed") return { error: SAVE_FAILED };
   if (check === "duplicate") return { error: "同じ商品がすでに登録されています" };

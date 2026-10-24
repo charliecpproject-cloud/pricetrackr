@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, controlCls } from "@/components/FormParts";
 import CategoryField from "@/components/CategoryField";
+import BrandField from "@/components/BrandField";
 import BarcodeInput from "@/components/BarcodeInput";
 import { MAX_BARCODES_PER_PRODUCT } from "@/lib/products/barcode";
 
@@ -57,13 +58,7 @@ export default function ProductFields({
       </Field>
 
       <Field label="ブランド" kind="optional" htmlFor={id("brand")}>
-        <input
-          id={id("brand")}
-          name={id("brand")}
-          maxLength={100}
-          placeholder="例：パスコ"
-          className={controlCls}
-        />
+        <BrandField id={id("brand")} name={id("brand")} placeholder="例：パスコ" />
       </Field>
 
       <Field label="カテゴリ" kind="optional" htmlFor={id("category")}>
