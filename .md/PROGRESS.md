@@ -296,6 +296,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 57 (价格入力: the product list floats over the form instead of pushing the fields down; it opens when the search box is tapped, gets shorter while typing, and closes after a choice, a tap outside or Escape; opaque layer behind it for the see-through themes; docs updated) done
 
 
+- Step 58 (price check default view: the heading is now 最近価格が更新された商品 and it shows the 3 products with the newest price entries, by price_observations.created_at, instead of the 3 newest products; docs updated) done
+
+
 ## In Progress
 
 - (none)

@@ -385,7 +385,21 @@ export default async function CheckPage({
   const isDefaultView = !term && !hasPriceFilter && !onlyFavorites;
 
   if (isDefaultView) {
-    // No search and no filter: only the most recently added products.
+    // No search and no filter: the products with the newest price entries (by entry time).
+    const { data: recentObs, error: recentError } = await supabase
+      .from("price_observations")
+      .select("created_at, product_packages (product_id)")
+      .order("created_at", { ascending: false })
+      .limit(60);
+    if (recentError) {
+      console.error("Recent prices fetch error:", recentError.message, recentError.code);
+    }
+    const recentIds: string[] = [];
+    for (const o of (recentObs ?? []) as any[]) {
+      const pid = [o.product_packages].flat()[0]?.product_id as string | undefined;
+      if (pid && !recentIds.includes(pid)) recentIds.push(pid);
+      if (recentIds.length >= RECENT_COUNT) break;
+    }
     const { data, error } = await supabase
       .from("products")
       .select(
@@ -399,12 +413,13 @@ export default async function CheckPage({
          )`
       )
       .order("created_at", { ascending: false })
-      .limit(RECENT_COUNT);
+      .in("id", recentIds);
     if (error) {
       console.error("Products fetch error:", error.message, error.code);
     }
     products = (data ?? []) as any[];
 
+    products.sort((a, b) => recentIds.indexOf(a.id) - recentIds.indexOf(b.id));
     const recentPackageIds = products.flatMap((p: any) =>
       ([p.product_packages].flat().filter(Boolean) as any[]).map((pkg) => pkg.id as string)
     );
@@ -697,9 +712,9 @@ export default async function CheckPage({
 
       {isDefaultView && (
         <div>
-          <h2 className="text-lg font-bold text-stone-900">最近追加した商品</h2>
+          <h2 className="text-lg font-bold text-stone-900">最近価格が更新された商品</h2>
           <p className="mt-1 text-sm text-stone-500">
-            新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は、検索か絞り込みで探せます。
+            価格の入力が新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は、検索か絞り込みで探せます。
           </p>
         </div>
       )}
