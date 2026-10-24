@@ -17,7 +17,7 @@ const tools = [
     title: "商品の統合",
     description: "重複して登録された商品を1つにまとめる",
     Icon: GitMerge,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/aliases",
