@@ -302,6 +302,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 59a (database: brand_aliases(brand, alias) with RLS (everyone reads, demo read, only admins write); admin-only merge_brand(from, to) renames the brand of all matching products, repoints aliases and keeps the old spelling as an alias) done
 
 
+- Step 59b (lib/products/brand.ts: suggestBrands() (category matching plus alias matches first) and resolveBrand() (alias to brand, other spelling to the existing spelling); normalize() exported from category.ts; tests) done
+
+
 ## In Progress
 
 - (none)
