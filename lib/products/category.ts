@@ -1,6 +1,6 @@
 export type CategoryCount = { name: string; count: number };
 
-const normalize = (s: string) => s.normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
+export const normalize = (s: string) => s.normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
 
 function isHan(ch: string): boolean {
   const c = ch.codePointAt(0) ?? 0;
