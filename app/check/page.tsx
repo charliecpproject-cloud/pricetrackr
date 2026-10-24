@@ -48,6 +48,8 @@ import { loadFavorites } from "@/lib/prices/loadFavorites";
 import { favoriteLevel, type FavoriteLevel } from "@/lib/prices/favorites";
 
 const RECENT_COUNT = 3; // products shown when there is no search and no filter
+const PAGE_SIZE = 20; // products shown at first, and added by each 「もっと見る」
+const MAX_LIMIT = 100;
 
 // How a 容量 block looks: a favorite gets a soft rose border and a faint tint; a related package
 // (another size of the same variation as a favorite) gets half of that tint.
@@ -237,6 +239,11 @@ export default async function CheckPage({
   // What to search: every field (default), or only the name, brand, category or barcode.
   const scope = parseSearchScope((rawParams as unknown as Record<string, unknown>).scope);
   const term = f.q;
+  // 「もっと見る」: how many products to show (20 more with each tap, up to 100).
+  const limitRaw = Number(Array.isArray(rawParams.limit) ? rawParams.limit[0] : rawParams.limit);
+  const limit = Number.isFinite(limitRaw)
+    ? Math.min(MAX_LIMIT, Math.max(PAGE_SIZE, Math.floor(limitRaw)))
+    : PAGE_SIZE;
   const activeCount = countActive(f) + (scope !== "all" ? 1 : 0);
 
   const supabase = await createSupabaseServerClient();
@@ -360,7 +367,7 @@ export default async function CheckPage({
   }
 
   // Search: name, alias, brand, category, memo, variations, barcodes and sizes (search_products).
-  const matchedIds = term ? await searchProductIds(supabase, term, 50, scope) : [];
+  const matchedIds = term ? await searchProductIds(supabase, term, Math.max(50, limit + 1), scope) : [];
   const nameFilter = `id.in.(${matchedIds.join(",") || "00000000-0000-0000-0000-000000000000"})`;
 
   let products: any[] = [];
@@ -419,7 +426,7 @@ export default async function CheckPage({
         )
         .in("product_packages.id", ids)
         .order("name_en", { ascending: true })
-        .limit(onlyFavorites ? 100 : 20);
+        .limit(onlyFavorites ? 100 : limit + 1);
       if (term) query = query.or(nameFilter);
       const { data, error } = await query;
       if (error) {
@@ -441,7 +448,7 @@ export default async function CheckPage({
          )`
       )
       .order("name_en", { ascending: true })
-      .limit(20);
+      .limit(limit + 1);
     if (term) query = query.or(nameFilter);
     const { data, error } = await query;
     if (error) {
@@ -456,6 +463,10 @@ export default async function CheckPage({
       latest = buildLatest(await fetchObservations(packageIds));
     }
   }
+
+  // One product more than shown was loaded: it tells whether 「もっと見る」 is needed.
+  const hasMore = !isDefaultView && !onlyFavorites && products.length > limit;
+  if (hasMore) products = products.slice(0, limit);
 
   // One entry per 容量 ...
   const cards: SizeCard[] = products
@@ -519,6 +530,15 @@ export default async function CheckPage({
   const noMatch = term !== "" && matchedIds.length === 0;
   const similar = noMatch ? await findSimilarProducts(supabase, term, scope) : [];
 
+  // The 「もっと見る」 link: the same search and filters, 20 more products.
+  const moreParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(rawParams)) {
+    if (key === "limit" || value === undefined) continue;
+    for (const item of Array.isArray(value) ? value : [value]) moreParams.append(key, item);
+  }
+  moreParams.set("limit", String(Math.min(MAX_LIMIT, limit + PAGE_SIZE)));
+  const moreHref = `/check?${moreParams.toString()}`;
+
   const clearHref = term ? `/check?q=${encodeURIComponent(term)}` : "/check";
 
   return (
@@ -549,4 +569,194 @@ export default async function CheckPage({
           open={activeCount > 0}
           className="rounded-2xl border border-line bg-panel p-4 shadow-sm"
         >
-          <summary
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-medium text-stone-700 [&::-webkit-details-marker]:hidden">
+            <SlidersHorizontal className="h-4 w-4" />
+            絞り込み
+            {activeCount > 0 && (
+              <span className="rounded-full bg-teal-600 px-2 py-0.5 text-xs font-bold text-white">
+                {activeCount}
+              </span>
+            )}
+            <ChevronDown className="ml-auto h-4 w-4 text-stone-400" />
+          </summary>
+
+          <div className="mt-4 space-y-5">
+            <SearchScopeChips key={scope} current={scope}>
+              {loggedIn && (
+                <label className="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-line bg-panel px-3 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600">
+                  <input
+                    type="checkbox"
+                    name="fav"
+                    value="1"
+                    defaultChecked={f.favorites}
+                    className="sr-only"
+                  />
+                  <Heart className="h-4 w-4" />
+                  お気に入りのみ
+                </label>
+              )}
+            </SearchScopeChips>
+            <div>
+              <label htmlFor="f_chain" className={labelCls}>
+                店舗（チェーン）
+              </label>
+              <select
+                id="f_chain"
+                name="chain"
+                defaultValue={f.chainId ?? ""}
+                className={controlCls}
+              >
+                <option value="">すべて</option>
+                {chainGroups.map((g) => (
+                  <optgroup key={g.key} label={g.label}>
+                    {g.items.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+
+            <CategoryFilter key={f.categories.join(",")} selected={f.categories} />
+
+            <fieldset className="min-w-0">
+              <legend className={labelCls}>価格の種類</legend>
+              <div className="grid grid-cols-3 gap-2">
+                <Chip name="sale" value="all" label="すべて" checked={f.sale === "all"} />
+                <Chip
+                  name="sale"
+                  value="regular"
+                  label="通常"
+                  checked={f.sale === "regular"}
+                />
+                <Chip
+                  name="sale"
+                  value="sale"
+                  label="特売・セール"
+                  checked={f.sale === "sale"}
+                />
+              </div>
+            </fieldset>
+
+            <div>
+              <p className={labelCls}>価格帯（円）</p>
+              <div className="flex items-center gap-2">
+                <input
+                  name="min"
+                  inputMode="numeric"
+                  aria-label="価格の下限"
+                  placeholder="下限"
+                  defaultValue={f.min ?? ""}
+                  className={controlCls}
+                />
+                <span className="text-stone-500">〜</span>
+                <input
+                  name="max"
+                  inputMode="numeric"
+                  aria-label="価格の上限"
+                  placeholder="上限"
+                  defaultValue={f.max ?? ""}
+                  className={controlCls}
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-stone-500">
+                クーポン・会員価格の適用後の価格で絞り込みます。税抜・税込は区別しません。
+              </p>
+            </div>
+
+            <PeriodFilter key={`${f.period}-${f.from}-${f.to}`} period={f.period} from={f.from} to={f.to} />
+
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                className="h-12 flex-1 rounded-xl bg-teal-600 text-base font-medium text-white"
+              >
+                この条件で検索
+              </button>
+              {activeCount > 0 && (
+                <Link href={clearHref} className="shrink-0 text-sm font-medium text-teal-700">
+                  条件をクリア
+                </Link>
+              )}
+            </div>
+          </div>
+        </details>
+      </form>
+
+      {isDefaultView && (
+        <div>
+          <h2 className="text-lg font-bold text-stone-900">最近追加した商品</h2>
+          <p className="mt-1 text-sm text-stone-500">
+            新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は、検索か絞り込みで探せます。
+          </p>
+        </div>
+      )}
+
+      {productCards.length === 0 && noMatch ? (
+        <SearchEmptyHelp term={term} similar={similar} canAdd={loggedIn} searchPath="/check" />
+      ) : productCards.length === 0 ? (
+        <p className="text-stone-500">
+          {onlyFavorites && favorites.ids.size === 0
+            ? "お気に入りがまだありません。商品名の横のハートをタップして登録できます。"
+            : hasPriceFilter
+              ? "条件に合う価格がありません"
+              : "見つかりませんでした"}
+        </p>
+      ) : (
+        <div className="space-y-4">
+          {productCards.map((pc) => {
+            const groups = groupByVariation(pc.items);
+            const tabs = groups.map((g) => ({
+              key: g.key,
+              label: g.label,
+              content: (
+                <div className="space-y-3">
+                  {g.items.map((card) => (
+                    <SizeBlock
+                      key={card.id}
+                      card={card}
+                      loggedIn={loggedIn}
+                      emptyText={emptyPriceText}
+                    />
+                  ))}
+                </div>
+              ),
+            }));
+            // One variation only: its name is shown as text, not as a chip.
+            const single = groups.length === 1 ? groups[0] : null;
+            const onlyVariation = single && single.key !== "none" ? single.label : null;
+            return (
+              <div
+                key={pc.id}
+                className="rounded-2xl border border-line bg-panel p-4 shadow-sm"
+              >
+                <p className="text-lg font-bold text-stone-900">{pc.name}</p>
+                {pc.sub && <p className="text-sm text-stone-500">{pc.sub}</p>}
+                {onlyVariation && <p className="text-sm text-stone-500">{onlyVariation}</p>}
+                <div className="mt-3">
+                  <VariationTabs groups={tabs} initialIndex={defaultGroupIndex(groups)} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    {hasMore && limit < MAX_LIMIT && (
+        <Link
+          href={moreHref}
+          scroll={false}
+          className="flex h-12 items-center justify-center rounded-xl border border-line bg-panel text-base font-medium text-stone-700 hover:bg-panel-soft"
+        >
+          もっと見る
+        </Link>
+      )}
+      {hasMore && limit >= MAX_LIMIT && (
+        <p className="text-center text-xs text-stone-500">
+          先頭の{limit}件を表示しています。検索や絞り込みで探せます。
+        </p>
+      )}
+    </div>
+  );
+}
