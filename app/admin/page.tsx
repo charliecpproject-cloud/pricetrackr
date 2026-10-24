@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, Flame, GitMerge, Ruler, Tags } from "lucide-react";
+import { ChevronRight, Flame, GitMerge, Ruler, Tag, Tags } from "lucide-react";
 import { getViewer } from "@/lib/auth/viewer";
 
 // Add future admin tools (price approval, ...) to this list.
 const tools = [
+  {
+    href: "/admin/brands",
+    title: "ブランドの管理",
+    description: "同じブランドの別の書き方（PASCO とパスコ）をまとめ、別名を登録する",
+    Icon: Tag,
+    ready: true,
+  },
   {
     href: "/admin/merge",
     title: "商品の統合",

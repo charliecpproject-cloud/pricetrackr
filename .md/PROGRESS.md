@@ -311,6 +311,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 59d (database: search_products() also searches brand_aliases in both directions, so パスコ finds PASCO and PASCO finds パスコ; scopes and weights unchanged) done
 
 
+- Step 59e (brands: /admin/brands with the brand list and counts, the まとめる form and button (merge_brand), alias add and delete, and a warning for products that look the same; migration adds the missing update policy on brand_aliases; registered in the admin tool list; docs updated; Step 59 complete) done
+
+
 ## In Progress
 
 - (none)
