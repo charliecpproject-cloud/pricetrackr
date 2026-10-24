@@ -269,6 +269,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 52 (navigation: 店舗 moved from the bottom bar into the profile menu, also shown to demo visitors; the bottom bar has 4 tabs; docs updated) done
 
 
+- Step 53 (home feed: 最近の更新 price rows are two lines; the name truncates, the まとめ買い block is replaced by one line with the best tier and +N for the other tiers; lib/home/bulkSummary.ts with tests; docs updated) done
+
+
 ## In Progress
 
 - (none)

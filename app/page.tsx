@@ -9,7 +9,8 @@ import { parseTaxBasis, type TaxBasis } from "@/lib/prices/tax";
 import { parseCategory, saleLabel } from "@/lib/stores/category";
 import { formatDateTime } from "@/lib/dateTime";
 import { greetingText } from "@/lib/home/greeting";
-import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
+import { bulkFeedSummary, type BulkFeedSummary } from "@/lib/home/bulkSummary";
+import { parseStoredTiers } from "@/lib/prices/bulk";
 
 const shortcuts = [
   { href: "/prices/new", label: "価格入力", Icon: PlusCircle },
@@ -32,7 +33,7 @@ type Activity =
       price: number | string;
       isSale: boolean;
       isMemberPrice: boolean;
-      bulkTiers: BulkTier[];
+      bulkSummary: BulkFeedSummary | null;
       taxRate: number | null;
       taxBasis: TaxBasis;
     }
@@ -83,7 +84,7 @@ export default async function HomePage() {
       price: o.price as number | string,
       isSale: !!o.is_sale,
       isMemberPrice: !!o.is_member_price,
-      bulkTiers: parseStoredTiers(o.bulk_tiers),
+      bulkSummary: bulkFeedSummary(Number(o.price), parseStoredTiers(o.bulk_tiers)),
       taxRate: (product?.tax_rate as number | null) ?? null,
       taxBasis: parseTaxBasis(o.tax_basis),
     };
@@ -152,34 +153,46 @@ export default async function HomePage() {
               <li key={a.key}>
                 {a.kind === "price" ? (
                   <Link href={a.href} className="flex items-start justify-between gap-3 py-3">
-                    <div className="min-w-0">
-                      <p className="font-medium text-stone-900">
-                        {a.name}
+                    <div className="min-w-0 flex-1">
+                      <p className="flex items-center gap-2 font-medium text-stone-900">
+                        <span className="truncate">{a.name}</span>
                         {a.sizeLabel && (
-                          <span className="ml-2 rounded-full bg-chip px-2 py-0.5 text-xs font-medium text-stone-700">
+                          <span className="shrink-0 rounded-full bg-chip px-2 py-0.5 text-xs font-medium text-stone-700">
                             {a.sizeLabel}
                           </span>
                         )}
                       </p>
-                      <p className="mt-0.5 text-xs text-stone-500">
-                        {a.chainName} ・ {formatDateTime(a.at)}
+                      <p className="mt-0.5 flex items-center gap-2 text-xs text-stone-500">
+                        <span className="truncate">
+                          {a.chainName} ・ {formatDateTime(a.at)}
+                        </span>
                         {a.isSale && (
-                          <span className="ml-2 rounded-md bg-amber-100 px-1.5 py-0.5 font-bold text-amber-700">
+                          <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 font-bold text-amber-700">
                             {a.saleText}
                           </span>
                         )}
                       </p>
                     </div>
-                    <PriceDisplay
-                      price={a.price}
-                      isMemberPrice={a.isMemberPrice}
-                      bulkTiers={a.bulkTiers}
-                      taxRate={a.taxRate}
-                      taxBasis={a.taxBasis}
-                      size="md"
-                    />
-                  </Link>
-                ) : (
+                    <div className="flex shrink-0 flex-col items-end gap-0.5">
+                      <PriceDisplay
+                        price={a.price}
+                        isMemberPrice={a.isMemberPrice}
+                        taxRate={a.taxRate}
+                        taxBasis={a.taxBasis}
+                        size="md"
+                      />
+                      {a.bulkSummary && (
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600">
+                          <span className="tabular-nums">{a.bulkSummary.text}</span>
+                          {a.bulkSummary.more > 0 && (
+                            <span className="rounded-md bg-rose-100 px-1 py-0.5 text-rose-700">
+                              +{a.bulkSummary.more}
+                            </span>
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  </Link>                ) : (
                   <Link href={a.href} className="flex items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
                       <p className="font-medium text-stone-900">
