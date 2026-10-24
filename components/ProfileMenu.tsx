@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogIn, LogOut, Settings, User, X } from "lucide-react";
+import { LogIn, LogOut, Settings, Store, User, X } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 
 export default function ProfileMenu({
@@ -93,6 +93,11 @@ export default function ProfileMenu({
                 </>
               )}
             </div>
+
+            <Link href="/stores" onClick={() => setOpen(false)} className={itemCls}>
+              <Store className="h-5 w-5 text-stone-500" />
+              店舗
+            </Link>
 
             {loggedIn ? (
               <>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, PlusCircle, Search, Store, Package } from "lucide-react";
+import { Home, PlusCircle, Search, Package } from "lucide-react";
 
 export default function AppNav() {
   const pathname = usePathname();
@@ -29,12 +29,6 @@ export default function AppNav() {
       label: "価格確認",
       Icon: Search,
       isActive: pathname.startsWith("/check"),
-    },
-    {
-      href: "/stores",
-      label: "店舗",
-      Icon: Store,
-      isActive: pathname.startsWith("/stores"),
     },
     {
       href: "/products",

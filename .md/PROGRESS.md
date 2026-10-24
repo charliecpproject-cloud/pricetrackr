@@ -263,6 +263,12 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Step 50b (/products?name=<text> opens 商品を追加 with 商品名 filled in: ProductFields and ProductForm take defaultName; used by the 「この名前で商品を追加」 button; Step 50 complete) done
 
 
+- Step 51 (price check: one card per product with the 容量 as blocks inside, variation chips when a product has 2 or more variations) done
+
+
+- Step 52 (navigation: 店舗 moved from the bottom bar into the profile menu, also shown to demo visitors; the bottom bar has 4 tabs; docs updated) done
+
+
 ## In Progress
 
 - (none)
