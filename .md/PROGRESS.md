@@ -13,6 +13,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 62 (docs: PART1_FOUNDATION.md cleaned up: the duplicate Empty search section and the outdated /admin/merge placeholder line removed, the Coupons and Membership bullets updated for the Step 42 price strip; the old PROGRESS.md moved to PROGRESS_ARCHIVE.md and a new PROGRESS.md started; handoff lines about Aider loading and the PROGRESS.md update brought up to date) done
 
 
+- Step 63 (/scan polish in components/BarcodeScanner.tsx: a torch button only where the camera reports torch support, a short vibration on a successful read where the device has one (Android), no sound anywhere, a clearer unsupported message on iPhone and iPad) done
+
+
 ## In Progress
 
 - (none)
@@ -20,7 +23,6 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 
 ## Next Up
 
-- Step 63: /scan polish (torch button where the camera supports it, vibration on a successful read where the device supports it (Android), no sound anywhere, a clearer message where BarcodeDetector is missing such as iPhone Safari; no vibration fallback on iPhone)
 - Step 64: price history chart or sparkline on the product detail page with lowest, average and highest and an X% above/below usual line (same tax basis only, legacy prices ignored)
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
 - Speed, later: check that Fluid compute is on (Vercel, Settings, Functions); consider Vercel Speed Insights.
