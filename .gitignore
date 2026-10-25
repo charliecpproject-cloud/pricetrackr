@@ -23,3 +23,7 @@ yarn-error.log*
 _archived/
 
 !.env.example
+
+# build and tool output
+*.tsbuildinfo
+.codebase-map/
