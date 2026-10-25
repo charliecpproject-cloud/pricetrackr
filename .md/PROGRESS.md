@@ -329,6 +329,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - Steps 59-60 tested in the browser (brand conversion and /admin/brands, product merge, legacy prices: view, move to a new and an existing 容量, archive, regular user and visitor views, old-link forwarding); test products removed
 
 
+- Step 61 (Phase 1 second close-out: .gitignore and .prettierignore extended and tsconfig.tsbuildinfo and .codebase-map no longer tracked; the unused addProduct and the empty app/products/action.tsx deleted; whole project formatted with Prettier in one formatting-only commit; .env.example checked against the code; live deploy and phone smoke test passed) done
+
+
 ## In Progress
 
 - (none)
@@ -337,7 +340,11 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 
 ## Next Up
 
-- Plan Phase 2 (freshness score, trust score, unit price)
+- Step 62: slim the docs (archive PROGRESS.md Steps 1-39 into a file Aider does not load with a short summary; clean up PART1_FOUNDATION.md and split it by area)
+- Step 63: /scan polish (torch button where the camera supports it, vibration or beep on a successful read on Android only, a clearer message where BarcodeDetector is missing such as iPhone Safari; no vibration or beep fallback on iPhone)
+- Step 64: price history chart or sparkline on the product detail page with lowest, average and highest and an X% above/below usual line (same tax basis only, legacy prices ignored)
+- Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
+- Wishlist: edit the size or unit of a package, show the logo inside the app, option to rank by normal price instead of the discounted price
 - Speed, later (option 2): faster login check with getClaims() in proxy.ts and lib/auth/viewer.ts, and keep the theme in a cookie so the layout needs no profile lookup. First check that the Supabase project uses an asymmetric JWT signing key (Project Settings, JWT Keys), otherwise it gives no gain. Trade-off: a revoked session is not noticed until the token expires. Saves about 2 to 3 round trips per page.
 - Speed, later (options 3 and 4, only if the new numbers still look slow): run independent queries together (Promise.all) on 価格入力, 価格確認 and 店舗; limit or lazy-load what 価格入力 loads (all products, packages and shops).
 - Speed, later: check that Fluid compute is on (Vercel, Settings, Functions); consider Vercel Speed Insights.
@@ -378,3 +385,4 @@ Phase 1 complete (manual entry and price lookup, live on Vercel)
 - 2026-10-17: in demo mode all pages are visible to visitors; write controls will be shown but disabled. If the demo flag cannot be read, the login guard treats demo mode as off.
 - 2026-10-20: package unit words: the measures ml, L, g, kg stay in code; every other unit is a counter word that is stored as the word itself (the old keys count, sheet and bag keep their words 個, 枚, 袋) and shown per piece; the words offered in the dropdowns live in the table counter_units, managed by admins (show/hide, add, remove only when unused, no renaming, 個 can never be hidden or removed).
 - 2026-10-20: bulk discount (まとめ買い) tiers are stored in price_observations.bulk_tiers (jsonb list of 1-3 {quantity, percent}); the entered price is always the regular 1-item price and each tier is applied on top at display time with the coupon rounding, never stored; bulk is display-only, so ranking, 最安, the price range filter and the unit price use the regular or coupon price; unit price lines show 通常 plus the biggest tier; the old bulk_percent and bulk_quantity columns were dropped.
+- 2026-10-26: /scan polish: no vibration or beep fallback on iPhone; iPhone and Safari only get a clearer message that BarcodeDetector is missing, manual entry stays

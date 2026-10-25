@@ -81,7 +81,7 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 - `app/prices/new/*` (PriceForm, NewPackageFields, ChainExtras, page) and `app/prices/actions.ts`
 - `app/check/page.tsx`, `app/check/[packageId]/{page.tsx,actions.ts}`
 - `app/stores/*` (chains, shops, ChainOptionsForm, CouponForm loader, couponActions)
-- `app/products/*` (ProductForm, VariationForm, PackageForm, ProductCardTools, ProductMemoEditor, productActions, variationActions, memoActions; `actions.ts` still holds `addPackage` and an unused old `addProduct`)
+- `app/products/*` (ProductForm, VariationForm, PackageForm, ProductCardTools, ProductMemoEditor, productActions, variationActions, memoActions; `actions.ts` holds `addPackage`)
 - `components/{PriceDisplay,DeleteObservationButton,FormParts}.tsx`, `lib/supabase/*`, `lib/prices/*`, `lib/products/variation.ts` (with tests)
 
 ## Steps 58-60 (built after the sections above were written)
@@ -94,6 +94,6 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 
 ## Status and wishlist (confirm against PROGRESS.md)
 - Phase 1 features are built: login, stores and branches, chain coupons, membership and bonus points, products with variations, memo, edit products and variations, price entry with inline new product and branch, price check and detail pages, delete own price, Japanese UI, app icon and manifest.
-- Still to do: housekeeping (Prettier, `.env.example`, delete the dead `addProduct`), live deploy and phone smoke test, Phase 1 close-out (PROGRESS.md and `git tag phase-1-complete`).
+- Phase 1 close-out is done (Step 61: housekeeping, Prettier, live deploy and phone smoke test).
 - Next: Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet).
 - Wishes: edit a package's size or unit, show the logo inside the app, an option to rank by normal price instead of discounted price.
