@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 type Status = "starting" | "scanning" | "unsupported" | "denied" | "error";
 
+type TorchCapabilities = MediaTrackCapabilities & { torch?: boolean };
+
 const WANTED_FORMATS = ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"];
 
 const MESSAGES: Record<Status, string> = {
@@ -16,6 +18,18 @@ const MESSAGES: Record<Status, string> = {
   error: "カメラを使えませんでした。番号を入力してください。",
 };
 
+const IOS_UNSUPPORTED_MESSAGE =
+  "iPhoneとiPadでは、カメラでのバーコード読み取りに対応していません。番号を入力してください。";
+
+// All iPhone and iPad browsers use Safari's engine, which has no BarcodeDetector.
+function isIosDevice(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
 // Reads a barcode with the camera. The video is processed on this device only;
 // nothing is recorded or sent. Only the code text is passed to onDetected.
 export default function BarcodeScanner({
@@ -24,8 +38,11 @@ export default function BarcodeScanner({
   onDetected: (code: string) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const trackRef = useRef<MediaStreamTrack | null>(null);
   const callbackRef = useRef(onDetected);
   const [status, setStatus] = useState<Status>("starting");
+  const [torchAvailable, setTorchAvailable] = useState(false);
+  const [torchOn, setTorchOn] = useState(false);
 
   useEffect(() => {
     callbackRef.current = onDetected;
@@ -78,6 +95,14 @@ export default function BarcodeScanner({
         setStatus("error");
         return;
       }
+
+      // The torch button is offered only when the camera reports a torch.
+      const track = stream.getVideoTracks()[0] ?? null;
+      trackRef.current = track;
+      const capabilities = track?.getCapabilities?.() as
+        TorchCapabilities | undefined;
+      if (capabilities?.torch) setTorchAvailable(true);
+
       setStatus("scanning");
 
       const detector = new Detector({ formats });
@@ -87,6 +112,8 @@ export default function BarcodeScanner({
           const found = await detector.detect(video);
           const value = found?.[0]?.rawValue;
           if (value) {
+            // A short buzz where the device has one (Android). No sound.
+            if (typeof navigator.vibrate === "function") navigator.vibrate(80);
             callbackRef.current(String(value));
             return;
           }
@@ -104,10 +131,29 @@ export default function BarcodeScanner({
       cancelled = true;
       if (timer) clearTimeout(timer);
       stream?.getTracks().forEach((t) => t.stop());
+      trackRef.current = null;
     };
   }, []);
 
+  async function toggleTorch() {
+    const track = trackRef.current;
+    if (!track) return;
+    const next = !torchOn;
+    try {
+      await track.applyConstraints({
+        advanced: [{ torch: next } as unknown as MediaTrackConstraintSet],
+      });
+      setTorchOn(next);
+    } catch {
+      // the torch could not be switched: keep the old state
+    }
+  }
+
   const showVideo = status === "starting" || status === "scanning";
+  const message =
+    status === "unsupported" && isIosDevice()
+      ? IOS_UNSUPPORTED_MESSAGE
+      : MESSAGES[status];
 
   return (
     <div className="space-y-3">
@@ -124,8 +170,17 @@ export default function BarcodeScanner({
           <div className="pointer-events-none absolute inset-x-[10%] top-1/2 h-24 -translate-y-1/2 rounded-xl border-2 border-white/80" />
         )}
       </div>
+      {status === "scanning" && torchAvailable && (
+        <button
+          type="button"
+          onClick={toggleTorch}
+          className="h-12 w-full rounded-xl border border-line bg-panel px-4 text-sm font-medium text-stone-900"
+        >
+          {torchOn ? "ライトを消す" : "ライトをつける"}
+        </button>
+      )}
       <p role="status" className="text-sm text-stone-600">
-        {MESSAGES[status]}
+        {message}
       </p>
     </div>
   );
