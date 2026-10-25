@@ -9,14 +9,25 @@ import { addBarcode, deleteBarcode } from "@/app/products/barcodeActions";
 type State = { error: string | null; message?: string | null };
 const initial: State = { error: null, message: null };
 
-function BarcodeRow({ code, packageLabel }: { code: string; packageLabel: string | null }) {
-  const [state, formAction, pending] = useToastedActionState(deleteBarcode, initial);
+function BarcodeRow({
+  code,
+  packageLabel,
+}: {
+  code: string;
+  packageLabel: string | null;
+}) {
+  const [state, formAction, pending] = useToastedActionState(
+    deleteBarcode,
+    initial,
+  );
 
   return (
     <li className="rounded-xl border border-line bg-panel p-2 pl-3">
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <p className="break-all text-sm tabular-nums text-stone-800">{code}</p>
+          <p className="break-all text-sm tabular-nums text-stone-800">
+            {code}
+          </p>
           <p className="text-xs text-stone-500">
             {packageLabel ? `容量：${packageLabel}` : "容量：指定なし"}
           </p>
@@ -24,7 +35,8 @@ function BarcodeRow({ code, packageLabel }: { code: string; packageLabel: string
         <form
           action={formAction}
           onSubmit={(e) => {
-            if (!window.confirm(`バーコード ${code} を削除しますか？`)) e.preventDefault();
+            if (!window.confirm(`バーコード ${code} を削除しますか？`))
+              e.preventDefault();
           }}
         >
           <input type="hidden" name="barcode_code" value={code} />
@@ -51,7 +63,10 @@ export default function ProductBarcodes({
   barcodes: { code: string; package_id?: string | null }[];
   packages: { id: string; label: string }[];
 }) {
-  const [state, formAction, pending] = useToastedActionState(addBarcode, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    addBarcode,
+    initial,
+  );
 
   return (
     <div className="space-y-3">
@@ -64,7 +79,9 @@ export default function ProductBarcodes({
             <BarcodeRow
               key={b.code}
               code={b.code}
-              packageLabel={packages.find((p) => p.id === b.package_id)?.label ?? null}
+              packageLabel={
+                packages.find((p) => p.id === b.package_id)?.label ?? null
+              }
             />
           ))}
         </ul>
@@ -93,7 +110,9 @@ export default function ProductBarcodes({
           </div>
         )}
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-        {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+        {state.message && (
+          <p className="text-sm text-teal-700">{state.message}</p>
+        )}
         <Button type="submit" disabled={pending} className="h-11 w-full">
           {pending ? "追加中…" : "バーコードを追加"}
         </Button>

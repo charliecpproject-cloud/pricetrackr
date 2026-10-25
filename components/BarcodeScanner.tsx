@@ -18,7 +18,11 @@ const MESSAGES: Record<Status, string> = {
 
 // Reads a barcode with the camera. The video is processed on this device only;
 // nothing is recorded or sent. Only the code text is passed to onDetected.
-export default function BarcodeScanner({ onDetected }: { onDetected: (code: string) => void }) {
+export default function BarcodeScanner({
+  onDetected,
+}: {
+  onDetected: (code: string) => void;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const callbackRef = useRef(onDetected);
   const [status, setStatus] = useState<Status>("starting");
@@ -107,8 +111,15 @@ export default function BarcodeScanner({ onDetected }: { onDetected: (code: stri
 
   return (
     <div className="space-y-3">
-      <div className={`relative overflow-hidden rounded-2xl bg-black ${showVideo ? "" : "hidden"}`}>
-        <video ref={videoRef} playsInline muted className="aspect-[4/3] w-full object-cover" />
+      <div
+        className={`relative overflow-hidden rounded-2xl bg-black ${showVideo ? "" : "hidden"}`}
+      >
+        <video
+          ref={videoRef}
+          playsInline
+          muted
+          className="aspect-[4/3] w-full object-cover"
+        />
         {status === "scanning" && (
           <div className="pointer-events-none absolute inset-x-[10%] top-1/2 h-24 -translate-y-1/2 rounded-xl border-2 border-white/80" />
         )}

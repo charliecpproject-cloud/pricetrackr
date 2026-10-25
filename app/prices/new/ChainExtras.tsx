@@ -21,7 +21,10 @@ export function MemberPriceCheck({
   if (!chain || chain.memberPercent === null) return null;
 
   return (
-    <label key={chain.id} className="flex items-start gap-3 rounded-xl bg-indigo-50 p-3 text-sm text-stone-800">
+    <label
+      key={chain.id}
+      className="flex items-start gap-3 rounded-xl bg-indigo-50 p-3 text-sm text-stone-800"
+    >
       <input
         type="checkbox"
         name="is_member_price"
@@ -30,7 +33,8 @@ export function MemberPriceCheck({
         className="mt-0.5 h-5 w-5 shrink-0 accent-indigo-600"
       />
       <span>
-        入力した価格は会員価格です（会員・現金払い {chain.memberPercent}%引き後）
+        入力した価格は会員価格です（会員・現金払い {chain.memberPercent}
+        %引き後）
         <Badge kind="optional" />
         <span className="mt-0.5 block text-xs text-stone-500">
           チェックしない場合は通常価格として扱い、会員価格は自動で計算して表示します。

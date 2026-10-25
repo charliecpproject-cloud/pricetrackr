@@ -28,7 +28,9 @@ export function isMeasureUnit(unit: string): boolean {
 
 /** A counter word: anything that is not a measure (and is a sensible length). */
 export function isCounterUnit(unit: string): boolean {
-  return unit.trim() !== "" && unit.length <= MAX_UNIT_LENGTH && !isMeasureUnit(unit);
+  return (
+    unit.trim() !== "" && unit.length <= MAX_UNIT_LENGTH && !isMeasureUnit(unit)
+  );
 }
 
 /** The word shown for a counter unit: 個 for count, 枚 for sheet, 袋 for bag, else the word itself. */
@@ -40,10 +42,13 @@ export function counterLabel(unit: string): string {
 
 /** The unit dropdown: the measures first, then the counter words. */
 export function unitDropdownOptions(
-  counters: readonly CounterUnitOption[]
+  counters: readonly CounterUnitOption[],
 ): { value: string; label: string }[] {
   return [
-    ...MEASURE_UNITS.map((unit) => ({ value: unit as string, label: unit as string })),
+    ...MEASURE_UNITS.map((unit) => ({
+      value: unit as string,
+      label: unit as string,
+    })),
     ...counters.map((c) => ({ value: c.unit, label: c.label })),
   ];
 }

@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
 
-export const labelCls = "mb-1.5 flex items-center text-sm font-medium text-stone-700";
+export const labelCls =
+  "mb-1.5 flex items-center text-sm font-medium text-stone-700";
 export const controlCls =
   "h-12 w-full rounded-xl border border-line bg-panel px-3 text-base focus:outline-none focus:ring-2 focus:ring-teal-600";
 
@@ -11,7 +12,9 @@ const badgeBase = "ml-2 rounded px-1.5 py-0.5 text-xs";
 export function Badge({ kind }: { kind: Kind }) {
   if (kind === "optional") {
     return (
-      <span className={`${badgeBase} bg-chip font-medium text-stone-500`}>任意</span>
+      <span className={`${badgeBase} bg-chip font-medium text-stone-500`}>
+        任意
+      </span>
     );
   }
   return (

@@ -8,7 +8,7 @@ export const BARCODE_TAKEN_HIDDEN =
 /** A message when one of the codes already belongs to a product, otherwise null. */
 export async function takenBarcodeMessage(
   supabase: Supabase,
-  codes: string[]
+  codes: string[],
 ): Promise<string | null> {
   if (codes.length === 0) return null;
   const { data, error } = await supabase

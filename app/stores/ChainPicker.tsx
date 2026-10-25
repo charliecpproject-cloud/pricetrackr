@@ -13,7 +13,7 @@ export default function ChainPicker({
 }) {
   const router = useRouter();
   const groups = groupByCategory(
-    chains.map((c) => ({ ...c, category: parseCategory(c.category) }))
+    chains.map((c) => ({ ...c, category: parseCategory(c.category) })),
   );
 
   return (
@@ -21,7 +21,9 @@ export default function ChainPicker({
       aria-label="チェーン"
       value={selectedId}
       onChange={(e) =>
-        router.push(e.target.value ? `/stores?chain=${e.target.value}` : "/stores")
+        router.push(
+          e.target.value ? `/stores?chain=${e.target.value}` : "/stores",
+        )
       }
       className={controlCls}
     >

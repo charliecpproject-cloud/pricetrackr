@@ -54,27 +54,42 @@ export function unitPriceSummary(options: {
 
   const regular = unitPrice(enteredPrice, size, unit);
   if (regular === null) return null;
-  const per = isCounterUnit(unit) ? `1${regular.label}あたり` : `${regular.label}あたり`;
+  const per = isCounterUnit(unit)
+    ? `1${regular.label}あたり`
+    : `${regular.label}あたり`;
 
-  const discount = isMemberPrice ? null : bestDiscount(couponPercents, memberPercent);
-  const discounted = discount ? unitPrice(couponPrice(enteredPrice, discount.percent), size, unit) : null;
+  const discount = isMemberPrice
+    ? null
+    : bestDiscount(couponPercents, memberPercent);
+  const discounted = discount
+    ? unitPrice(couponPrice(enteredPrice, discount.percent), size, unit)
+    : null;
 
   const bestTier = bestBulkTier(enteredPrice, bulkTiers);
-  const bulk = bestTier ? unitPrice(bulkItemPrice(enteredPrice, bestTier), size, unit) : null;
+  const bulk = bestTier
+    ? unitPrice(bulkItemPrice(enteredPrice, bestTier), size, unit)
+    : null;
 
   if (discounted === null && bulk === null) {
     return { per, items: [{ label: null, amount: formatYen(regular.amount) }] };
   }
 
   const items: UnitSummaryItem[] = [
-    { label: isMemberPrice ? "会員価格" : regularLabel, amount: formatYen(regular.amount) },
+    {
+      label: isMemberPrice ? "会員価格" : regularLabel,
+      amount: formatYen(regular.amount),
+    },
   ];
   if (discount && discounted !== null) {
     items.push({
-      label: discount.kind === "coupon" ? `${discount.percent}%クーポン` : `会員${discount.percent}%引`,
+      label:
+        discount.kind === "coupon"
+          ? `${discount.percent}%クーポン`
+          : `会員${discount.percent}%引`,
       amount: formatYen(discounted.amount),
     });
   }
-  if (bestTier && bulk !== null) items.push({ label: bulkLabel(bestTier), amount: formatYen(bulk.amount) });
+  if (bestTier && bulk !== null)
+    items.push({ label: bulkLabel(bestTier), amount: formatYen(bulk.amount) });
   return { per, items };
 }

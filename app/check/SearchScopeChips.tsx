@@ -37,8 +37,11 @@ export default function SearchScopeChips({
                   onChange={(e) => {
                     setSelected(s.key);
                     const form = e.currentTarget.form;
-                    const box = form?.elements.namedItem("q") as HTMLInputElement | null;
-                    if (form && box && box.value.trim() !== "") form.requestSubmit();
+                    const box = form?.elements.namedItem(
+                      "q",
+                    ) as HTMLInputElement | null;
+                    if (form && box && box.value.trim() !== "")
+                      form.requestSubmit();
                   }}
                   className="sr-only"
                 />

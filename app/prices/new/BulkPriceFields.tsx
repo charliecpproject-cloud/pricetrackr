@@ -1,11 +1,25 @@
 import { Badge, controlCls, labelCls } from "@/components/FormParts";
-import { BULK_MAX_TIERS, type BulkMode, type BulkTier } from "@/lib/prices/bulk";
+import {
+  BULK_MAX_TIERS,
+  type BulkMode,
+  type BulkTier,
+} from "@/lib/prices/bulk";
 
-export type BulkRow = { quantity: string; mode: BulkMode; percent: string; total: string };
+export type BulkRow = {
+  quantity: string;
+  mode: BulkMode;
+  percent: string;
+  total: string;
+};
 
 const MIN_ROWS = 2;
 
-const blankRow = (): BulkRow => ({ quantity: "", mode: "percent", percent: "", total: "" });
+const blankRow = (): BulkRow => ({
+  quantity: "",
+  mode: "percent",
+  percent: "",
+  total: "",
+});
 
 export function emptyBulkRows(): BulkRow[] {
   return Array.from({ length: MIN_ROWS }, blankRow);
@@ -13,11 +27,20 @@ export function emptyBulkRows(): BulkRow[] {
 
 // Form rows from stored tiers, padded to at least two rows.
 export function rowsFromTiers(tiers: BulkTier[]): BulkRow[] {
-  const rows = tiers.slice(0, BULK_MAX_TIERS).map(
-    (t): BulkRow =>
-      t.kind === "total"
-        ? { quantity: String(t.quantity), mode: "total", percent: "", total: String(t.total) }
-        : { quantity: String(t.quantity), mode: "percent", percent: String(t.percent), total: "" }
+  const rows = tiers.slice(0, BULK_MAX_TIERS).map((t): BulkRow =>
+    t.kind === "total"
+      ? {
+          quantity: String(t.quantity),
+          mode: "total",
+          percent: "",
+          total: String(t.total),
+        }
+      : {
+          quantity: String(t.quantity),
+          mode: "percent",
+          percent: String(t.percent),
+          total: "",
+        },
   );
   while (rows.length < MIN_ROWS) rows.push(blankRow());
   return rows;
@@ -48,7 +71,9 @@ export default function BulkPriceFields({
   if (!chain || !chain.bulkEnabled) return null;
 
   const update = (index: number, patch: Partial<BulkRow>) =>
-    onTiersChange(tiers.map((row, i) => (i === index ? { ...row, ...patch } : row)));
+    onTiersChange(
+      tiers.map((row, i) => (i === index ? { ...row, ...patch } : row)),
+    );
 
   return (
     <div className="space-y-3 rounded-xl bg-rose-50 p-3 text-sm text-stone-800">
@@ -64,7 +89,9 @@ export default function BulkPriceFields({
           まとめ買い割引があります（入力した価格は1個の通常価格です）
           <Badge kind="optional" />
           <span className="mt-0.5 block text-xs text-stone-500">
-            決まった個数以上まとめて買うと安くなるときにチェックします。「10個以上 20%引」のような割引率か、「5個で550円」のような合計金額を、最大{BULK_MAX_TIERS}段階まで入力できます。
+            決まった個数以上まとめて買うと安くなるときにチェックします。「10個以上
+            20%引」のような割引率か、「5個で550円」のような合計金額を、最大
+            {BULK_MAX_TIERS}段階まで入力できます。
           </span>
         </span>
       </label>
@@ -72,7 +99,10 @@ export default function BulkPriceFields({
       {checked && (
         <div className="space-y-3">
           {tiers.map((row, i) => (
-            <div key={i} className="space-y-2 rounded-xl border border-line bg-panel p-2.5">
+            <div
+              key={i}
+              className="space-y-2 rounded-xl border border-line bg-panel p-2.5"
+            >
               <input type="hidden" name={`bulk_mode_${i}`} value={row.mode} />
               <div className="flex gap-2">
                 {MODES.map((m) => (

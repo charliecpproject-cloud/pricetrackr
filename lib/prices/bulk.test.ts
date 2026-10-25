@@ -63,29 +63,49 @@ describe("bulkTierPrice", () => {
 
 describe("bulkItemPrice", () => {
   it("uses the percent for a percent tier", () => {
-    expect(bulkItemPrice(1000, { kind: "percent", quantity: 10, percent: 20 })).toBe(800);
+    expect(
+      bulkItemPrice(1000, { kind: "percent", quantity: 10, percent: 20 }),
+    ).toBe(800);
   });
 
   it("divides a bundle price by the quantity, with one decimal", () => {
-    expect(bulkItemPrice(120, { kind: "total", quantity: 5, total: 550 })).toBe(110);
-    expect(bulkItemPrice(200, { kind: "total", quantity: 3, total: 500 })).toBe(166.7);
+    expect(bulkItemPrice(120, { kind: "total", quantity: 5, total: 550 })).toBe(
+      110,
+    );
+    expect(bulkItemPrice(200, { kind: "total", quantity: 3, total: 500 })).toBe(
+      166.7,
+    );
   });
 });
 
 describe("bulkEquivalentPercent", () => {
   it("is the percent of a percent tier", () => {
-    expect(bulkEquivalentPercent(1000, { kind: "percent", quantity: 10, percent: 20 })).toBe(20);
+    expect(
+      bulkEquivalentPercent(1000, {
+        kind: "percent",
+        quantity: 10,
+        percent: 20,
+      }),
+    ).toBe(20);
   });
 
   it("works out the discount of a bundle price, rounded down", () => {
     // 5 x 120 = 600; 550 is 8.33% less
-    expect(bulkEquivalentPercent(120, { kind: "total", quantity: 5, total: 550 })).toBe(8);
-    expect(bulkEquivalentPercent(100, { kind: "total", quantity: 10, total: 710 })).toBe(29);
+    expect(
+      bulkEquivalentPercent(120, { kind: "total", quantity: 5, total: 550 }),
+    ).toBe(8);
+    expect(
+      bulkEquivalentPercent(100, { kind: "total", quantity: 10, total: 710 }),
+    ).toBe(29);
   });
 
   it("is null when the bundle is not cheaper", () => {
-    expect(bulkEquivalentPercent(100, { kind: "total", quantity: 5, total: 500 })).toBeNull();
-    expect(bulkEquivalentPercent(100, { kind: "total", quantity: 5, total: 600 })).toBeNull();
+    expect(
+      bulkEquivalentPercent(100, { kind: "total", quantity: 5, total: 500 }),
+    ).toBeNull();
+    expect(
+      bulkEquivalentPercent(100, { kind: "total", quantity: 5, total: 600 }),
+    ).toBeNull();
   });
 });
 
@@ -103,7 +123,12 @@ describe("bestBulkTier", () => {
 });
 
 describe("parseBulkTiers", () => {
-  const row = (quantity: string, percent: string, total = "", mode = "percent") => ({
+  const row = (
+    quantity: string,
+    percent: string,
+    total = "",
+    mode = "percent",
+  ) => ({
     quantity,
     mode,
     percent,
@@ -128,7 +153,10 @@ describe("parseBulkTiers", () => {
   });
 
   it("mixes percent and bundle rows", () => {
-    const result = parseBulkTiers([row("10", "20"), row("5", "", "550", "total")]);
+    const result = parseBulkTiers([
+      row("10", "20"),
+      row("5", "", "550", "total"),
+    ]);
     expect(result).toEqual({
       ok: true,
       tiers: [
@@ -161,7 +189,9 @@ describe("parseBulkTiers", () => {
 
   it("refuses a repeated quantity, even in different modes", () => {
     expect(parseBulkTiers([row("10", "20"), row("10", "25")]).ok).toBe(false);
-    expect(parseBulkTiers([row("10", "20"), row("10", "", "700", "total")]).ok).toBe(false);
+    expect(
+      parseBulkTiers([row("10", "20"), row("10", "", "700", "total")]).ok,
+    ).toBe(false);
   });
 
   it("refuses more than 3 tiers", () => {
@@ -182,7 +212,7 @@ describe("parseStoredTiers", () => {
         { quantity: 20, percent: 25 },
         { quantity: 5, total: 550 },
         { quantity: 10, percent: 20 },
-      ])
+      ]),
     ).toEqual([
       { kind: "total", quantity: 5, total: 550 },
       { kind: "percent", quantity: 10, percent: 20 },
@@ -205,7 +235,7 @@ describe("parseStoredTiers", () => {
         { quantity: 5 },
         { quantity: "x" },
         null,
-      ])
+      ]),
     ).toEqual([{ kind: "percent", quantity: 10, percent: 20 }]);
   });
 });

@@ -9,7 +9,7 @@ import { parseStoredTiers, type BulkTier } from "@/lib/prices/bulk";
 // packageId is a real 容量 id, or "default:<productId>:..." for a product without a 容量.
 export async function lookupBulkDefaults(
   chainId: string,
-  packageId: string
+  packageId: string,
 ): Promise<BulkTier[] | null> {
   const chain = z.string().uuid().safeParse(chainId);
   if (!chain.success) return null;
@@ -17,7 +17,9 @@ export async function lookupBulkDefaults(
 
   const supabase = await createSupabaseServerClient();
 
-  async function latest(packageIds: string[] | null): Promise<BulkTier[] | null> {
+  async function latest(
+    packageIds: string[] | null,
+  ): Promise<BulkTier[] | null> {
     let query = supabase
       .from("price_observations")
       .select("bulk_tiers")

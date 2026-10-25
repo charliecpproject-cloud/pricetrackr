@@ -29,12 +29,14 @@ export function parseCategory(value: unknown): StoreCategory | null {
 
 // "特売" at supermarkets and drugstores, "セール" everywhere else. Same meaning.
 export function saleLabel(category: StoreCategory | null | undefined): string {
-  return category === "supermarket" || category === "drugstore" ? "特売" : "セール";
+  return category === "supermarket" || category === "drugstore"
+    ? "特売"
+    : "セール";
 }
 
 // Groups items by category, in the list order above; uncategorized last.
 export function groupByCategory<T extends { category: StoreCategory | null }>(
-  items: T[]
+  items: T[],
 ): { key: string; label: string; items: T[] }[] {
   const groups: { key: string; label: string; items: T[] }[] = [];
   for (const category of [...STORE_CATEGORIES, null]) {

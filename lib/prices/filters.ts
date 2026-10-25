@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { STORE_CATEGORIES, parseCategory, type StoreCategory } from "../stores/category";
+import {
+  STORE_CATEGORIES,
+  parseCategory,
+  type StoreCategory,
+} from "../stores/category";
 
 export type Period = "all" | "week" | "month" | "quarter";
 export type SaleFilter = "all" | "regular" | "sale";
@@ -68,7 +72,10 @@ export function parseFilters(params: RawParams): Filters {
   const categories = STORE_CATEGORIES.filter((c) => picked.has(c));
 
   const period: Period =
-    periodRaw === "all" || periodRaw === "week" || periodRaw === "month" || periodRaw === "quarter"
+    periodRaw === "all" ||
+    periodRaw === "week" ||
+    periodRaw === "month" ||
+    periodRaw === "quarter"
       ? periodRaw
       : DEFAULT_PERIOD;
 
@@ -83,7 +90,10 @@ export function parseFilters(params: RawParams): Filters {
 
   return {
     // Short and free of characters that break the search filter.
-    q: one(params.q).trim().slice(0, 50).replace(/[,()%_*\\]/g, ""),
+    q: one(params.q)
+      .trim()
+      .slice(0, 50)
+      .replace(/[,()%_*\\]/g, ""),
     chainId: chain.success ? chain.data : null,
     categories,
     sale: saleRaw === "sale" || saleRaw === "regular" ? saleRaw : "all",
@@ -100,7 +110,9 @@ export function parseFilters(params: RawParams): Filters {
 export function rangeStart(f: Filters, now: Date = new Date()): string | null {
   if (f.from) return `${f.from}T00:00:00+09:00`;
   if (f.to || f.period === "all") return null;
-  return new Date(now.getTime() - PERIOD_DAYS[f.period] * 86_400_000).toISOString();
+  return new Date(
+    now.getTime() - PERIOD_DAYS[f.period] * 86_400_000,
+  ).toISOString();
 }
 
 /** End of the date range (end of that day in Japan), or null. */
@@ -109,7 +121,9 @@ export function rangeEnd(f: Filters): string | null {
 }
 
 export function inPriceRange(price: number, f: Filters): boolean {
-  return (f.min === null || price >= f.min) && (f.max === null || price <= f.max);
+  return (
+    (f.min === null || price >= f.min) && (f.max === null || price <= f.max)
+  );
 }
 
 /** True when the period is not the default (3か月) or dates are typed. */

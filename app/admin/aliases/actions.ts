@@ -23,10 +23,15 @@ const wordSchema = z
   .max(50, "言葉は50文字以内で入力してください");
 
 // Several aliases can be added at once, separated by commas or line breaks.
-export async function addAliases(_prev: State, formData: FormData): Promise<State> {
+export async function addAliases(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
 
-  const word = wordSchema.safeParse(String(formData.get("canonical") ?? "").replace(/\s+/g, " "));
+  const word = wordSchema.safeParse(
+    String(formData.get("canonical") ?? "").replace(/\s+/g, " "),
+  );
   if (!word.success) return { error: word.error.issues[0].message };
 
   const typed = String(formData.get("aliases") ?? "")
@@ -36,12 +41,17 @@ export async function addAliases(_prev: State, formData: FormData): Promise<Stat
 
   const aliases: string[] = [];
   for (const a of typed) {
-    if (a.length > 50) return { error: `別名は50文字以内で入力してください：${a.slice(0, 20)}…` };
+    if (a.length > 50)
+      return {
+        error: `別名は50文字以内で入力してください：${a.slice(0, 20)}…`,
+      };
     if (a.toLowerCase() === word.data.toLowerCase()) continue;
-    if (!aliases.some((x) => x.toLowerCase() === a.toLowerCase())) aliases.push(a);
+    if (!aliases.some((x) => x.toLowerCase() === a.toLowerCase()))
+      aliases.push(a);
   }
   if (aliases.length === 0) return { error: "別名を入力してください" };
-  if (aliases.length > 20) return { error: "一度に追加できる別名は20個までです" };
+  if (aliases.length > 20)
+    return { error: "一度に追加できる別名は20個までです" };
 
   const supabase = await createSupabaseServerClient();
   const { data: existing, error: existingError } = await supabase
@@ -49,12 +59,19 @@ export async function addAliases(_prev: State, formData: FormData): Promise<Stat
     .select("alias")
     .eq("canonical", word.data);
   if (existingError) {
-    console.error("Alias fetch error:", existingError.message, existingError.code);
+    console.error(
+      "Alias fetch error:",
+      existingError.message,
+      existingError.code,
+    );
     return { error: FAILED };
   }
-  const have = new Set(((existing ?? []) as { alias: string }[]).map((r) => r.alias.toLowerCase()));
+  const have = new Set(
+    ((existing ?? []) as { alias: string }[]).map((r) => r.alias.toLowerCase()),
+  );
   const fresh = aliases.filter((a) => !have.has(a.toLowerCase()));
-  if (fresh.length === 0) return { error: "入力した別名はすでに登録されています" };
+  if (fresh.length === 0)
+    return { error: "入力した別名はすでに登録されています" };
   if (have.size + fresh.length > MAX_PER_WORD) {
     return { error: `ひとつの言葉につき別名は${MAX_PER_WORD}個までです` };
   }
@@ -71,9 +88,15 @@ export async function addAliases(_prev: State, formData: FormData): Promise<Stat
   return { error: null, message: `別名を${fresh.length}件追加しました` };
 }
 
-export async function setAliasEnabled(_prev: State, formData: FormData): Promise<State> {
+export async function setAliasEnabled(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
-  const id = z.string().uuid("別名が正しくありません").safeParse(formData.get("id"));
+  const id = z
+    .string()
+    .uuid("別名が正しくありません")
+    .safeParse(formData.get("id"));
   if (!id.success) return { error: id.error.issues[0].message };
   const enabled = formData.get("enabled") === "on";
 
@@ -89,12 +112,21 @@ export async function setAliasEnabled(_prev: State, formData: FormData): Promise
   }
 
   refresh();
-  return { error: null, message: enabled ? "別名を有効にしました" : "別名を無効にしました" };
+  return {
+    error: null,
+    message: enabled ? "別名を有効にしました" : "別名を無効にしました",
+  };
 }
 
-export async function deleteAlias(_prev: State, formData: FormData): Promise<State> {
+export async function deleteAlias(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
-  const id = z.string().uuid("別名が正しくありません").safeParse(formData.get("id"));
+  const id = z
+    .string()
+    .uuid("別名が正しくありません")
+    .safeParse(formData.get("id"));
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();

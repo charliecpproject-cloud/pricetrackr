@@ -8,11 +8,19 @@ import { Field, controlCls } from "@/components/FormParts";
 import CategoryField from "@/components/CategoryField";
 import BrandField from "@/components/BrandField";
 import { updateProduct, updateVariation } from "@/app/products/productActions";
-import { deletePackage, deleteProduct, deleteVariation } from "@/app/products/deleteActions";
+import {
+  deletePackage,
+  deleteProduct,
+  deleteVariation,
+} from "@/app/products/deleteActions";
 import { useProductDialogs } from "@/app/products/ProductDialogs";
 import { packageLabel } from "@/lib/prices/format";
 import ProductBarcodes from "@/app/products/ProductBarcodes";
-import { parseAttributes, variationLabel, type Attribute } from "@/lib/products/variation";
+import {
+  parseAttributes,
+  variationLabel,
+  type Attribute,
+} from "@/lib/products/variation";
 
 type Product = {
   id: string;
@@ -39,7 +47,8 @@ const initial: State = { error: null, message: null };
 // null = the number of price records could not be loaded.
 type Count = number | null;
 
-const countText = (count: Count) => (count === null ? "件数不明" : `${count}件`);
+const countText = (count: Count) =>
+  count === null ? "件数不明" : `${count}件`;
 
 // The line of a delete confirmation that tells what happens to price records.
 function priceLine(count: Count, isAdmin: boolean): string {
@@ -62,13 +71,18 @@ function Messages({ state }: { state: State }) {
   return (
     <>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+      {state.message && (
+        <p className="text-sm text-teal-700">{state.message}</p>
+      )}
     </>
   );
 }
 
 function ProductEditForm({ product }: { product: Product }) {
-  const [state, formAction, pending] = useToastedActionState(updateProduct, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    updateProduct,
+    initial,
+  );
   const main = product.name_ja || product.name_en || "";
   const alias = product.name_ja ? (product.name_en ?? "") : "";
 
@@ -106,7 +120,11 @@ function ProductEditForm({ product }: { product: Product }) {
           defaultValue={product.brand ?? ""}
         />
       </Field>
-      <Field label="カテゴリ" kind="optional" htmlFor={`category-${product.id}`}>
+      <Field
+        label="カテゴリ"
+        kind="optional"
+        htmlFor={`category-${product.id}`}
+      >
         <CategoryField
           id={`category-${product.id}`}
           name="category"
@@ -154,9 +172,14 @@ function VariationDeleteForm({
   priceCount: Count;
   isAdmin: boolean;
 }) {
-  const [state, formAction, pending] = useToastedActionState(deleteVariation, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    deleteVariation,
+    initial,
+  );
   const target =
-    packageCount > 0 ? `このバリエーションと容量${packageCount}件` : "このバリエーション";
+    packageCount > 0
+      ? `このバリエーションと容量${packageCount}件`
+      : "このバリエーション";
   const override = isOverride(priceCount, isAdmin);
 
   return (
@@ -167,7 +190,7 @@ function VariationDeleteForm({
           if (blockedForUser(priceCount, isAdmin)) return;
           if (
             !window.confirm(
-              `${target}を削除しますか？\n${priceLine(priceCount, isAdmin)}\nこの操作は元に戻せません。`
+              `${target}を削除しますか？\n${priceLine(priceCount, isAdmin)}\nこの操作は元に戻せません。`,
             )
           ) {
             e.preventDefault();
@@ -182,7 +205,9 @@ function VariationDeleteForm({
             override ? "font-bold" : "font-medium"
           }`}
         >
-          {override ? "このバリエーションを上書き削除" : "このバリエーションを削除"}
+          {override
+            ? "このバリエーションを上書き削除"
+            : "このバリエーションを削除"}
           （価格の記録 {countText(priceCount)}）
         </button>
       </form>
@@ -204,9 +229,12 @@ function VariationEditForm({
   priceCount: Count;
   isAdmin: boolean;
 }) {
-  const [state, formAction, pending] = useToastedActionState(updateVariation, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    updateVariation,
+    initial,
+  );
   const [rows, setRows] = useState(() =>
-    attributes.map((a, i) => ({ id: i, name: a.name, value: a.value }))
+    attributes.map((a, i) => ({ id: i, name: a.name, value: a.value })),
   );
   const [nextId, setNextId] = useState(attributes.length);
 
@@ -217,7 +245,9 @@ function VariationEditForm({
     <div className="space-y-2 rounded-xl border border-line bg-panel p-3">
       <form action={formAction} className="space-y-3">
         <input type="hidden" name="variation_id" value={id} />
-        <p className="text-sm font-medium text-stone-700">{variationLabel(attributes)}</p>
+        <p className="text-sm font-medium text-stone-700">
+          {variationLabel(attributes)}
+        </p>
         {rows.map((row) => (
           <div key={row.id} className="flex gap-2">
             <input
@@ -242,7 +272,9 @@ function VariationEditForm({
               type="button"
               aria-label="この行を削除"
               disabled={rows.length <= 1}
-              onClick={() => setRows((cur) => cur.filter((r) => r.id !== row.id))}
+              onClick={() =>
+                setRows((cur) => cur.filter((r) => r.id !== row.id))
+              }
               className="h-12 w-12 shrink-0 rounded-xl border border-line text-stone-500 disabled:opacity-40"
             >
               ×
@@ -286,7 +318,10 @@ function PackageRowItem({
   priceCount: Count;
   isAdmin: boolean;
 }) {
-  const [state, formAction, pending] = useToastedActionState(deletePackage, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    deletePackage,
+    initial,
+  );
   const override = isOverride(priceCount, isAdmin);
 
   return (
@@ -294,7 +329,9 @@ function PackageRowItem({
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-sm text-stone-800">{label}</p>
-          <p className="text-xs text-stone-500">価格の記録 {countText(priceCount)}</p>
+          <p className="text-xs text-stone-500">
+            価格の記録 {countText(priceCount)}
+          </p>
         </div>
         <form
           action={formAction}
@@ -302,7 +339,7 @@ function PackageRowItem({
             if (blockedForUser(priceCount, isAdmin)) return;
             if (
               !window.confirm(
-                `この容量（${label}）を削除しますか？\n${priceLine(priceCount, isAdmin)}\nこの操作は元に戻せません。`
+                `この容量（${label}）を削除しますか？\n${priceLine(priceCount, isAdmin)}\nこの操作は元に戻せません。`,
               )
             ) {
               e.preventDefault();
@@ -335,7 +372,10 @@ function ProductDeleteForm({
   name: string;
   priceCount: Count;
 }) {
-  const [state, formAction, pending] = useToastedActionState(deleteProduct, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    deleteProduct,
+    initial,
+  );
   const line =
     priceCount === null
       ? "価格の記録：件数を取得できませんでした"
@@ -354,7 +394,7 @@ function ProductDeleteForm({
         onSubmit={(e) => {
           if (
             !window.confirm(
-              `「${name}」を削除しますか？\n容量・バリエーションも画面に表示されなくなります。\n${line}`
+              `「${name}」を削除しますか？\n容量・バリエーションも画面に表示されなくなります。\n${line}`,
             )
           ) {
             e.preventDefault();
@@ -391,10 +431,17 @@ export default function ProductCardTools({
   const { openAddVariation, openAddPackage } = useProductDialogs();
 
   const variations = (
-    [product.product_variations].flat().filter(Boolean) as { id: string; attributes: unknown }[]
+    [product.product_variations].flat().filter(Boolean) as {
+      id: string;
+      attributes: unknown;
+    }[]
   ).map((v) => ({ id: v.id, attributes: parseAttributes(v.attributes) }));
-  const packages = [product.product_packages].flat().filter(Boolean) as PackageRow[];
-  const variationLabels = new Map(variations.map((v) => [v.id, variationLabel(v.attributes)]));
+  const packages = [product.product_packages]
+    .flat()
+    .filter(Boolean) as PackageRow[];
+  const variationLabels = new Map(
+    variations.map((v) => [v.id, variationLabel(v.attributes)]),
+  );
   const productName = product.name_ja || product.name_en || "この商品";
   const barcodes = [product.product_barcodes].flat().filter(Boolean) as {
     id: string;
@@ -404,24 +451,33 @@ export default function ProductCardTools({
   const packageCount = (pkgId: string): Count =>
     priceCounts === null ? null : (priceCounts[pkgId] ?? 0);
   const sumCount = (list: PackageRow[]): Count =>
-    priceCounts === null ? null : list.reduce((sum, p) => sum + (priceCounts[p.id] ?? 0), 0);
+    priceCounts === null
+      ? null
+      : list.reduce((sum, p) => sum + (priceCounts[p.id] ?? 0), 0);
 
   const dialogProduct = {
     id: product.id,
     name: productName,
-    variations: variations.map((v) => ({ id: v.id, label: variationLabel(v.attributes) })),
+    variations: variations.map((v) => ({
+      id: v.id,
+      label: variationLabel(v.attributes),
+    })),
   };
 
   return (
     <>
       <details className="mt-3 rounded-xl bg-panel-soft p-3">
-        <summary className="cursor-pointer text-sm font-medium text-teal-700">商品を編集</summary>
+        <summary className="cursor-pointer text-sm font-medium text-teal-700">
+          商品を編集
+        </summary>
         <div className="mt-3 space-y-6">
           <ProductEditForm product={product} />
 
           {variations.length > 0 && (
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-stone-800">バリエーションを編集</h4>
+              <h4 className="text-sm font-bold text-stone-800">
+                バリエーションを編集
+              </h4>
               {variations.map((v) => {
                 const own = packages.filter((p) => p.variation_id === v.id);
                 return (
@@ -454,7 +510,9 @@ export default function ProductCardTools({
                     isAdmin={isAdmin}
                     priceCount={packageCount(p.id)}
                     label={[
-                      p.variation_id ? variationLabels.get(p.variation_id) : null,
+                      p.variation_id
+                        ? variationLabels.get(p.variation_id)
+                        : null,
                       packageLabel(p.package_size, p.package_unit),
                     ]
                       .filter(Boolean)
@@ -485,17 +543,29 @@ export default function ProductCardTools({
           />
 
           {isAdmin && (
-            <ProductDeleteForm id={product.id} name={productName} priceCount={sumCount(packages)} />
+            <ProductDeleteForm
+              id={product.id}
+              name={productName}
+              priceCount={sumCount(packages)}
+            />
           )}
         </div>
       </details>
 
       <div className="mt-3 flex gap-2">
-        <button type="button" onClick={() => openAddVariation(dialogProduct)} className={addBtnCls}>
+        <button
+          type="button"
+          onClick={() => openAddVariation(dialogProduct)}
+          className={addBtnCls}
+        >
           <Plus className="h-4 w-4" />
           バリエーションを追加
         </button>
-        <button type="button" onClick={() => openAddPackage(dialogProduct)} className={addBtnCls}>
+        <button
+          type="button"
+          onClick={() => openAddPackage(dialogProduct)}
+          className={addBtnCls}
+        >
           <Plus className="h-4 w-4" />
           容量を追加
         </button>

@@ -16,8 +16,17 @@ describe("similarSearchVariants", () => {
   });
 
   it("tries each word of several words, then the prefixes", () => {
-    expect(similarSearchVariants("明治 ヨーグルド")).toEqual(["明治", "ヨーグルド", "ヨーグ"]);
-    expect(similarSearchVariants("milk chocolat")).toEqual(["milk", "chocolat", "mil", "cho"]);
+    expect(similarSearchVariants("明治 ヨーグルド")).toEqual([
+      "明治",
+      "ヨーグルド",
+      "ヨーグ",
+    ]);
+    expect(similarSearchVariants("milk chocolat")).toEqual([
+      "milk",
+      "chocolat",
+      "mil",
+      "cho",
+    ]);
   });
 
   it("returns at most 6", () => {

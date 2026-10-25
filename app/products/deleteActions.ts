@@ -20,12 +20,17 @@ function readId(formData: FormData, key: string, message: string) {
 }
 
 // Any user: only without price entries. Admin: also with price entries (archived).
-export async function deletePackage(_prev: State, formData: FormData): Promise<State> {
+export async function deletePackage(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   const id = readId(formData, "package_id", "容量が正しくありません");
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("delete_package", { p_id: id.data });
+  const { data, error } = await supabase.rpc("delete_package", {
+    p_id: id.data,
+  });
   if (error) {
     console.error("Package delete error:", error.message, error.code);
     return { error: FAILED };
@@ -39,8 +44,15 @@ export async function deletePackage(_prev: State, formData: FormData): Promise<S
 }
 
 // Same rule for a variation (and its packages).
-export async function deleteVariation(_prev: State, formData: FormData): Promise<State> {
-  const id = readId(formData, "variation_id", "バリエーションが正しくありません");
+export async function deleteVariation(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
+  const id = readId(
+    formData,
+    "variation_id",
+    "バリエーションが正しくありません",
+  );
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();
@@ -52,7 +64,8 @@ export async function deleteVariation(_prev: State, formData: FormData): Promise
     return { error: FAILED };
   }
   if (data === "has_prices") return { error: HAS_PRICES };
-  if (data === "not_found") return { error: "バリエーションが見つかりませんでした" };
+  if (data === "not_found")
+    return { error: "バリエーションが見つかりませんでした" };
   if (data !== "ok" && data !== "archived") return { error: FAILED };
 
   refresh();
@@ -60,12 +73,17 @@ export async function deleteVariation(_prev: State, formData: FormData): Promise
 }
 
 // Admin only. The database function checks the role again.
-export async function deleteProduct(_prev: State, formData: FormData): Promise<State> {
+export async function deleteProduct(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   const id = readId(formData, "id", "商品が正しくありません");
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("delete_product", { p_id: id.data });
+  const { data, error } = await supabase.rpc("delete_product", {
+    p_id: id.data,
+  });
   if (error) {
     console.error("Product delete error:", error.message, error.code);
     return { error: FAILED };

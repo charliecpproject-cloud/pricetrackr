@@ -7,7 +7,7 @@ const chain = (
   name: string,
   category: StoreCategory | null,
   entries: number,
-  createdAt = "2026-01-01T00:00:00Z"
+  createdAt = "2026-01-01T00:00:00Z",
 ) => ({ id, name, category, entries, createdAt });
 
 describe("arrangeChains", () => {
@@ -30,7 +30,7 @@ describe("arrangeChains", () => {
         chain("C", "c", "drugstore", 30),
         chain("D", "d", null, 100),
       ],
-      3
+      3,
     );
     expect(topIds).toEqual(["D", "C", "B"]);
   });
@@ -42,7 +42,7 @@ describe("arrangeChains", () => {
         chain("y", "new", null, 0, "2026-09-01T00:00:00Z"),
         chain("z", "used", null, 2),
       ],
-      3
+      3,
     );
     expect(topIds).toEqual(["z", "y", "x"]);
   });

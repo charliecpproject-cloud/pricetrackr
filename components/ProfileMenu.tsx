@@ -56,7 +56,12 @@ export default function ProfileMenu({
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="メニュー">
+        <div
+          className="fixed inset-0 z-[60]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="メニュー"
+        >
           <button
             type="button"
             aria-label="閉じる"
@@ -88,24 +93,40 @@ export default function ProfileMenu({
                 </>
               ) : (
                 <>
-                  <span className="font-bold text-stone-800">デモモード（閲覧のみ）</span>
-                  <span className="mt-1 block">ログインすると価格を記録できます。</span>
+                  <span className="font-bold text-stone-800">
+                    デモモード（閲覧のみ）
+                  </span>
+                  <span className="mt-1 block">
+                    ログインすると価格を記録できます。
+                  </span>
                 </>
               )}
             </div>
 
-            <Link href="/stores" onClick={() => setOpen(false)} className={itemCls}>
+            <Link
+              href="/stores"
+              onClick={() => setOpen(false)}
+              className={itemCls}
+            >
               <Store className="h-5 w-5 text-stone-500" />
               店舗
             </Link>
 
             {loggedIn ? (
               <>
-                <Link href="/settings" onClick={() => setOpen(false)} className={itemCls}>
+                <Link
+                  href="/settings"
+                  onClick={() => setOpen(false)}
+                  className={itemCls}
+                >
                   <Settings className="h-5 w-5 text-stone-500" />
                   設定
                 </Link>
-                <button type="button" onClick={handleLogout} className={itemCls}>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className={itemCls}
+                >
                   <LogOut className="h-5 w-5 text-stone-500" />
                   ログアウト
                 </button>

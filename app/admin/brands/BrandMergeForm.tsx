@@ -15,7 +15,10 @@ export default function BrandMergeForm({
 }: {
   brands: { name: string; count: number }[];
 }) {
-  const [state, formAction, pending] = useToastedActionState(mergeBrands, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    mergeBrands,
+    initialState,
+  );
 
   return (
     <form
@@ -24,7 +27,7 @@ export default function BrandMergeForm({
         const data = new FormData(e.currentTarget);
         if (
           !window.confirm(
-            `「${data.get("from")}」の商品を「${data.get("to")}」にまとめますか？\n元の名前は別名として残ります。`
+            `「${data.get("from")}」の商品を「${data.get("to")}」にまとめますか？\n元の名前は別名として残ります。`,
           )
         ) {
           e.preventDefault();
@@ -42,7 +45,13 @@ export default function BrandMergeForm({
         <label htmlFor="merge_from" className={labelCls}>
           まとめるブランド（この名前をやめる） <Badge kind="required" />
         </label>
-        <select id="merge_from" name="from" required defaultValue="" className={controlCls}>
+        <select
+          id="merge_from"
+          name="from"
+          required
+          defaultValue=""
+          className={controlCls}
+        >
           <option value="">選んでください</option>
           {brands.map((b) => (
             <option key={b.name} value={b.name}>

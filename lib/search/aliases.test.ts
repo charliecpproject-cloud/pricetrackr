@@ -8,7 +8,10 @@ const aliases = [
 
 describe("expandQuery", () => {
   it("adds the word of an alias", () => {
-    expect(expandQuery("baby food", aliases)).toEqual(["baby food", "ベビーフード"]);
+    expect(expandQuery("baby food", aliases)).toEqual([
+      "baby food",
+      "ベビーフード",
+    ]);
   });
 
   it("keeps the other words and ignores case, width and kana", () => {
@@ -25,8 +28,14 @@ describe("expandQuery", () => {
 
 describe("matchesSearchWithAliases", () => {
   it("finds the word through an alias and still finds the alias text itself", () => {
-    expect(matchesSearchWithAliases("ベビーフード りんご", "baby food", aliases)).toBe(true);
-    expect(matchesSearchWithAliases("Baby spoon", "baby food", aliases)).toBe(false);
-    expect(matchesSearchWithAliases("baby food puree", "baby food", aliases)).toBe(true);
+    expect(
+      matchesSearchWithAliases("ベビーフード りんご", "baby food", aliases),
+    ).toBe(true);
+    expect(matchesSearchWithAliases("Baby spoon", "baby food", aliases)).toBe(
+      false,
+    );
+    expect(
+      matchesSearchWithAliases("baby food puree", "baby food", aliases),
+    ).toBe(true);
   });
 });

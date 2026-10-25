@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { Field, controlCls } from "@/components/FormParts";
 import ProductFields from "@/components/ProductFields";
-import { unitDropdownOptions, type CounterUnitOption } from "@/lib/prices/unitWords";
+import {
+  unitDropdownOptions,
+  type CounterUnitOption,
+} from "@/lib/prices/unitWords";
 
 export type ProductOption = {
   id: string;
   label: string;
   variations: { id: string; label: string }[];
 };
-
 
 // controlCls is full width; the unit dropdown must stay small.
 const unitCls = controlCls.replace("w-full", "w-24 shrink-0");

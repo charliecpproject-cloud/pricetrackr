@@ -15,7 +15,7 @@ const SAVE_FAILED = "保存できませんでした。もう一度お試しく�
 
 export async function updateProductMemo(
   _prevState: State,
-  formData: FormData
+  formData: FormData,
 ): Promise<State> {
   const parsed = schema.safeParse({
     product_id: formData.get("product_id") ?? "",

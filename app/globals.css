@@ -138,8 +138,14 @@
   --ring: #0d9488;
   --radius: 0.875rem;
 }
-html { color-scheme: light; }
-body { font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif; }
+html {
+  color-scheme: light;
+}
+body {
+  font-family:
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic",
+    Meiryo, system-ui, sans-serif;
+}
 
 /* Theme-able panel colours. Defaults equal the old stone/white values. */
 @theme inline {

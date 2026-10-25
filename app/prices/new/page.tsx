@@ -19,7 +19,11 @@ export default async function NewPricePage({
 }: {
   searchParams: Promise<{ product?: string; package?: string; chain?: string }>;
 }) {
-  const { product: productParam, package: packageParam, chain: chainParam } = await searchParams;
+  const {
+    product: productParam,
+    package: packageParam,
+    chain: chainParam,
+  } = await searchParams;
   // A product chosen by a barcode scan (must be a valid id).
   const parsedProductId = z.string().uuid().safeParse(productParam);
   const focusProductId = parsedProductId.success ? parsedProductId.data : null;
@@ -29,20 +33,39 @@ export default async function NewPricePage({
   // Everything the page needs is fetched at the same time. The chain usage needs to know
   // whether anyone is logged in, so it starts as soon as the login check is done.
   const viewerPromise = getViewer();
-  const usagePromise = viewerPromise.then((v) => getChainUsage(supabase, v.loggedIn));
-  const [productsResult, chainsResult, shopsResult, aliasesResult, viewer, counterUnits, recentResult, usage] = await Promise.all([
+  const usagePromise = viewerPromise.then((v) =>
+    getChainUsage(supabase, v.loggedIn),
+  );
+  const [
+    productsResult,
+    chainsResult,
+    shopsResult,
+    aliasesResult,
+    viewer,
+    counterUnits,
+    recentResult,
+    usage,
+  ] = await Promise.all([
     supabase
       .from("products")
       .select(
-        "id, name_en, name_ja, brand, category, tax_rate, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code)"
+        "id, name_en, name_ja, brand, category, tax_rate, product_variations (id, attributes), product_packages (id, variation_id, package_size, package_unit), product_barcodes (code)",
       )
       .order("name_en", { ascending: true }),
     supabase
       .from("store_chains")
-      .select("id, name, category, created_at, member_discount_percent, has_bonus_points, bulk_enabled")
+      .select(
+        "id, name, category, created_at, member_discount_percent, has_bonus_points, bulk_enabled",
+      )
       .order("name", { ascending: true }),
-    supabase.from("shops").select("id, store_chain_id, name").order("name", { ascending: true }),
-    supabase.from("search_aliases").select("alias, canonical").eq("enabled", true),
+    supabase
+      .from("shops")
+      .select("id, store_chain_id, name")
+      .order("name", { ascending: true }),
+    supabase
+      .from("search_aliases")
+      .select("alias, canonical")
+      .eq("enabled", true),
     viewerPromise,
     loadCounterUnits(supabase),
     supabase
@@ -60,16 +83,32 @@ export default async function NewPricePage({
 
   // The 10 packages priced most recently (newest first), for the product picker.
   const recentIds: string[] = [];
-  for (const row of (recentResult.data ?? []) as { product_package_id: string }[]) {
-    if (!recentIds.includes(row.product_package_id)) recentIds.push(row.product_package_id);
+  for (const row of (recentResult.data ?? []) as {
+    product_package_id: string;
+  }[]) {
+    if (!recentIds.includes(row.product_package_id))
+      recentIds.push(row.product_package_id);
     if (recentIds.length >= 10) break;
   }
 
-  if (productsError) console.error("Products fetch error:", productsError.message, productsError.code);
-  if (chainsError) console.error("Chains fetch error:", chainsError.message, chainsError.code);
-  if (shopsError) console.error("Shops fetch error:", shopsError.message, shopsError.code);
+  if (productsError)
+    console.error(
+      "Products fetch error:",
+      productsError.message,
+      productsError.code,
+    );
+  if (chainsError)
+    console.error("Chains fetch error:", chainsError.message, chainsError.code);
+  if (shopsError)
+    console.error("Shops fetch error:", shopsError.message, shopsError.code);
 
-  const packages: { id: string; productId: string; label: string; search: string; taxRate: number | null }[] = [];
+  const packages: {
+    id: string;
+    productId: string;
+    label: string;
+    search: string;
+    taxRate: number | null;
+  }[] = [];
   const productOptions: {
     id: string;
     label: string;
@@ -79,19 +118,34 @@ export default async function NewPricePage({
   for (const product of (products ?? []) as any[]) {
     const productName = product.name_ja || product.name_en || "名称未設定";
     const title = `${productName}${product.brand ? `（${product.brand}）` : ""}`;
-    const variations = ([product.product_variations].flat().filter(Boolean) as any[]).map(
-      (v) => ({ id: v.id as string, label: variationLabel(parseAttributes(v.attributes)) })
-    );
-    const productPackages = [product.product_packages].flat().filter(Boolean) as any[];
-    const barcodeText = ([product.product_barcodes].flat().filter(Boolean) as any[])
+    const variations = (
+      [product.product_variations].flat().filter(Boolean) as any[]
+    ).map((v) => ({
+      id: v.id as string,
+      label: variationLabel(parseAttributes(v.attributes)),
+    }));
+    const productPackages = [product.product_packages]
+      .flat()
+      .filter(Boolean) as any[];
+    const barcodeText = (
+      [product.product_barcodes].flat().filter(Boolean) as any[]
+    )
       .map((b) => b.code as string)
       .join(" ");
 
-    const taxRate: number | null = product.tax_rate == null ? null : Number(product.tax_rate);
+    const taxRate: number | null =
+      product.tax_rate == null ? null : Number(product.tax_rate);
     productOptions.push({ id: product.id as string, label: title, variations });
 
     const searchText = (variationText?: string) =>
-      [product.name_ja, product.name_en, product.brand, product.category, variationText, barcodeText]
+      [
+        product.name_ja,
+        product.name_en,
+        product.brand,
+        product.category,
+        variationText,
+        barcodeText,
+      ]
         .filter(Boolean)
         .join(" ");
 
@@ -100,7 +154,11 @@ export default async function NewPricePage({
       packages.push({
         id: pkg.id as string,
         productId: product.id as string,
-        label: [title, variation?.label, packageLabel(pkg.package_size, pkg.package_unit)]
+        label: [
+          title,
+          variation?.label,
+          packageLabel(pkg.package_size, pkg.package_unit),
+        ]
           .filter(Boolean)
           .join(" — "),
         search: searchText(variation?.label),
@@ -113,17 +171,29 @@ export default async function NewPricePage({
     const withoutPackage =
       variations.length === 0
         ? productPackages.length === 0
-          ? [{ variationId: null as string | null, label: undefined as string | undefined }]
+          ? [
+              {
+                variationId: null as string | null,
+                label: undefined as string | undefined,
+              },
+            ]
           : []
         : variations
-            .filter((v) => !productPackages.some((p) => p.variation_id === v.id))
-            .map((v) => ({ variationId: v.id as string | null, label: v.label as string | undefined }));
+            .filter(
+              (v) => !productPackages.some((p) => p.variation_id === v.id),
+            )
+            .map((v) => ({
+              variationId: v.id as string | null,
+              label: v.label as string | undefined,
+            }));
 
     for (const target of withoutPackage) {
       packages.push({
         id: `default:${product.id}:${target.variationId ?? "-"}`,
         productId: product.id as string,
-        label: [title, target.label, packageLabel(1, "count")].filter(Boolean).join(" — "),
+        label: [title, target.label, packageLabel(1, "count")]
+          .filter(Boolean)
+          .join(" — "),
         search: searchText(target.label),
         taxRate,
       });
@@ -144,7 +214,8 @@ export default async function NewPricePage({
       ? wantedPackageId
       : focusProduct && listedPackages.length === 1
         ? listedPackages[0].id
-        : "";  const startNew = !!focusProduct && listedPackages.length === 0;
+        : "";
+  const startNew = !!focusProduct && listedPackages.length === 0;
 
   const readOnly = !viewer.loggedIn;
 
@@ -157,10 +228,12 @@ export default async function NewPricePage({
       createdAt: chain.created_at as string,
       memberPercent: (chain.member_discount_percent ?? null) as number | null,
       hasBonusPoints: !!chain.has_bonus_points,
-    }))
+    })),
   );
   const topSet = new Set(topIds);
-  const bulkById = new Map(((chains ?? []) as any[]).map((c) => [c.id as string, !!c.bulk_enabled]));
+  const bulkById = new Map(
+    ((chains ?? []) as any[]).map((c) => [c.id as string, !!c.bulk_enabled]),
+  );
   const chainOptions = sorted.map((c) => ({
     id: c.id,
     name: c.name,
@@ -178,9 +251,13 @@ export default async function NewPricePage({
       : "";
 
   // Last-used chain: the chain of the newest price entry (logged-in users only).
-  const lastRow = ((recentResult.data ?? []) as { store_chain_id: string | null }[])[0];
+  const lastRow = (
+    (recentResult.data ?? []) as { store_chain_id: string | null }[]
+  )[0];
   const lastChainId =
-    !readOnly && lastRow?.store_chain_id && chainOptions.some((c) => c.id === lastRow.store_chain_id)
+    !readOnly &&
+    lastRow?.store_chain_id &&
+    chainOptions.some((c) => c.id === lastRow.store_chain_id)
       ? lastRow.store_chain_id
       : "";
   // A chain in the link (?chain=) wins over the last-used chain.
@@ -209,7 +286,8 @@ export default async function NewPricePage({
       {focusProduct && (
         <div className="flex items-center justify-between gap-3 rounded-xl bg-teal-50 px-3 py-2 text-sm text-teal-700">
           <span className="min-w-0">
-            バーコードで選んだ商品：<span className="font-bold">{focusProduct.label}</span>
+            バーコードで選んだ商品：
+            <span className="font-bold">{focusProduct.label}</span>
           </span>
           <Link href="/prices/new" className="shrink-0 font-medium underline">
             解除

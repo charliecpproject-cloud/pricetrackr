@@ -1,13 +1,24 @@
 "use client";
 import { useToastedActionState } from "@/lib/toast/useToastedActionState";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
 import { addVariation } from "@/app/products/variationActions";
 import { addPackage } from "@/app/products/actions";
-import { unitDropdownOptions, type CounterUnitOption } from "@/lib/prices/unitWords";
+import {
+  unitDropdownOptions,
+  type CounterUnitOption,
+} from "@/lib/prices/unitWords";
 
 export type DialogProduct = {
   id: string;
@@ -26,10 +37,12 @@ const Ctx = createContext<Api | null>(null);
 
 export function useProductDialogs(): Api {
   const api = useContext(Ctx);
-  if (!api) throw new Error("useProductDialogs must be used inside ProductDialogsProvider");
+  if (!api)
+    throw new Error(
+      "useProductDialogs must be used inside ProductDialogsProvider",
+    );
   return api;
 }
-
 
 // controlCls is full width; the unit dropdown must stay small.
 const unitCls = controlCls.replace("w-full", "w-24 shrink-0");
@@ -48,10 +61,10 @@ function AddPackageForm({
   counterUnits: CounterUnitOption[];
   onDone: () => void;
 }) {
-  const [state, formAction, pending] = useToastedActionState<PackageState, FormData>(
-    addPackage,
-    packageInitial
-  );
+  const [state, formAction, pending] = useToastedActionState<
+    PackageState,
+    FormData
+  >(addPackage, packageInitial);
 
   // A new state object without an error means the package was added.
   useEffect(() => {
@@ -112,7 +125,11 @@ function AddPackageForm({
       </Field>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      <Button type="submit" disabled={pending} className="h-12 w-full text-base">
+      <Button
+        type="submit"
+        disabled={pending}
+        className="h-12 w-full text-base"
+      >
         {pending ? "追加中…" : "追加"}
       </Button>
     </form>
@@ -128,7 +145,10 @@ function AddVariationForm({
   attributeNames: string[];
   onDone: () => void;
 }) {
-  const [state, formAction, pending] = useToastedActionState(addVariation, variationInitial);
+  const [state, formAction, pending] = useToastedActionState(
+    addVariation,
+    variationInitial,
+  );
   const [rows, setRows] = useState([{ id: 0, name: "", value: "" }]);
   const [nextId, setNextId] = useState(1);
 
@@ -193,7 +213,11 @@ function AddVariationForm({
       </button>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      <Button type="submit" disabled={pending} className="h-12 w-full text-base">
+      <Button
+        type="submit"
+        disabled={pending}
+        className="h-12 w-full text-base"
+      >
         {pending ? "追加中…" : "追加"}
       </Button>
     </form>
@@ -217,7 +241,7 @@ export function ProductDialogsProvider({
       openAddVariation: (product) => setDialog({ kind: "variation", product }),
       openAddPackage: (product) => setDialog({ kind: "package", product }),
     }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -229,7 +253,8 @@ export function ProductDialogsProvider({
     return () => window.removeEventListener("keydown", onKey);
   }, [dialog, close]);
 
-  const title = dialog?.kind === "package" ? "容量を追加" : "バリエーションを追加";
+  const title =
+    dialog?.kind === "package" ? "容量を追加" : "バリエーションを追加";
 
   return (
     <Ctx.Provider value={api}>

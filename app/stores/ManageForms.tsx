@@ -18,7 +18,9 @@ function Messages({ state }: { state: State }) {
   return (
     <>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+      {state.message && (
+        <p className="text-sm text-teal-700">{state.message}</p>
+      )}
     </>
   );
 }
@@ -28,14 +30,23 @@ export function ChainEditor({
 }: {
   chain: { id: string; name: string; category: string | null };
 }) {
-  const [state, formAction, pending] = useToastedActionState(updateStoreChain, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    updateStoreChain,
+    initial,
+  );
 
   return (
     <div className="rounded-xl bg-panel-soft p-3">
-      <p className="text-sm font-bold text-stone-800">チェーンの名前・カテゴリ</p>
+      <p className="text-sm font-bold text-stone-800">
+        チェーンの名前・カテゴリ
+      </p>
       <form action={formAction} className="mt-3 space-y-4">
         <input type="hidden" name="id" value={chain.id} />
-        <Field label="チェーン名" kind="required" htmlFor={`chain-name-${chain.id}`}>
+        <Field
+          label="チェーン名"
+          kind="required"
+          htmlFor={`chain-name-${chain.id}`}
+        >
           <input
             id={`chain-name-${chain.id}`}
             name="name"
@@ -45,7 +56,11 @@ export function ChainEditor({
             className={controlCls}
           />
         </Field>
-        <Field label="カテゴリ" kind="optional" htmlFor={`chain-category-${chain.id}`}>
+        <Field
+          label="カテゴリ"
+          kind="optional"
+          htmlFor={`chain-category-${chain.id}`}
+        >
           <select
             id={`chain-category-${chain.id}`}
             name="category"
@@ -69,16 +84,30 @@ export function ChainEditor({
   );
 }
 
-export function ChainDeleteButton({ id, shopCount }: { id: string; shopCount: number }) {
-  const [state, formAction, pending] = useToastedActionState(deleteStoreChain, initial);
+export function ChainDeleteButton({
+  id,
+  shopCount,
+}: {
+  id: string;
+  shopCount: number;
+}) {
+  const [state, formAction, pending] = useToastedActionState(
+    deleteStoreChain,
+    initial,
+  );
 
   return (
     <div>
       <form
         action={formAction}
         onSubmit={(e) => {
-          const extra = shopCount > 0 ? `登録されている支店${shopCount}件も` : "";
-          if (!window.confirm(`このチェーンと${extra}削除しますか？この操作は元に戻せません。`)) {
+          const extra =
+            shopCount > 0 ? `登録されている支店${shopCount}件も` : "";
+          if (
+            !window.confirm(
+              `このチェーンと${extra}削除しますか？この操作は元に戻せません。`,
+            )
+          ) {
             e.preventDefault();
           }
         }}
@@ -100,10 +129,21 @@ export function ChainDeleteButton({ id, shopCount }: { id: string; shopCount: nu
 export function ShopRow({
   shop,
 }: {
-  shop: { id: string; name: string; region: string | null; address: string | null };
+  shop: {
+    id: string;
+    name: string;
+    region: string | null;
+    address: string | null;
+  };
 }) {
-  const [saveState, saveAction, saving] = useToastedActionState(updateShop, initial);
-  const [deleteState, deleteAction, deleting] = useToastedActionState(deleteShop, initial);
+  const [saveState, saveAction, saving] = useToastedActionState(
+    updateShop,
+    initial,
+  );
+  const [deleteState, deleteAction, deleting] = useToastedActionState(
+    deleteShop,
+    initial,
+  );
 
   return (
     <li className="rounded-xl border border-line p-3">
@@ -146,7 +186,11 @@ export function ShopRow({
       <form
         action={deleteAction}
         onSubmit={(e) => {
-          if (!window.confirm("この支店を削除しますか？この操作は元に戻せません。")) {
+          if (
+            !window.confirm(
+              "この支店を削除しますか？この操作は元に戻せません。",
+            )
+          ) {
             e.preventDefault();
           }
         }}

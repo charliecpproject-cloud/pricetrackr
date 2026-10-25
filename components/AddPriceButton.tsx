@@ -19,7 +19,10 @@ export default function AddPriceButton({
 
   if (disabled) {
     return (
-      <span aria-disabled="true" className={`${base} border-line bg-chip text-stone-400`}>
+      <span
+        aria-disabled="true"
+        className={`${base} border-line bg-chip text-stone-400`}
+      >
         <PlusCircle className="h-4 w-4" aria-hidden="true" />
         価格を追加
       </span>

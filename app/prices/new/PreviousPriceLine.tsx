@@ -25,18 +25,28 @@ function Line({
   return (
     <p className="text-sm text-stone-600">
       <span className="font-medium">{label}</span>{" "}
-      <span className="font-bold tabular-nums text-stone-900">{formatYen(prev.price)}</span>
-      {showChain && prev.chainName ? ` ${prev.chainName}` : ""} {formatDate(prev.observedAt)}
+      <span className="font-bold tabular-nums text-stone-900">
+        {formatYen(prev.price)}
+      </span>
+      {showChain && prev.chainName ? ` ${prev.chainName}` : ""}{" "}
+      {formatDate(prev.observedAt)}
       {change.kind === "up" && (
-        <span className="ml-2 font-bold tabular-nums text-rose-600">▲ +{change.percent}%</span>
+        <span className="ml-2 font-bold tabular-nums text-rose-600">
+          ▲ +{change.percent}%
+        </span>
       )}
       {change.kind === "down" && (
-        <span className="ml-2 font-bold tabular-nums text-teal-700">▼ -{change.percent}%</span>
+        <span className="ml-2 font-bold tabular-nums text-teal-700">
+          ▼ -{change.percent}%
+        </span>
       )}
-      {change.kind === "same" && <span className="ml-2 text-stone-500">同じ価格</span>}
+      {change.kind === "same" && (
+        <span className="ml-2 text-stone-500">同じ価格</span>
+      )}
       {change.kind === "mismatch" && (
         <span className="ml-2 text-xs text-stone-500">
-          税の扱いが違うため比較できません（前回は{TAX_BADGE_LABEL[prev.taxBasis]}）
+          税の扱いが違うため比較できません（前回は
+          {TAX_BADGE_LABEL[prev.taxBasis]}）
         </span>
       )}
     </p>
@@ -68,13 +78,30 @@ export default function PreviousPriceLine({
   const showSecond = !!atChain && atChain.chainId !== latest.chainId;
 
   return (
-    <div aria-live="polite" className="space-y-0.5 rounded-xl bg-panel-soft px-3 py-2">
-      <Line label="前回" prev={latest} current={current} basis={basis} showChain />
+    <div
+      aria-live="polite"
+      className="space-y-0.5 rounded-xl bg-panel-soft px-3 py-2"
+    >
+      <Line
+        label="前回"
+        prev={latest}
+        current={current}
+        basis={basis}
+        showChain
+      />
       {showSecond && atChain && (
-        <Line label="同じチェーンの前回" prev={atChain} current={current} basis={basis} showChain={false} />
+        <Line
+          label="同じチェーンの前回"
+          prev={atChain}
+          current={current}
+          basis={basis}
+          showChain={false}
+        />
       )}
       {chainId && !atChain && (
-        <p className="text-xs text-stone-500">このチェーンの価格はまだありません</p>
+        <p className="text-xs text-stone-500">
+          このチェーンの価格はまだありません
+        </p>
       )}
     </div>
   );

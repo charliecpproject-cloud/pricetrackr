@@ -18,7 +18,10 @@ export default function AliasRow({
   enabled: boolean;
 }) {
   const [, toggleAction] = useToastedActionState(setAliasEnabled, initialState);
-  const [, deleteFormAction, deleting] = useToastedActionState(deleteAlias, initialState);
+  const [, deleteFormAction, deleting] = useToastedActionState(
+    deleteAlias,
+    initialState,
+  );
 
   return (
     <li className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel px-3 py-2">
@@ -38,7 +41,8 @@ export default function AliasRow({
       <form
         action={deleteFormAction}
         onSubmit={(e) => {
-          if (!window.confirm(`別名「${alias}」を削除しますか？`)) e.preventDefault();
+          if (!window.confirm(`別名「${alias}」を削除しますか？`))
+            e.preventDefault();
         }}
       >
         <input type="hidden" name="id" value={id} />

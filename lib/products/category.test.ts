@@ -26,14 +26,24 @@ describe("suggestCategories", () => {
   });
 
   it("returns at most 10", () => {
-    const many = Array.from({ length: 15 }, (_, i) => ({ name: `飲${i}`, count: i }));
+    const many = Array.from({ length: 15 }, (_, i) => ({
+      name: `飲${i}`,
+      count: i,
+    }));
     expect(suggestCategories("飲", many)).toHaveLength(10);
   });
 });
 
 describe("countCategories", () => {
   it("groups the same category and ignores empty values", () => {
-    const result = countCategories(["パン", "パン", " パン ", null, "", "飲料"]);
+    const result = countCategories([
+      "パン",
+      "パン",
+      " パン ",
+      null,
+      "",
+      "飲料",
+    ]);
     expect(result).toContainEqual({ name: "パン", count: 3 });
     expect(result).toContainEqual({ name: "飲料", count: 1 });
     expect(result).toHaveLength(2);

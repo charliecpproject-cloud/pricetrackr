@@ -40,7 +40,9 @@ export default function FavoriteButton({
       aria-pressed={favorite}
       aria-label={label}
       title={
-        !favorite && level === "related" ? "同じバリエーションの別の容量がお気に入りです" : label
+        !favorite && level === "related"
+          ? "同じバリエーションの別の容量がお気に入りです"
+          : label
       }
       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition active:scale-90 ${tone}`}
     >

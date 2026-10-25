@@ -15,7 +15,9 @@ const FAILED = "統合できませんでした。もう一度お試しくださ�
 const idSchema = z.string().uuid();
 
 // Products matching the typed text (the same search as 価格確認), for the two pickers.
-export async function searchMergeProducts(term: string): Promise<MergeProduct[]> {
+export async function searchMergeProducts(
+  term: string,
+): Promise<MergeProduct[]> {
   if (!(await getViewer()).isAdmin) return [];
   const text = typeof term === "string" ? term.trim().slice(0, 100) : "";
   if (text === "") return [];
@@ -50,12 +52,13 @@ export async function searchMergeProducts(term: string): Promise<MergeProduct[]>
 // What a merge would do (nothing is changed here).
 export async function loadMergePreview(
   loserId: string,
-  winnerId: string
+  winnerId: string,
 ): Promise<MergePreview | null> {
   if (!(await getViewer()).isAdmin) return null;
   const loser = idSchema.safeParse(loserId);
   const winner = idSchema.safeParse(winnerId);
-  if (!loser.success || !winner.success || loser.data === winner.data) return null;
+  if (!loser.success || !winner.success || loser.data === winner.data)
+    return null;
 
   const supabase = await createSupabaseServerClient();
 
@@ -78,12 +81,18 @@ export async function loadMergePreview(
   ]);
   if (pkgResult.error || loserCodes === null || winnerCodes === null) {
     if (pkgResult.error) {
-      console.error("Package fetch error:", pkgResult.error.message, pkgResult.error.code);
+      console.error(
+        "Package fetch error:",
+        pkgResult.error.message,
+        pkgResult.error.code,
+      );
     }
     return null;
   }
 
-  const packageIds = ((pkgResult.data ?? []) as { id: string }[]).map((p) => p.id);
+  const packageIds = ((pkgResult.data ?? []) as { id: string }[]).map(
+    (p) => p.id,
+  );
   let entries = 0;
   if (packageIds.length > 0) {
     const { count, error } = await supabase
@@ -97,7 +106,10 @@ export async function loadMergePreview(
     entries = count ?? 0;
   }
 
-  const moved = Math.min(loserCodes, Math.max(0, MAX_BARCODES_PER_PRODUCT - winnerCodes));
+  const moved = Math.min(
+    loserCodes,
+    Math.max(0, MAX_BARCODES_PER_PRODUCT - winnerCodes),
+  );
   return {
     loserPackages: packageIds.length,
     loserEntries: entries,
@@ -108,7 +120,10 @@ export async function loadMergePreview(
   };
 }
 
-export async function mergeProducts(_prev: State, formData: FormData): Promise<State> {
+export async function mergeProducts(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
 
   const loser = idSchema.safeParse(formData.get("loser_id"));

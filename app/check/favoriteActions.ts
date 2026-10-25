@@ -8,7 +8,10 @@ import { getViewer } from "@/lib/auth/viewer";
 type Result = { error: string | null };
 
 // Adds or removes a favorite for the logged-in account. RLS makes sure only its own rows change.
-export async function setFavorite(packageId: string, favorite: boolean): Promise<Result> {
+export async function setFavorite(
+  packageId: string,
+  favorite: boolean,
+): Promise<Result> {
   const id = z.string().uuid().safeParse(packageId);
   if (!id.success) return { error: "容量が正しくありません" };
   if (!(await getViewer()).loggedIn) return { error: "ログインしてください" };
@@ -16,7 +19,9 @@ export async function setFavorite(packageId: string, favorite: boolean): Promise
   const supabase = await createSupabaseServerClient();
 
   if (favorite) {
-    const { error } = await supabase.from("favorite_packages").insert({ package_id: id.data });
+    const { error } = await supabase
+      .from("favorite_packages")
+      .insert({ package_id: id.data });
     // 23505: already a favorite, which is what was asked for.
     if (error && error.code !== "23505") {
       console.error("Favorite insert error:", error.message, error.code);

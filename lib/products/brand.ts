@@ -9,7 +9,7 @@ export function suggestBrands(
   term: string,
   brands: CategoryCount[],
   aliases: BrandAlias[],
-  limit = 10
+  limit = 10,
 ): CategoryCount[] {
   const t = normalize(term);
   const base = suggestCategories(term, brands, limit);
@@ -40,7 +40,7 @@ export function suggestBrands(
 export function resolveBrand(
   input: string,
   brands: CategoryCount[],
-  aliases: BrandAlias[]
+  aliases: BrandAlias[],
 ): string {
   const text = input.replace(/\s+/g, " ").trim();
   if (text === "") return "";

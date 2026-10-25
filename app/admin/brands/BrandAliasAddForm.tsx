@@ -10,7 +10,10 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function BrandAliasAddForm({ brand }: { brand: string }) {
-  const [state, formAction, pending] = useToastedActionState(addBrandAliases, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    addBrandAliases,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="mt-3 space-y-2">

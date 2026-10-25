@@ -7,7 +7,7 @@ function item(
   variationLabel: string | null,
   sizeValue: number,
   unit: string,
-  favorite = "none"
+  favorite = "none",
 ) {
   return { id, variationId, variationLabel, sizeValue, unit, favorite };
 }
@@ -40,7 +40,11 @@ describe("groupByVariation", () => {
       item("d", "v1", "hot", 1, "L"),
     ]);
     expect(groups.map((g) => g.key)).toEqual(["v1", "v2", "none"]);
-    expect(groups.map((g) => g.label)).toEqual(["hot", "ice", "バリエーションなし"]);
+    expect(groups.map((g) => g.label)).toEqual([
+      "hot",
+      "ice",
+      "バリエーションなし",
+    ]);
     expect(groups[0].items.map((i) => i.id)).toEqual(["c", "d"]);
   });
 

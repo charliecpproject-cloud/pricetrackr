@@ -10,7 +10,12 @@ import { TAX_BASES } from "@/lib/prices/tax";
 import { parseBarcodes } from "@/lib/products/barcode";
 import { loadAllowedUnits } from "@/lib/prices/counterUnits";
 import { MAX_UNIT_LENGTH } from "@/lib/prices/unitWords";
-import { BULK_MAX_TIERS, bulkTiersToJson, parseBulkTiers, type BulkTier } from "@/lib/prices/bulk";
+import {
+  BULK_MAX_TIERS,
+  bulkTiersToJson,
+  parseBulkTiers,
+  type BulkTier,
+} from "@/lib/prices/bulk";
 
 type State = {
   error: string | null;
@@ -31,18 +36,42 @@ const baseSchema = z.object({
     .trim()
     .max(100, "支店名は100文字以内で入力してください")
     .nullable(),
-  notes: z.string().trim().max(200, "メモは200文字以内で入力してください").nullable(),
+  notes: z
+    .string()
+    .trim()
+    .max(200, "メモは200文字以内で入力してください")
+    .nullable(),
 });
 
 const newPackageSchema = z.object({
   product_id: z.string().uuid("商品が正しくありません").nullable(),
   variation_id: z.string().uuid("バリエーションが正しくありません").nullable(),
-  name: z.string().trim().max(100, "商品名は100文字以内で入力してください").nullable(),
-  
-  brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください").nullable(),
-  other_name: z.string().trim().max(100, "英語名・別名は100文字以内で入力してください").nullable(),
-  category: z.string().trim().max(100, "カテゴリは100文字以内で入力してください").nullable(),
-  memo: z.string().trim().max(1000, "メモは1000文字以内で入力してください").nullable(),
+  name: z
+    .string()
+    .trim()
+    .max(100, "商品名は100文字以内で入力してください")
+    .nullable(),
+
+  brand: z
+    .string()
+    .trim()
+    .max(100, "ブランドは100文字以内で入力してください")
+    .nullable(),
+  other_name: z
+    .string()
+    .trim()
+    .max(100, "英語名・別名は100文字以内で入力してください")
+    .nullable(),
+  category: z
+    .string()
+    .trim()
+    .max(100, "カテゴリは100文字以内で入力してください")
+    .nullable(),
+  memo: z
+    .string()
+    .trim()
+    .max(1000, "メモは1000文字以内で入力してください")
+    .nullable(),
   tax_rate: z
     .string()
     .regex(/^(?:\d|[12]\d|30)$/, "税率が正しくありません")
@@ -70,13 +99,13 @@ const norm = (value: string | null | undefined) =>
 // Finds or creates the package entered in the "新規" panel.
 async function resolveNewPackage(
   supabase: Supabase,
-  formData: FormData
+  formData: FormData,
 ): Promise<{ packageId: string } | { error: string }> {
   const parsed = newPackageSchema.safeParse({
     product_id: text(formData, "np_product_id"),
     variation_id: text(formData, "np_variation_id"),
     name: text(formData, "np_name"),
-    
+
     brand: text(formData, "np_brand"),
     other_name: text(formData, "np_other_name"),
     category: text(formData, "np_category"),
@@ -91,12 +120,14 @@ async function resolveNewPackage(
   const barcodes = barcodeResult.codes;
 
   const size = parseSize(text(formData, "np_size"));
-  if (size === null) return { error: "容量は0より大きい数値で入力してください" };
+  if (size === null)
+    return { error: "容量は0より大きい数値で入力してください" };
 
   const { name, unit, other_name, category, memo, tax_rate } = parsed.data;
   const brand = (await resolveBrandText(supabase, parsed.data.brand)) || null;
   // Only a measure or an enabled counter word may be used for a new 容量.
-  if (!(await loadAllowedUnits(supabase)).includes(unit)) return { error: UNIT_ERROR };
+  if (!(await loadAllowedUnits(supabase)).includes(unit))
+    return { error: UNIT_ERROR };
 
   const name_ja = name;
   const name_en: string | null = other_name;
@@ -135,12 +166,12 @@ async function resolveNewPackage(
     const duplicate = ((existing ?? []) as any[]).some(
       (p) =>
         norm(p.brand) === norm(brand) &&
-        ((name_ja && norm(p.name_ja) === norm(name_ja)) ||
-          false)
+        ((name_ja && norm(p.name_ja) === norm(name_ja)) || false),
     );
     if (duplicate) {
       return {
-        error: "同じ商品がすでに登録されています。上の「商品」から選んでください",
+        error:
+          "同じ商品がすでに登録されています。上の「商品」から選んでください",
       };
     }
 
@@ -157,7 +188,11 @@ async function resolveNewPackage(
       .select("id")
       .single();
     if (productError || !created) {
-      console.error("Product insert error:", productError?.message, productError?.code);
+      console.error(
+        "Product insert error:",
+        productError?.message,
+        productError?.code,
+      );
       return { error: "商品を追加できませんでした" };
     }
     productId = created.id as string;
@@ -166,7 +201,11 @@ async function resolveNewPackage(
         .from("product_barcodes")
         .insert(barcodes.map((code) => ({ product_id: created.id, code })));
       if (codeError) {
-        console.error("Barcode insert error:", codeError.message, codeError.code);
+        console.error(
+          "Barcode insert error:",
+          codeError.message,
+          codeError.code,
+        );
         // Do not keep a half-saved product.
         await supabase.from("products").delete().eq("id", created.id);
         return {
@@ -187,7 +226,9 @@ async function resolveNewPackage(
     .eq("product_id", productId)
     .eq("package_size", size)
     .eq("package_unit", unit);
-  lookup = variationId ? lookup.eq("variation_id", variationId) : lookup.is("variation_id", null);
+  lookup = variationId
+    ? lookup.eq("variation_id", variationId)
+    : lookup.is("variation_id", null);
   const { data: found } = await lookup.limit(1);
   if (found && found.length > 0) return { packageId: found[0].id as string };
 
@@ -215,7 +256,12 @@ async function resolveNewPackage(
       .from("product_barcodes")
       .update({ package_id: pkg.id })
       .in("code", barcodes);
-    if (linkError) console.error("Barcode package link error:", linkError.message, linkError.code);
+    if (linkError)
+      console.error(
+        "Barcode package link error:",
+        linkError.message,
+        linkError.code,
+      );
   }
   return { packageId: pkg.id as string };
 }
@@ -225,7 +271,7 @@ async function resolveNewPackage(
 const DEFAULT_PACKAGE_PLACEHOLDER = "00000000-0000-0000-0000-000000000000";
 
 function parseDefaultPackageRef(
-  raw: string | null
+  raw: string | null,
 ): { productId: string; variationId: string | null } | null {
   if (!raw) return null;
   const match = /^default:([0-9a-f-]{36}):([0-9a-f-]{36}|-)$/i.exec(raw);
@@ -243,18 +289,23 @@ function parseDefaultPackageRef(
 async function resolveDefaultPackage(
   supabase: Supabase,
   productId: string,
-  variationId: string | null
+  variationId: string | null,
 ): Promise<{ packageId: string } | { error: string }> {
   const { data: variations, error: variationError } = await supabase
     .from("product_variations")
     .select("id")
     .eq("product_id", productId);
   if (variationError) {
-    console.error("Variation fetch error:", variationError.message, variationError.code);
+    console.error(
+      "Variation fetch error:",
+      variationError.message,
+      variationError.code,
+    );
     return { error: SAVE_FAILED };
   }
   const list = (variations ?? []) as { id: string }[];
-  if (list.length > 0 && !variationId) return { error: "バリエーションを選んでください" };
+  if (list.length > 0 && !variationId)
+    return { error: "バリエーションを選んでください" };
   if (variationId && !list.some((v) => v.id === variationId)) {
     return { error: "選んだバリエーションはこの商品のものではありません" };
   }
@@ -265,7 +316,9 @@ async function resolveDefaultPackage(
     .eq("product_id", productId)
     .eq("package_size", 1)
     .eq("package_unit", "count");
-  lookup = variationId ? lookup.eq("variation_id", variationId) : lookup.is("variation_id", null);
+  lookup = variationId
+    ? lookup.eq("variation_id", variationId)
+    : lookup.is("variation_id", null);
   const { data: found } = await lookup.limit(1);
   if (found && found.length > 0) return { packageId: found[0].id as string };
 
@@ -288,10 +341,12 @@ async function resolveDefaultPackage(
 
 export async function addPriceObservation(
   _prevState: State,
-  formData: FormData
+  formData: FormData,
 ): Promise<State> {
   const isNewPackage = text(formData, "new_package") === "1";
-  const defaultRef = parseDefaultPackageRef(text(formData, "product_package_id"));
+  const defaultRef = parseDefaultPackageRef(
+    text(formData, "product_package_id"),
+  );
 
   const parsed = baseSchema.safeParse({
     store_chain_id: text(formData, "store_chain_id") ?? "",
@@ -306,7 +361,11 @@ export async function addPriceObservation(
     const check = z
       .string()
       .uuid("商品・容量を選んでください")
-      .safeParse(defaultRef ? DEFAULT_PACKAGE_PLACEHOLDER : (text(formData, "product_package_id") ?? ""));
+      .safeParse(
+        defaultRef
+          ? DEFAULT_PACKAGE_PLACEHOLDER
+          : (text(formData, "product_package_id") ?? ""),
+      );
     if (!check.success) return { error: check.error.issues[0].message };
     packageId = check.data;
   }
@@ -317,7 +376,8 @@ export async function addPriceObservation(
   if (observedAt === null) return { error: "日時が正しくありません" };
   const taxRaw = text(formData, "tax_basis");
   const taxBasis = TAX_BASES.find((b) => b === taxRaw);
-  if (!taxBasis) return { error: "税抜き・税込み・不明のどれかを選んでください" };
+  if (!taxBasis)
+    return { error: "税抜き・税込み・不明のどれかを選んでください" };
 
   const { store_chain_id, new_shop_name, notes } = parsed.data;
   let shopId = parsed.data.shop_id;
@@ -330,7 +390,7 @@ export async function addPriceObservation(
     const resolvedDefault = await resolveDefaultPackage(
       supabase,
       defaultRef.productId,
-      defaultRef.variationId
+      defaultRef.variationId,
     );
     if ("error" in resolvedDefault) return { error: resolvedDefault.error };
     packageId = resolvedDefault.packageId;
@@ -348,13 +408,14 @@ export async function addPriceObservation(
   }
 
   const isMemberPrice =
-    formData.get("is_member_price") === "on" && chainRow.member_discount_percent !== null;
+    formData.get("is_member_price") === "on" &&
+    chainRow.member_discount_percent !== null;
 
   let bonusPoints: number | null = null;
   const rawPoints = text(formData, "bonus_points");
   if (chainRow.has_bonus_points && rawPoints !== null) {
     const asciiPoints = rawPoints.replace(/[０-９]/g, (d) =>
-      String(d.charCodeAt(0) - 0xff10)
+      String(d.charCodeAt(0) - 0xff10),
     );
     const n = Number(asciiPoints);
     if (!Number.isInteger(n) || n < 0 || n > 100000) {
@@ -365,7 +426,10 @@ export async function addPriceObservation(
 
   // Bulk discount tiers: rows of quantity and percent. The entered price is the regular price.
   let bulkTiers: BulkTier[] | null = null;
-  if (formData.get("is_bulk_price") === "on" && chainRow.bulk_enabled === true) {
+  if (
+    formData.get("is_bulk_price") === "on" &&
+    chainRow.bulk_enabled === true
+  ) {
     // Fixed field names per row (bulk_quantity_0 ...), so the inputs of a row always belong together.
     const rows = Array.from({ length: BULK_MAX_TIERS }, (_, i) => ({
       quantity: text(formData, `bulk_quantity_${i}`) ?? "",
@@ -376,8 +440,14 @@ export async function addPriceObservation(
     const parsedTiers = parseBulkTiers(rows);
     if (!parsedTiers.ok) return { error: parsedTiers.error };
     // A bundle price must really be cheaper than the same number of items at the regular price.
-    if (parsedTiers.tiers.some((t) => t.kind === "total" && t.total >= t.quantity * price)) {
-      return { error: "まとめ買いの合計金額は、個数×通常価格より安く入力してください" };
+    if (
+      parsedTiers.tiers.some(
+        (t) => t.kind === "total" && t.total >= t.quantity * price,
+      )
+    ) {
+      return {
+        error: "まとめ買いの合計金額は、個数×通常価格より安く入力してください",
+      };
     }
     bulkTiers = parsedTiers.tiers;
   }
@@ -408,7 +478,11 @@ export async function addPriceObservation(
         .select("id")
         .single();
       if (shopError || !created) {
-        console.error("Shop insert error:", shopError?.message, shopError?.code);
+        console.error(
+          "Shop insert error:",
+          shopError?.message,
+          shopError?.code,
+        );
         return { error: "支店を追加できませんでした" };
       }
       shopId = created.id;

@@ -18,7 +18,10 @@ export default function ShopForm({
   selectedChainId?: string;
 }) {
   const initialState = { error: null as string | null };
-  const [state, formAction, pending] = useToastedActionState(addShop, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    addShop,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-4">
@@ -49,10 +52,20 @@ export default function ShopForm({
         />
       </Field>
       <Field label="住所" kind="optional" htmlFor="shop_address">
-        <input id="shop_address" name="address" maxLength={200} className={controlCls} />
+        <input
+          id="shop_address"
+          name="address"
+          maxLength={200}
+          className={controlCls}
+        />
       </Field>
       <Field label="地域" kind="optional" htmlFor="shop_region">
-        <input id="shop_region" name="region" maxLength={200} className={controlCls} />
+        <input
+          id="shop_region"
+          name="region"
+          maxLength={200}
+          className={controlCls}
+        />
       </Field>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <Button type="submit" disabled={pending} className="h-12 w-full">

@@ -33,7 +33,9 @@ describe("parseFilters", () => {
     expect(f.from).toBeNull();
   });
   it("reads several categories, in list order, without duplicates", () => {
-    const f = parseFilters({ cat: ["drugstore", "supermarket", "drugstore", "nope"] });
+    const f = parseFilters({
+      cat: ["drugstore", "supermarket", "drugstore", "nope"],
+    });
     expect(f.categories).toEqual(["supermarket", "drugstore"]);
     expect(countActive(f)).toBe(1);
   });
@@ -70,12 +72,20 @@ describe("date range", () => {
     expect(rangeStart(f, now)).toBe("2026-10-09T00:00:00.000Z");
   });
   it("uses typed dates with 全期間", () => {
-    const f = parseFilters({ period: "all", from: "2026-09-01", to: "2026-09-30" });
+    const f = parseFilters({
+      period: "all",
+      from: "2026-09-01",
+      to: "2026-09-30",
+    });
     expect(rangeStart(f, now)).toBe("2026-09-01T00:00:00+09:00");
     expect(rangeEnd(f)).toBe("2026-09-30T23:59:59+09:00");
   });
   it("ignores typed dates when a quick period is chosen", () => {
-    const f = parseFilters({ period: "week", from: "2026-09-01", to: "2026-09-30" });
+    const f = parseFilters({
+      period: "week",
+      from: "2026-09-01",
+      to: "2026-09-30",
+    });
     expect([f.from, f.to]).toEqual([null, null]);
     expect(rangeStart(f, now)).toBe("2026-10-09T00:00:00.000Z");
   });
@@ -93,7 +103,12 @@ describe("price range and count", () => {
     expect(inPriceRange(201, f)).toBe(false);
   });
   it("counts each group once", () => {
-    const f = parseFilters({ sale: "sale", min: "1", max: "9", period: "month" });
+    const f = parseFilters({
+      sale: "sale",
+      min: "1",
+      max: "9",
+      period: "month",
+    });
     expect(countActive(f)).toBe(3);
   });
   it("does not count the default period, but counts the others", () => {

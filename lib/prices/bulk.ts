@@ -15,7 +15,11 @@ export type BulkTier =
   | { kind: "percent"; quantity: number; percent: number }
   | { kind: "total"; quantity: number; total: number };
 
-function parseInteger(raw: string | null | undefined, min: number, max: number): number | null {
+function parseInteger(
+  raw: string | null | undefined,
+  min: number,
+  max: number,
+): number | null {
   if (raw === null || raw === undefined) return null;
   const text = raw.normalize("NFKC").replace(/\s+/g, "");
   if (!/^\d{1,4}$/.test(text)) return null;
@@ -23,11 +27,15 @@ function parseInteger(raw: string | null | undefined, min: number, max: number):
   return n >= min && n <= max ? n : null;
 }
 
-export function parseBulkPercent(raw: string | null | undefined): number | null {
+export function parseBulkPercent(
+  raw: string | null | undefined,
+): number | null {
   return parseInteger(raw, BULK_MIN_PERCENT, BULK_MAX_PERCENT);
 }
 
-export function parseBulkQuantity(raw: string | null | undefined): number | null {
+export function parseBulkQuantity(
+  raw: string | null | undefined,
+): number | null {
   return parseInteger(raw, BULK_MIN_QUANTITY, BULK_MAX_QUANTITY);
 }
 
@@ -53,13 +61,15 @@ export type BulkRowInput = {
  * and at most 3 tiers, no repeated quantity. The result is sorted by quantity.
  */
 export function parseBulkTiers(
-  rows: BulkRowInput[]
+  rows: BulkRowInput[],
 ): { ok: true; tiers: BulkTier[] } | { ok: false; error: string } {
   const tiers: BulkTier[] = [];
   for (const row of rows) {
     const mode: BulkMode = row.mode === "total" ? "total" : "percent";
     const rawQuantity = (row.quantity ?? "").trim();
-    const rawValue = ((mode === "total" ? row.total : row.percent) ?? "").trim();
+    const rawValue = (
+      (mode === "total" ? row.total : row.percent) ?? ""
+    ).trim();
     if (rawQuantity === "" && rawValue === "") continue;
 
     const quantity = parseBulkQuantity(rawQuantity);
@@ -90,7 +100,10 @@ export function parseBulkTiers(
     }
   }
   if (tiers.length === 0) {
-    return { ok: false, error: "まとめ買いの個数と、割引率または合計金額を入力してください" };
+    return {
+      ok: false,
+      error: "まとめ買いの個数と、割引率または合計金額を入力してください",
+    };
   }
   if (tiers.length > BULK_MAX_TIERS) {
     return { ok: false, error: `まとめ買いは${BULK_MAX_TIERS}段階までです` };
@@ -106,7 +119,11 @@ export function parseStoredTiers(value: unknown): BulkTier[] {
   if (!Array.isArray(value)) return [];
   const tiers: BulkTier[] = [];
   for (const item of value) {
-    const row = item as { quantity?: unknown; percent?: unknown; total?: unknown } | null;
+    const row = item as {
+      quantity?: unknown;
+      percent?: unknown;
+      total?: unknown;
+    } | null;
     const quantity = row?.quantity;
     if (
       typeof quantity !== "number" ||
@@ -139,12 +156,12 @@ export function parseStoredTiers(value: unknown): BulkTier[] {
 
 /** What is stored in bulk_tiers: {quantity, percent} or {quantity, total}. */
 export function bulkTiersToJson(
-  tiers: readonly BulkTier[]
+  tiers: readonly BulkTier[],
 ): { quantity: number; percent?: number; total?: number }[] {
   return tiers.map((t) =>
     t.kind === "total"
       ? { quantity: t.quantity, total: t.total }
-      : { quantity: t.quantity, percent: t.percent }
+      : { quantity: t.quantity, percent: t.percent },
   );
 }
 
@@ -155,24 +172,37 @@ export function bulkTierPrice(price: number, percent: number): number {
 
 /** Price per item of a tier: a percent tier rounds down to the yen, a bundle price is total / quantity (one decimal). */
 export function bulkItemPrice(price: number, tier: BulkTier): number {
-  if (tier.kind === "total") return Math.round((tier.total / tier.quantity) * 10) / 10;
+  if (tier.kind === "total")
+    return Math.round((tier.total / tier.quantity) * 10) / 10;
   return bulkTierPrice(price, tier.percent);
 }
 
 /** The discount of a tier in whole percent (rounded down, so it never promises more); null when it is no discount. */
-export function bulkEquivalentPercent(price: number, tier: BulkTier): number | null {
+export function bulkEquivalentPercent(
+  price: number,
+  tier: BulkTier,
+): number | null {
   if (tier.kind === "percent") return tier.percent;
   const regularTotal = price * tier.quantity;
   if (!Number.isFinite(regularTotal) || regularTotal <= 0) return null;
-  const percent = Math.floor(((regularTotal - tier.total) / regularTotal) * 100 + 1e-9);
+  const percent = Math.floor(
+    ((regularTotal - tier.total) / regularTotal) * 100 + 1e-9,
+  );
   return percent >= 1 ? percent : null;
 }
 
 /** The tier with the lowest price per item, or null when there are no tiers. */
-export function bestBulkTier(price: number, tiers: readonly BulkTier[]): BulkTier | null {
+export function bestBulkTier(
+  price: number,
+  tiers: readonly BulkTier[],
+): BulkTier | null {
   let best: BulkTier | null = null;
   for (const tier of tiers) {
-    if (best === null || bulkItemPrice(price, tier) < bulkItemPrice(price, best)) best = tier;
+    if (
+      best === null ||
+      bulkItemPrice(price, tier) < bulkItemPrice(price, best)
+    )
+      best = tier;
   }
   return best;
 }

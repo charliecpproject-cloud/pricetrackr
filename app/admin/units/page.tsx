@@ -24,16 +24,27 @@ export default async function UnitsPage() {
     supabase.rpc("counter_unit_usage"),
   ]);
   if (unitsResult.error) {
-    console.error("Counter units fetch error:", unitsResult.error.message, unitsResult.error.code);
+    console.error(
+      "Counter units fetch error:",
+      unitsResult.error.message,
+      unitsResult.error.code,
+    );
   }
   if (usageResult.error) {
-    console.error("Counter unit usage error:", usageResult.error.message, usageResult.error.code);
+    console.error(
+      "Counter unit usage error:",
+      usageResult.error.message,
+      usageResult.error.code,
+    );
   }
 
   const units = (unitsResult.data ?? []) as UnitRecord[];
   const usageKnown = !usageResult.error;
   const usage = new Map<string, number>();
-  for (const row of (usageResult.data ?? []) as { unit: string; package_count: number | string }[]) {
+  for (const row of (usageResult.data ?? []) as {
+    unit: string;
+    package_count: number | string;
+  }[]) {
     usage.set(row.unit, Number(row.package_count));
   }
 
@@ -41,14 +52,18 @@ export default async function UnitsPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="inline-block text-sm font-medium text-teal-700">
+      <Link
+        href="/admin"
+        className="inline-block text-sm font-medium text-teal-700"
+      >
         ← 管理者ツールに戻る
       </Link>
 
       <div>
         <h1 className="text-2xl font-bold text-stone-900">単位の言葉</h1>
         <p className="mt-1 text-sm text-stone-500">
-          容量の単位に使う「数える言葉」（個・枚・本・パックなど）を管理します。チェックを入れた言葉が、価格入力と商品の単位の選択肢に表示されます。ml・L・g・kg は固定です。
+          容量の単位に使う「数える言葉」（個・枚・本・パックなど）を管理します。チェックを入れた言葉が、価格入力と商品の単位の選択肢に表示されます。ml・L・g・kg
+          は固定です。
         </p>
       </div>
 
@@ -65,7 +80,9 @@ export default async function UnitsPage() {
           </span>
         </h2>
         {units.length === 0 ? (
-          <p className="mt-2 text-sm text-stone-500">言葉を読み込めませんでした。</p>
+          <p className="mt-2 text-sm text-stone-500">
+            言葉を読み込めませんでした。
+          </p>
         ) : (
           <ul className="mt-3 space-y-2">
             {units.map((u) => (

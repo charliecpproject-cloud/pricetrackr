@@ -23,7 +23,18 @@ describe("parseNewCounterWord", () => {
   });
 
   it("refuses measures and the old keys in any case", () => {
-    for (const bad of ["ml", "ML", "L", "l", "g", "kg", "KG", "count", "Sheet", "bag"]) {
+    for (const bad of [
+      "ml",
+      "ML",
+      "L",
+      "l",
+      "g",
+      "kg",
+      "KG",
+      "count",
+      "Sheet",
+      "bag",
+    ]) {
       expect(parseNewCounterWord(bad).ok).toBe(false);
     }
   });

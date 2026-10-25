@@ -7,7 +7,7 @@ export type FavoriteLevel = "favorite" | "related" | "none";
 /** Packages of one product and one variation share a group key. No variation counts as one group. */
 export function favoriteGroupKey(
   productId: string,
-  variationId: string | null | undefined
+  variationId: string | null | undefined,
 ): string {
   return `${productId}:${variationId ?? "-"}`;
 }
@@ -17,8 +17,10 @@ export function favoriteLevel(
   productId: string,
   variationId: string | null | undefined,
   favoriteIds: ReadonlySet<string>,
-  favoriteGroups: ReadonlySet<string>
+  favoriteGroups: ReadonlySet<string>,
 ): FavoriteLevel {
   if (favoriteIds.has(packageId)) return "favorite";
-  return favoriteGroups.has(favoriteGroupKey(productId, variationId)) ? "related" : "none";
+  return favoriteGroups.has(favoriteGroupKey(productId, variationId))
+    ? "related"
+    : "none";
 }

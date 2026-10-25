@@ -42,7 +42,7 @@ export default function CheckScrollMemory() {
             y: window.scrollY,
             len: window.history.length,
             at: Date.now(),
-          })
+          }),
         );
       } catch {
         // ignore

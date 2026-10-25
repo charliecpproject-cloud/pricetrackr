@@ -23,14 +23,34 @@ html[data-theme="midnight"] {
 }
 html[data-theme="midnight"] body {
   background:
-    radial-gradient(1.5px 1.5px at 14% 12%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(
+      1.5px 1.5px at 14% 12%,
+      rgb(255 255 255 / 0.7),
+      transparent
+    ),
     radial-gradient(1px 1px at 82% 8%, rgb(255 255 255 / 0.6), transparent),
-    radial-gradient(1.5px 1.5px at 66% 34%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(
+      1.5px 1.5px at 66% 34%,
+      rgb(255 255 255 / 0.5),
+      transparent
+    ),
     radial-gradient(1px 1px at 28% 52%, rgb(255 255 255 / 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 90% 66%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(
+      1.5px 1.5px at 90% 66%,
+      rgb(255 255 255 / 0.6),
+      transparent
+    ),
     radial-gradient(1px 1px at 8% 80%, rgb(255 255 255 / 0.5), transparent),
-    radial-gradient(ellipse at 15% -10%, rgb(125 110 235 / 0.5) 0, transparent 55%),
-    radial-gradient(ellipse at 100% 35%, rgb(70 125 225 / 0.38) 0, transparent 50%),
+    radial-gradient(
+      ellipse at 15% -10%,
+      rgb(125 110 235 / 0.5) 0,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 100% 35%,
+      rgb(70 125 225 / 0.38) 0,
+      transparent 50%
+    ),
     linear-gradient(180deg, #2b3478, #202863 60%, #181f52);
   background-attachment: fixed;
 }

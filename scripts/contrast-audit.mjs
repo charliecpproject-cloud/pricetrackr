@@ -8,7 +8,9 @@ const read = (p) => fs.readFileSync(path.join(process.cwd(), p), "utf8");
 
 // ---------- colours ----------
 function fromOklch(s) {
-  const m = s.match(/oklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)(?:deg)?\s*(?:\/\s*([\d.]+)(%?))?\s*\)/);
+  const m = s.match(
+    /oklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)(?:deg)?\s*(?:\/\s*([\d.]+)(%?))?\s*\)/,
+  );
   if (!m) return null;
   let L = parseFloat(m[1]);
   if (m[2]) L /= 100;
@@ -42,9 +44,16 @@ function parseColor(str) {
     const n = (i) => parseInt(h.slice(i, i + 2), 16);
     return { r: n(0), g: n(2), b: n(4), a: h.length === 8 ? n(6) / 255 : 1 };
   }
-  m = s.match(/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)\s*(?:[,/]\s*([\d.]+)(%?))?\s*\)$/);
+  m = s.match(
+    /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)\s*(?:[,/]\s*([\d.]+)(%?))?\s*\)$/,
+  );
   if (m) {
-    return { r: +m[1], g: +m[2], b: +m[3], a: m[4] === undefined ? 1 : +m[4] / (m[5] ? 100 : 1) };
+    return {
+      r: +m[1],
+      g: +m[2],
+      b: +m[3],
+      a: m[4] === undefined ? 1 : +m[4] / (m[5] ? 100 : 1),
+    };
   }
   const o = fromOklch(s);
   if (!o) throw new Error(`Cannot read colour: ${str}`);
@@ -72,16 +81,22 @@ const ratio = (a, b) => {
 
 // ---------- theme files ----------
 const tw = {};
-for (const m of read("node_modules/tailwindcss/theme.css").matchAll(/(--color-[\w-]+)\s*:\s*([^;]+);/g)) {
+for (const m of read("node_modules/tailwindcss/theme.css").matchAll(
+  /(--color-[\w-]+)\s*:\s*([^;]+);/g,
+)) {
   tw[m[1]] = m[2].trim();
 }
 
 function declarations(css, id) {
   const vars = {};
   for (const m of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const selectors = m[1].replace(/\/\*[\s\S]*?\*\//g, "").split(",").map((x) => x.trim());
+    const selectors = m[1]
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .split(",")
+      .map((x) => x.trim());
     if (!selectors.includes(`html[data-theme="${id}"]`)) continue;
-    for (const d of m[2].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) vars[d[1]] = d[2].trim();
+    for (const d of m[2].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g))
+      vars[d[1]] = d[2].trim();
   }
   return vars;
 }
@@ -99,7 +114,8 @@ function colorOf(vars, name) {
   if (name.startsWith("text:")) {
     name = name.slice(5);
     // dark themes lighten text that uses the accent colour
-    if (vars["--ac-text"] && (name === "teal-600" || name === "indigo-600")) return parseColor(resolve(vars, vars["--ac-text"]));
+    if (vars["--ac-text"] && (name === "teal-600" || name === "indigo-600"))
+      return parseColor(resolve(vars, vars["--ac-text"]));
   }
   if (name === "#ffffff") return { r: 255, g: 255, b: 255, a: 1 };
   const raw = vars[`--color-${name}`] ?? tw[`--color-${name}`];
@@ -136,7 +152,11 @@ const themes = {
     { name: "middle", layers: ["#202863"] },
     { name: "bottom", layers: ["#181f52"] },
     { name: "violet glow", layers: ["#2b3478", "rgb(125 110 235 / 0.5)"] },
-    { name: "card highlight", layers: ["#2b3478"], hl: "rgb(255 255 255 / 0.08)" },
+    {
+      name: "card highlight",
+      layers: ["#2b3478"],
+      hl: "rgb(255 255 255 / 0.08)",
+    },
   ]),
   calm: fileTheme("calm", true, [
     { name: "top", layers: ["#0f3038"] },
@@ -162,7 +182,12 @@ const checks = [
   ["Points: amber-700 (14px bold)", "amber-700", P, 4.5],
   ["Badge: tax sky-700 on sky-100", "sky-700", "sky-100", 4.5],
   ["Badge: tax unknown stone-600 on chip", "stone-600", "chip", 4.5],
-  ["Badge: sale / Welkatsu amber-700 on amber-100", "amber-700", "amber-100", 4.5],
+  [
+    "Badge: sale / Welkatsu amber-700 on amber-100",
+    "amber-700",
+    "amber-100",
+    4.5,
+  ],
   ["Badge: bulk rose-700 on rose-100", "rose-700", "rose-100", 4.5],
   ["Badge: new product teal-700 on teal-100", "teal-700", "teal-100", 4.5],
   ["Chip: size stone-700 on chip", "stone-700", "chip", 4.5],
@@ -172,10 +197,28 @@ const checks = [
   ["Accent text teal-700 on panel", "teal-700", P, 4.5],
   ["Bottom bar: inactive stone-500 (12px)", "stone-500", "nav", 4.5],
   ["Bottom bar: active label teal-700 (12px bold)", "teal-700", "nav", 4.5],
-  ["Bottom bar: active icon teal-700 on teal-100", "teal-700", "teal-100", 3, { on: "nav" }],
+  [
+    "Bottom bar: active icon teal-700 on teal-100",
+    "teal-700",
+    "teal-100",
+    3,
+    { on: "nav" },
+  ],
   ["Button: white on teal-600 (14px bold)", "#ffffff", "teal-600", 4.5],
-  ["Disabled: white on teal-600 at 50%", "#ffffff", "teal-600", 3, { op: 0.5, info: true }],
-  ["Disabled: outline button stone-600 at 40%", "stone-600", P, 3, { op: 0.4, info: true }],
+  [
+    "Disabled: white on teal-600 at 50%",
+    "#ffffff",
+    "teal-600",
+    3,
+    { op: 0.5, info: true },
+  ],
+  [
+    "Disabled: outline button stone-600 at 40%",
+    "stone-600",
+    P,
+    3,
+    { op: 0.4, info: true },
+  ],
   ["Disabled: delete red-600 at 50%", "red-600", P, 3, { op: 0.5, info: true }],
 ];
 
@@ -192,7 +235,8 @@ function evaluate(vars, ctx, fg, bg, opts) {
   const base = ctx[opts.on ?? "panel"];
   let bgc;
   if (bg === "panel" || bg === "nav") bgc = ctx[bg];
-  else if (bg === "chip") bgc = over(parseColor(resolve(vars, vars["--chip"])), base);
+  else if (bg === "chip")
+    bgc = over(parseColor(resolve(vars, vars["--chip"])), base);
   else bgc = over(colorOf(vars, bg), base);
   let fgc = over(colorOf(vars, fg), bgc);
   if (opts.op) {
@@ -203,7 +247,19 @@ function evaluate(vars, ctx, fg, bg, opts) {
 }
 // ---------- run ----------
 const showAll = process.argv.includes("--all");
-const colourNames = ["sky-100", "sky-700", "amber-100", "amber-700", "rose-100", "rose-600", "rose-700", "red-600", "indigo-600", "teal-100", "teal-700"];
+const colourNames = [
+  "sky-100",
+  "sky-700",
+  "amber-100",
+  "amber-700",
+  "rose-100",
+  "rose-600",
+  "rose-700",
+  "red-600",
+  "indigo-600",
+  "teal-100",
+  "teal-700",
+];
 let problems = 0;
 
 for (const [id, t] of Object.entries(themes)) {
@@ -220,13 +276,17 @@ for (const [id, t] of Object.entries(themes)) {
     else problems++;
     if (!pass || showAll) {
       const tag = pass ? "ok  " : opts.info ? "LOW " : "FAIL";
-      console.log(`${tag} ${worst.r.toFixed(2).padStart(5)} (need ${min})  ${label}  [worst: ${worst.at}]`);
+      console.log(
+        `${tag} ${worst.r.toFixed(2).padStart(5)} (need ${min})  ${label}  [worst: ${worst.at}]`,
+      );
     }
   }
   console.log(`${ok} of ${checks.length} pairs reach the minimum`);
   if (t.vars["--ac-text"]) {
     const missing = colourNames.filter((n) => !t.vars[`--color-${n}`]);
-    console.log(`Not remapped in this dark theme (Tailwind default is used): ${missing.join(", ") || "none"}`);
+    console.log(
+      `Not remapped in this dark theme (Tailwind default is used): ${missing.join(", ") || "none"}`,
+    );
   }
 }
 console.log(`\nTotal pairs below the minimum: ${problems}`);

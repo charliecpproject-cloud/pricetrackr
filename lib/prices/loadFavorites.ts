@@ -22,12 +22,15 @@ export async function loadFavorites(supabase: Supabase): Promise<FavoriteSets> {
     return { ids, groups };
   }
 
-  for (const row of (data ?? []) as { package_id: string; product_packages: unknown }[]) {
+  for (const row of (data ?? []) as {
+    package_id: string;
+    product_packages: unknown;
+  }[]) {
     ids.add(row.package_id);
     const pkg = [row.product_packages].flat()[0] as
-      | { product_id?: string; variation_id?: string | null }
-      | undefined;
-    if (pkg?.product_id) groups.add(favoriteGroupKey(pkg.product_id, pkg.variation_id));
+      { product_id?: string; variation_id?: string | null } | undefined;
+    if (pkg?.product_id)
+      groups.add(favoriteGroupKey(pkg.product_id, pkg.variation_id));
   }
   return { ids, groups };
 }

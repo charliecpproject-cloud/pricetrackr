@@ -20,7 +20,7 @@ export function expandQuery(query: string, aliases: SearchAlias[]): string[] {
 export function matchesSearchWithAliases(
   haystack: string,
   query: string,
-  aliases: SearchAlias[]
+  aliases: SearchAlias[],
 ): boolean {
   return expandQuery(query, aliases).some((q) => matchesSearch(haystack, q));
 }

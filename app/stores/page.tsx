@@ -54,18 +54,28 @@ export default async function StoresPage({
       <h1 className="mb-6 text-2xl font-bold">店舗</h1>
 
       {chainsError && (
-        <p className="mb-4 text-red-600">チェーンの取得エラー: {chainsError.message}</p>
+        <p className="mb-4 text-red-600">
+          チェーンの取得エラー: {chainsError.message}
+        </p>
       )}
       {shopsError && (
-        <p className="mb-4 text-red-600">ショップの取得エラー: {shopsError.message}</p>
+        <p className="mb-4 text-red-600">
+          ショップの取得エラー: {shopsError.message}
+        </p>
       )}
 
       {!chains || chains.length === 0 ? (
-        <p className="my-8 text-center text-stone-500">まだ店舗がありません。</p>
+        <p className="my-8 text-center text-stone-500">
+          まだ店舗がありません。
+        </p>
       ) : (
         <div className="space-y-4">
           <ChainPicker
-            chains={chains.map((c) => ({ id: c.id, name: c.name, category: c.category }))}
+            chains={chains.map((c) => ({
+              id: c.id,
+              name: c.name,
+              category: c.category,
+            }))}
             selectedId={selected?.id ?? ""}
           />
 
@@ -82,50 +92,58 @@ export default async function StoresPage({
                       {CATEGORY_LABEL[category]}
                     </span>
                   )}
-                  {selected.coupon_percents && selected.coupon_percents.length > 0 && (
-                    <span className="rounded bg-rose-100 px-2 py-0.5 text-sm font-medium text-rose-600">
-                      クーポン{" "}
-                      {selected.coupon_percents.map((p: number) => `${p}%`).join(" / ")}
-                    </span>
-                  )}
+                  {selected.coupon_percents &&
+                    selected.coupon_percents.length > 0 && (
+                      <span className="rounded bg-rose-100 px-2 py-0.5 text-sm font-medium text-rose-600">
+                        クーポン{" "}
+                        {selected.coupon_percents
+                          .map((p: number) => `${p}%`)
+                          .join(" / ")}
+                      </span>
+                    )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-              <ReadOnlyFieldset readOnly={readOnly}>
-                {shops && shops.length > 0 ? (
-                  <ul className="space-y-2">
-                    {shops.map((shop) => (
-                      <ShopRow
-                        key={shop.id}
-                        shop={{
-                          id: shop.id,
-                          name: shop.name,
-                          region: shop.region,
-                          address: shop.address,
-                        }}
-                      />
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-stone-500">支店はまだありません。</p>
-                )}
+                <ReadOnlyFieldset readOnly={readOnly}>
+                  {shops && shops.length > 0 ? (
+                    <ul className="space-y-2">
+                      {shops.map((shop) => (
+                        <ShopRow
+                          key={shop.id}
+                          shop={{
+                            id: shop.id,
+                            name: shop.name,
+                            region: shop.region,
+                            address: shop.address,
+                          }}
+                        />
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-stone-500">
+                      支店はまだありません。
+                    </p>
+                  )}
 
-                {/* クーポン・会員価格・ポイントの設定 */}
-                <div className="mt-4">
-                  <CouponForm
-                    chainId={selected.id}
-                    current={selected.coupon_percents ?? []}
-                  />
-                </div>
+                  {/* クーポン・会員価格・ポイントの設定 */}
+                  <div className="mt-4">
+                    <CouponForm
+                      chainId={selected.id}
+                      current={selected.coupon_percents ?? []}
+                    />
+                  </div>
 
-                <div className="mt-4 space-y-2 border-t border-stone-100 pt-4">
-                  <ChainEditor
-                    key={selected.id}
-                    chain={{ id: selected.id, name: selected.name, category }}
-                  />
-                  <ChainDeleteButton id={selected.id} shopCount={shops?.length ?? 0} />
-                </div>
-              </ReadOnlyFieldset>
+                  <div className="mt-4 space-y-2 border-t border-stone-100 pt-4">
+                    <ChainEditor
+                      key={selected.id}
+                      chain={{ id: selected.id, name: selected.name, category }}
+                    />
+                    <ChainDeleteButton
+                      id={selected.id}
+                      shopCount={shops?.length ?? 0}
+                    />
+                  </div>
+                </ReadOnlyFieldset>
               </CardContent>
             </Card>
           ) : (

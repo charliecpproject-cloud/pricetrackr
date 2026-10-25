@@ -24,7 +24,9 @@ export default function ScanClient() {
 
       const result = await lookupBarcode(raw);
       if (result.status === "found") {
-        const packagePart = result.packageId ? `&package=${result.packageId}` : "";
+        const packagePart = result.packageId
+          ? `&package=${result.packageId}`
+          : "";
         router.push(`/prices/new?product=${result.productId}${packagePart}`);
         return;
       }
@@ -38,7 +40,7 @@ export default function ScanClient() {
       setBusy(false);
       setScannerKey((k) => k + 1); // start the camera again
     },
-    [router]
+    [router],
   );
 
   return (
@@ -52,7 +54,10 @@ export default function ScanClient() {
         }}
         className="space-y-2"
       >
-        <label htmlFor="manual_barcode" className="block text-sm font-medium text-stone-700">
+        <label
+          htmlFor="manual_barcode"
+          className="block text-sm font-medium text-stone-700"
+        >
           番号を入力して探す
         </label>
         <div className="flex gap-2">
@@ -66,7 +71,11 @@ export default function ScanClient() {
             placeholder="例：4901234567894"
             className={controlCls}
           />
-          <Button type="submit" disabled={busy || manual.trim() === ""} className="h-12 shrink-0 px-5">
+          <Button
+            type="submit"
+            disabled={busy || manual.trim() === ""}
+            className="h-12 shrink-0 px-5"
+          >
             探す
           </Button>
         </div>

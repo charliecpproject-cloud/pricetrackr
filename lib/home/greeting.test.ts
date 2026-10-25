@@ -3,7 +3,9 @@ import { greetingFor, greetingText } from "./greeting";
 
 describe("greetingFor (Japan time)", () => {
   it("morning", () => {
-    expect(greetingFor(new Date("2026-10-18T00:00:00Z"))).toBe("おはようございます"); // 09:00
+    expect(greetingFor(new Date("2026-10-18T00:00:00Z"))).toBe(
+      "おはようございます",
+    ); // 09:00
   });
 
   it("daytime", () => {
@@ -16,7 +18,9 @@ describe("greetingFor (Japan time)", () => {
 
   it("late night is still こんばんは, 5:00 is morning", () => {
     expect(greetingFor(new Date("2026-10-17T18:00:00Z"))).toBe("こんばんは"); // 03:00
-    expect(greetingFor(new Date("2026-10-17T20:00:00Z"))).toBe("おはようございます"); // 05:00
+    expect(greetingFor(new Date("2026-10-17T20:00:00Z"))).toBe(
+      "おはようございます",
+    ); // 05:00
   });
 });
 
@@ -24,7 +28,9 @@ describe("greetingText", () => {
   const morning = new Date("2026-10-18T00:00:00Z");
 
   it("adds the name", () => {
-    expect(greetingText("たろう", morning)).toBe("おはようございます、たろうさん");
+    expect(greetingText("たろう", morning)).toBe(
+      "おはようございます、たろうさん",
+    );
   });
 
   it("uses only the greeting without a name", () => {

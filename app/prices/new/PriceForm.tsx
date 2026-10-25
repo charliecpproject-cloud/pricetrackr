@@ -16,11 +16,19 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Collapsible from "@/components/Collapsible";
-import { CATEGORY_LABEL, parseCategory, saleLabel } from "@/lib/stores/category";
+import {
+  CATEGORY_LABEL,
+  parseCategory,
+  saleLabel,
+} from "@/lib/stores/category";
 import { addPriceObservation } from "@/app/prices/actions";
 import { TAX_BASES, TAX_RADIO_LABEL, type TaxBasis } from "@/lib/prices/tax";
 import { BonusPointsField, MemberPriceCheck } from "./ChainExtras";
-import BulkPriceFields, { emptyBulkRows, rowsFromTiers, type BulkRow } from "./BulkPriceFields";
+import BulkPriceFields, {
+  emptyBulkRows,
+  rowsFromTiers,
+  type BulkRow,
+} from "./BulkPriceFields";
 import { lookupBulkDefaults } from "@/app/prices/bulkDefaults";
 import { lookupPreviousPrices } from "@/app/prices/previousPrice";
 import { parsePriceInput, type PreviousPrices } from "@/lib/prices/previous";
@@ -33,9 +41,20 @@ import type { SearchAlias } from "@/lib/search/aliases";
 import PackagePicker from "./PackagePicker";
 import NewPackageFields, { type ProductOption } from "./NewPackageFields";
 import type { CounterUnitOption } from "@/lib/prices/unitWords";
-import { Badge, Field, NewToggle, controlCls, labelCls } from "@/components/FormParts";
+import {
+  Badge,
+  Field,
+  NewToggle,
+  controlCls,
+  labelCls,
+} from "@/components/FormParts";
 
-type Pkg = { id: string; label: string; search: string; taxRate?: number | null };
+type Pkg = {
+  id: string;
+  label: string;
+  search: string;
+  taxRate?: number | null;
+};
 type Chain = {
   id: string;
   name: string;
@@ -107,7 +126,10 @@ export default function PriceForm({
   defaultProductId?: string;
   counterUnits: CounterUnitOption[];
 }) {
-  const [state, formAction, pending] = useToastedActionState(addPriceObservation, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    addPriceObservation,
+    initialState,
+  );
   const [search, setSearch] = useState("");
   const [packageId, setPackageId] = useState(initialPackageId);
   const [isNewPackage, setIsNewPackage] = useState(startNew);
@@ -132,7 +154,9 @@ export default function PriceForm({
   const focusRef = useRef(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const [saveVisible, setSaveVisible] = useState(true);
-  const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
+  const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(
+    null,
+  );
   const saveRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -183,7 +207,7 @@ export default function PriceForm({
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => setSaveVisible(entry.isIntersecting),
-      { rootMargin: "0px 0px -80px 0px" }
+      { rootMargin: "0px 0px -80px 0px" },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -198,22 +222,33 @@ export default function PriceForm({
     return () => clearTimeout(id);
   }, [state]);
 
-  const selectedPackage = packages.some((p) => p.id === packageId) ? packageId : "";
+  const selectedPackage = packages.some((p) => p.id === packageId)
+    ? packageId
+    : "";
 
   const branchOptions = branches.filter((b) => b.chainId === chainId);
-  const selectedBranch = branchOptions.some((b) => b.id === branchId) ? branchId : "";
+  const selectedBranch = branchOptions.some((b) => b.id === branchId)
+    ? branchId
+    : "";
   const selectedChain = chains.find((c) => c.id === chainId);
 
   // 税抜き chosen and the product has a tax rate: show the 税込 estimate live under the price box.
-  const selectedRate = packages.find((p) => p.id === selectedPackage)?.taxRate ?? null;
+  const selectedRate =
+    packages.find((p) => p.id === selectedPackage)?.taxRate ?? null;
   const taxEstimate =
-    !isNewPackage && taxBasis === "excl" && selectedRate !== null && selectedRate > 0
+    !isNewPackage &&
+    taxBasis === "excl" &&
+    selectedRate !== null &&
+    selectedRate > 0
       ? taxIncludedEstimate(parsePriceInput(price) ?? NaN, selectedRate)
       : null;
 
   // The previous price of this 容量 (any chain, and at the chosen chain), fetched when the
   // 容量 or the chain changes and again after each save. Shown only while the key still matches.
-  const [previous, setPrevious] = useState<{ key: string; data: PreviousPrices } | null>(null);
+  const [previous, setPrevious] = useState<{
+    key: string;
+    data: PreviousPrices;
+  } | null>(null);
   const previousKey = `${selectedPackage}|${chainId}`;
   useEffect(() => {
     if (!selectedPackage || selectedPackage.startsWith("default:")) return;
@@ -227,9 +262,12 @@ export default function PriceForm({
       cancelled = true;
     };
   }, [selectedPackage, chainId, previousKey, state]);
-  const previousPrices = previous && previous.key === previousKey ? previous.data : null;
+  const previousPrices =
+    previous && previous.key === previousKey ? previous.data : null;
   // The price to compare with: the newest at the chosen chain, else the newest at any chain.
-  const reference = previousPrices ? (previousPrices.atChain ?? previousPrices.latest) : null;
+  const reference = previousPrices
+    ? (previousPrices.atChain ?? previousPrices.latest)
+    : null;
   const priceWarnings =
     !isNewPackage && priceDone && reference
       ? suspiciousPrice(parsePriceInput(price), taxBasis, reference)
@@ -257,7 +295,7 @@ export default function PriceForm({
   // Dropdown content: the short list (or everything), grouped by category.
   // The chains arrive already sorted, so groups appear in the right order.
   const visibleChains = chains.filter(
-    (c) => showAllChains || c.isTop || c.id === chainId
+    (c) => showAllChains || c.isTop || c.id === chainId,
   );
   const chainGroups: { key: string; label: string; items: Chain[] }[] = [];
   for (const c of visibleChains) {
@@ -265,7 +303,11 @@ export default function PriceForm({
     const key = category ?? "none";
     let group = chainGroups.find((g) => g.key === key);
     if (!group) {
-      group = { key, label: category ? CATEGORY_LABEL[category] : "未分類", items: [] };
+      group = {
+        key,
+        label: category ? CATEGORY_LABEL[category] : "未分類",
+        items: [],
+      };
       chainGroups.push(group);
     }
     group.items.push(c);
@@ -274,7 +316,9 @@ export default function PriceForm({
     ? newBranch.trim()
     : (branchOptions.find((b) => b.id === selectedBranch)?.name ?? "");
 
-  const saleText = selectedChain ? saleLabel(parseCategory(selectedChain.category)) : "特売";
+  const saleText = selectedChain
+    ? saleLabel(parseCategory(selectedChain.category))
+    : "特売";
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -379,7 +423,11 @@ export default function PriceForm({
           </div>
         </Field>
 
-        <Collapsible title="支店" badge={<Badge kind="optional" />} summary={branchSummary}>
+        <Collapsible
+          title="支店"
+          badge={<Badge kind="optional" />}
+          summary={branchSummary}
+        >
           <div className="flex gap-2">
             {isNewBranch ? (
               <input
@@ -463,7 +511,10 @@ export default function PriceForm({
         </Field>
         {taxEstimate !== null && selectedRate !== null && (
           <p className="text-sm text-stone-600">
-            税込の目安 <span className="font-bold tabular-nums">{formatYen(taxEstimate)}</span>
+            税込の目安{" "}
+            <span className="font-bold tabular-nums">
+              {formatYen(taxEstimate)}
+            </span>
             （{selectedRate}%・未確認）
           </p>
         )}
@@ -523,7 +574,11 @@ export default function PriceForm({
         </div>
       </fieldset>
 
-      <BonusPointsField chain={selectedChain} value={bonusPoints} onChange={setBonusPoints} />
+      <BonusPointsField
+        chain={selectedChain}
+        value={bonusPoints}
+        onChange={setBonusPoints}
+      />
 
       <Field label="日時" kind="required" htmlFor="observed_at">
         <div className="flex gap-2">
@@ -544,8 +599,7 @@ export default function PriceForm({
             onClick={() => setObservedAt(nowInJapan())}
             className="flex h-12 shrink-0 items-center gap-1.5 rounded-xl border border-line bg-panel px-4 text-sm font-medium text-stone-700 active:scale-95"
           >
-            <Clock className="h-4 w-4" />
-            今
+            <Clock className="h-4 w-4" />今
           </button>
         </div>
       </Field>
@@ -572,7 +626,10 @@ export default function PriceForm({
         <p className="text-sm text-teal-700">
           {state.message}
           {state.toastLink && (
-            <Link href={state.toastLink.href} className="ml-2 font-bold underline">
+            <Link
+              href={state.toastLink.href}
+              className="ml-2 font-bold underline"
+            >
               {state.toastLink.label}
             </Link>
           )}
@@ -580,7 +637,11 @@ export default function PriceForm({
       )}
 
       <div ref={saveRef}>
-        <Button type="submit" disabled={saveDisabled} className="h-12 w-full text-base">
+        <Button
+          type="submit"
+          disabled={saveDisabled}
+          className="h-12 w-full text-base"
+        >
           {pending ? "保存中…" : "保存"}
         </Button>
       </div>

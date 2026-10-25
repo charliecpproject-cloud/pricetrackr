@@ -8,7 +8,8 @@ export function normalizeBarcode(raw: string): string | null {
   return /^\d{12}$/.test(text) ? `0${text}` : text;
 }
 
-type ParsedBarcodes = { ok: true; codes: string[] } | { ok: false; error: string };
+type ParsedBarcodes =
+  { ok: true; codes: string[] } | { ok: false; error: string };
 
 /** Cleans a list of typed codes: empty ones are skipped, duplicates removed. */
 export function parseBarcodes(values: unknown[]): ParsedBarcodes {
@@ -25,7 +26,10 @@ export function parseBarcodes(values: unknown[]): ParsedBarcodes {
     if (!codes.includes(code)) codes.push(code);
   }
   if (codes.length > MAX_BARCODES_PER_PRODUCT) {
-    return { ok: false, error: `バーコードは${MAX_BARCODES_PER_PRODUCT}個までです` };
+    return {
+      ok: false,
+      error: `バーコードは${MAX_BARCODES_PER_PRODUCT}個までです`,
+    };
   }
   return { ok: true, codes };
 }

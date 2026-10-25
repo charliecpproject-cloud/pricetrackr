@@ -22,7 +22,7 @@ export default async function CouponForm({
   const { data, error } = await supabase
     .from("store_chains")
     .select(
-      "coupon_percents, member_discount_percent, has_bonus_points, point_use_enabled, point_use_multiplier, bulk_enabled"
+      "coupon_percents, member_discount_percent, has_bonus_points, point_use_enabled, point_use_multiplier, bulk_enabled",
     )
     .eq("id", chainId)
     .single();

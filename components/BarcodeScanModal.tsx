@@ -35,7 +35,9 @@ export default function BarcodeScanModal({
       />
       <div className="relative w-full max-w-xl rounded-t-3xl border border-line bg-background p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-xl sm:rounded-3xl">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-lg font-bold text-stone-900">バーコードを読み取る</h3>
+          <h3 className="text-lg font-bold text-stone-900">
+            バーコードを読み取る
+          </h3>
           <button
             type="button"
             onClick={onClose}

@@ -58,11 +58,19 @@ export default function ProductFields({
       </Field>
 
       <Field label="ブランド" kind="optional" htmlFor={id("brand")}>
-        <BrandField id={id("brand")} name={id("brand")} placeholder="例：パスコ" />
+        <BrandField
+          id={id("brand")}
+          name={id("brand")}
+          placeholder="例：パスコ"
+        />
       </Field>
 
       <Field label="カテゴリ" kind="optional" htmlFor={id("category")}>
-        <CategoryField id={id("category")} name={id("category")} placeholder="例：パン" />
+        <CategoryField
+          id={id("category")}
+          name={id("category")}
+          placeholder="例：パン"
+        />
       </Field>
 
       <Field
@@ -104,7 +112,9 @@ export default function ProductFields({
                 <button
                   type="button"
                   aria-label="この行を削除"
-                  onClick={() => setBarcodeRows((cur) => cur.filter((r) => r !== row))}
+                  onClick={() =>
+                    setBarcodeRows((cur) => cur.filter((r) => r !== row))
+                  }
                   className="h-12 w-12 shrink-0 rounded-xl border border-line text-stone-500"
                 >
                   ×

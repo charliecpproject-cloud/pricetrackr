@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getViewer } from "@/lib/auth/viewer";
-import { MAX_COUNTER_WORDS, parseNewCounterWord } from "@/lib/prices/counterWord";
+import {
+  MAX_COUNTER_WORDS,
+  parseNewCounterWord,
+} from "@/lib/prices/counterWord";
 import { MAX_UNIT_LENGTH } from "@/lib/prices/unitWords";
 
 type State = { error: string | null; message?: string | null };
@@ -20,12 +23,17 @@ function refresh() {
 // The stored unit of a word (the word itself, or count / sheet / bag).
 function unitFrom(formData: FormData): string | null {
   const value = formData.get("unit");
-  return typeof value === "string" && value.length > 0 && value.length <= MAX_UNIT_LENGTH
+  return typeof value === "string" &&
+    value.length > 0 &&
+    value.length <= MAX_UNIT_LENGTH
     ? value
     : null;
 }
 
-export async function addCounterUnit(_prev: State, formData: FormData): Promise<State> {
+export async function addCounterUnit(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
 
   const parsed = parseNewCounterWord(String(formData.get("word") ?? ""));
@@ -36,16 +44,28 @@ export async function addCounterUnit(_prev: State, formData: FormData): Promise<
     .from("counter_units")
     .select("unit, label, sort_order");
   if (fetchError || !existing) {
-    console.error("Counter units fetch error:", fetchError?.message, fetchError?.code);
+    console.error(
+      "Counter units fetch error:",
+      fetchError?.message,
+      fetchError?.code,
+    );
     return { error: FAILED };
   }
 
-  const rows = existing as { unit: string; label: string; sort_order: number }[];
+  const rows = existing as {
+    unit: string;
+    label: string;
+    sort_order: number;
+  }[];
   if (rows.length >= MAX_COUNTER_WORDS) {
     return { error: `言葉は${MAX_COUNTER_WORDS}個までです` };
   }
   const lower = parsed.word.toLowerCase();
-  if (rows.some((r) => r.unit.toLowerCase() === lower || r.label.toLowerCase() === lower)) {
+  if (
+    rows.some(
+      (r) => r.unit.toLowerCase() === lower || r.label.toLowerCase() === lower,
+    )
+  ) {
     return { error: "この言葉はすでに登録されています" };
   }
 
@@ -56,7 +76,8 @@ export async function addCounterUnit(_prev: State, formData: FormData): Promise<
   if (error) {
     console.error("Counter unit insert error:", error.message, error.code);
     if (error.code === "42501") return { error: NOT_ADMIN };
-    if (error.code === "23505") return { error: "この言葉はすでに登録されています" };
+    if (error.code === "23505")
+      return { error: "この言葉はすでに登録されています" };
     return { error: FAILED };
   }
 
@@ -64,7 +85,10 @@ export async function addCounterUnit(_prev: State, formData: FormData): Promise<
   return { error: null, message: `「${parsed.word}」を追加しました` };
 }
 
-export async function setCounterUnitEnabled(_prev: State, formData: FormData): Promise<State> {
+export async function setCounterUnitEnabled(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
   const unit = unitFrom(formData);
   if (!unit) return { error: "言葉が正しくありません" };
@@ -85,18 +109,25 @@ export async function setCounterUnitEnabled(_prev: State, formData: FormData): P
   refresh();
   return {
     error: null,
-    message: enabled ? "単位の選択肢に表示します" : "単位の選択肢から外しました",
+    message: enabled
+      ? "単位の選択肢に表示します"
+      : "単位の選択肢から外しました",
   };
 }
 
-export async function deleteCounterUnit(_prev: State, formData: FormData): Promise<State> {
+export async function deleteCounterUnit(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
   const unit = unitFrom(formData);
   if (!unit) return { error: "言葉が正しくありません" };
 
   // The database function refuses 個 and words that are used by a 容量.
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("delete_counter_unit", { p_unit: unit });
+  const { data, error } = await supabase.rpc("delete_counter_unit", {
+    p_unit: unit,
+  });
   if (error) {
     console.error("Counter unit delete error:", error.message, error.code);
     return { error: "削除できませんでした。もう一度お試しください。" };

@@ -40,8 +40,12 @@ export default async function SettingsPage() {
       <div className={`${cardCls} space-y-2`}>
         <h2 className="text-lg font-bold text-stone-900">アカウント</h2>
         <p className="break-all text-stone-700">{user.email}</p>
-        <p className="text-sm text-stone-500">種類：{isAdmin ? "管理者" : "一般"}</p>
-        <ProfileNameForm current={(profile?.display_name as string | null) ?? ""} />
+        <p className="text-sm text-stone-500">
+          種類：{isAdmin ? "管理者" : "一般"}
+        </p>
+        <ProfileNameForm
+          current={(profile?.display_name as string | null) ?? ""}
+        />
       </div>
 
       <div className={`${cardCls} space-y-3`}>
@@ -58,7 +62,9 @@ export default async function SettingsPage() {
             <h2 className="text-lg font-bold text-stone-900">デモモード</h2>
             <span
               className={`rounded-full px-3 py-1 text-sm font-bold ${
-                demoMode ? "bg-amber-100 text-amber-700" : "bg-chip text-stone-600"
+                demoMode
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-chip text-stone-600"
               }`}
             >
               {demoMode ? "オン" : "オフ"}

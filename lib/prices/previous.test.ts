@@ -21,11 +21,17 @@ describe("parsePriceInput", () => {
 
 describe("priceChange", () => {
   it("up", () => {
-    expect(priceChange(2064, "incl", prev)).toEqual({ kind: "up", percent: 3.2 });
+    expect(priceChange(2064, "incl", prev)).toEqual({
+      kind: "up",
+      percent: 3.2,
+    });
   });
 
   it("down", () => {
-    expect(priceChange(1918, "incl", prev)).toEqual({ kind: "down", percent: 4.1 });
+    expect(priceChange(1918, "incl", prev)).toEqual({
+      kind: "down",
+      percent: 4.1,
+    });
   });
 
   it("same", () => {
@@ -39,7 +45,9 @@ describe("priceChange", () => {
   });
 
   it("compares two unknown bases", () => {
-    expect(priceChange(2100, "unknown", { price: 2000, taxBasis: "unknown" })).toEqual({
+    expect(
+      priceChange(2100, "unknown", { price: 2000, taxBasis: "unknown" }),
+    ).toEqual({
       kind: "up",
       percent: 5,
     });

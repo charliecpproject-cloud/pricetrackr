@@ -62,7 +62,9 @@ export default function LegacyPrices({
                     {formatDateTime(r.observedAt)}
                     <PriceAge iso={r.observedAt} className="ml-1.5" />
                     {r.bonusPoints ? (
-                      <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span>
+                      <span className="ml-2 text-amber-700">
+                        +{r.bonusPoints}ポイント
+                      </span>
                     ) : null}
                   </p>
                 </div>
@@ -72,7 +74,9 @@ export default function LegacyPrices({
                     couponPercents={r.couponPercents}
                     memberPercent={r.memberPercent}
                     isMemberPrice={r.isMemberPrice}
-                    regularLabel={r.isSale ? `${saleLabel(r.category)}価格` : undefined}
+                    regularLabel={
+                      r.isSale ? `${saleLabel(r.category)}価格` : undefined
+                    }
                     pointUseMultiplier={r.pointUseMultiplier}
                     bulkTiers={r.bulkTiers}
                     taxRate={taxRate}

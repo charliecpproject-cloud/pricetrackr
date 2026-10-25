@@ -27,9 +27,10 @@ export async function addStoreChain(
   // ---- DB 挿入 ----
   const supabase = await createSupabaseServerClient();
 
-  const { error } = await supabase
-    .from("store_chains")
-    .insert({ name: parseResult.data, category: parseCategory(formData.get("category")) });
+  const { error } = await supabase.from("store_chains").insert({
+    name: parseResult.data,
+    category: parseCategory(formData.get("category")),
+  });
 
   if (error) {
     console.error("Supabase insert error:", error);

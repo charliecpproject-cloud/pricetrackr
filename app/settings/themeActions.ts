@@ -6,7 +6,7 @@ import { THEMES } from "@/lib/themes/themes";
 
 export async function setTheme(
   _prevState: { error: string | null; message?: string | null },
-  formData: FormData
+  formData: FormData,
 ): Promise<{ error: string | null; message?: string | null }> {
   const theme = THEMES.find((t) => t.id === formData.get("theme"));
   if (!theme) return { error: "不正な選択です" };

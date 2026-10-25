@@ -6,10 +6,16 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type State = { error: string | null; message?: string | null };
 
-const nameSchema = z.string().trim().max(30, "表示名は30文字以内で入力してください");
+const nameSchema = z
+  .string()
+  .trim()
+  .max(30, "表示名は30文字以内で入力してください");
 
 // An empty name clears it. Names do not need to be unique.
-export async function setDisplayName(_prev: State, formData: FormData): Promise<State> {
+export async function setDisplayName(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   const raw = String(formData.get("display_name") ?? "").replace(/\s+/g, " ");
   const parsed = nameSchema.safeParse(raw);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -34,6 +40,7 @@ export async function setDisplayName(_prev: State, formData: FormData): Promise<
   revalidatePath("/", "layout");
   return {
     error: null,
-    message: parsed.data === "" ? "表示名を削除しました" : "表示名を保存しました",
+    message:
+      parsed.data === "" ? "表示名を削除しました" : "表示名を保存しました",
   };
 }

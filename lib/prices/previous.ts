@@ -9,7 +9,10 @@ export type PreviousPrice = {
 };
 
 // latest: the newest price of this 容量 at any chain; atChain: the newest at the chosen chain.
-export type PreviousPrices = { latest: PreviousPrice | null; atChain: PreviousPrice | null };
+export type PreviousPrices = {
+  latest: PreviousPrice | null;
+  atChain: PreviousPrice | null;
+};
 
 export type PriceChange =
   | { kind: "none" } // nothing (valid) typed yet
@@ -29,12 +32,14 @@ export function parsePriceInput(text: string): number {
 export function priceChange(
   current: number,
   currentBasis: TaxBasis,
-  previous: { price: number; taxBasis: TaxBasis }
+  previous: { price: number; taxBasis: TaxBasis },
 ): PriceChange {
   if (!Number.isFinite(current) || current <= 0) return { kind: "none" };
-  if (!Number.isFinite(previous.price) || previous.price <= 0) return { kind: "none" };
+  if (!Number.isFinite(previous.price) || previous.price <= 0)
+    return { kind: "none" };
   if (currentBasis !== previous.taxBasis) return { kind: "mismatch" };
-  const percent = Math.round(((current - previous.price) / previous.price) * 1000) / 10;
+  const percent =
+    Math.round(((current - previous.price) / previous.price) * 1000) / 10;
   if (percent === 0) return { kind: "same" };
   return { kind: percent > 0 ? "up" : "down", percent: Math.abs(percent) };
 }

@@ -9,8 +9,10 @@ import {
 
 describe("isMeasureUnit", () => {
   it("knows ml, L, g and kg only", () => {
-    for (const unit of ["ml", "L", "g", "kg"]) expect(isMeasureUnit(unit)).toBe(true);
-    for (const unit of ["count", "本", "", "l", "KG"]) expect(isMeasureUnit(unit)).toBe(false);
+    for (const unit of ["ml", "L", "g", "kg"])
+      expect(isMeasureUnit(unit)).toBe(true);
+    for (const unit of ["count", "本", "", "l", "KG"])
+      expect(isMeasureUnit(unit)).toBe(false);
   });
 });
 
@@ -48,13 +50,24 @@ describe("unitDropdownOptions", () => {
       { unit: "count", label: "個" },
       { unit: "本", label: "本" },
     ]);
-    expect(options.map((o) => o.value)).toEqual(["ml", "L", "g", "kg", "count", "本"]);
+    expect(options.map((o) => o.value)).toEqual([
+      "ml",
+      "L",
+      "g",
+      "kg",
+      "count",
+      "本",
+    ]);
     expect(options[4]).toEqual({ value: "count", label: "個" });
   });
 });
 
 describe("DEFAULT_COUNTER_OPTIONS", () => {
   it("has the three original words, 個 first", () => {
-    expect(DEFAULT_COUNTER_OPTIONS.map((o) => o.unit)).toEqual(["count", "sheet", "bag"]);
+    expect(DEFAULT_COUNTER_OPTIONS.map((o) => o.unit)).toEqual([
+      "count",
+      "sheet",
+      "bag",
+    ]);
   });
 });

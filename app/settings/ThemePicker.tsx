@@ -11,7 +11,10 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function ThemePicker({ current }: { current: ThemeId }) {
-  const [state, formAction, pending] = useToastedActionState(setTheme, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    setTheme,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-3">
@@ -31,25 +34,39 @@ export default function ThemePicker({ current }: { current: ThemeId }) {
             <span
               aria-hidden="true"
               className="flex h-12 w-16 shrink-0 items-center justify-center rounded-lg border"
-              style={{ background: t.previewBackground, borderColor: t.previewBorder }}
+              style={{
+                background: t.previewBackground,
+                borderColor: t.previewBorder,
+              }}
             >
               <span
                 className="h-6 w-10 rounded-md border"
-                style={{ background: t.previewPanel, borderColor: t.previewBorder }}
+                style={{
+                  background: t.previewPanel,
+                  borderColor: t.previewBorder,
+                }}
               />
             </span>
             <span className="min-w-0">
               <span className="block font-bold text-stone-900">{t.label}</span>
-              <span className="block text-sm text-stone-500">{t.description}</span>
+              <span className="block text-sm text-stone-500">
+                {t.description}
+              </span>
             </span>
           </label>
         ))}
       </div>
-      <Button type="submit" disabled={pending} className="h-12 w-full text-base">
+      <Button
+        type="submit"
+        disabled={pending}
+        className="h-12 w-full text-base"
+      >
         {pending ? "変更中…" : "このテーマにする"}
       </Button>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+      {state.message && (
+        <p className="text-sm text-teal-700">{state.message}</p>
+      )}
     </form>
   );
 }

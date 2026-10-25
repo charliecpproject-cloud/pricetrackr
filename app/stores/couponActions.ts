@@ -11,7 +11,10 @@ const schema = z.object({
     z.coerce
       .number()
       .int()
-      .refine((n) => [5, 10, 15].includes(n), "クーポンの割合が正しくありません")
+      .refine(
+        (n) => [5, 10, 15].includes(n),
+        "クーポンの割合が正しくありません",
+      ),
   ),
 });
 
@@ -19,7 +22,7 @@ type State = { error: string | null; message: string | null };
 
 export async function updateChainCoupons(
   _prevState: State,
-  formData: FormData
+  formData: FormData,
 ): Promise<State> {
   const parsed = schema.safeParse({
     chainId: formData.get("chainId"),
@@ -29,7 +32,9 @@ export async function updateChainCoupons(
     return { error: parsed.error.issues[0].message, message: null };
   }
 
-  const percents = Array.from(new Set(parsed.data.percents)).sort((a, b) => a - b);
+  const percents = Array.from(new Set(parsed.data.percents)).sort(
+    (a, b) => a - b,
+  );
 
   let memberPercent: number | null = null;
   if (formData.get("member_enabled") === "on") {
@@ -48,7 +53,11 @@ export async function updateChainCoupons(
   const pointUseEnabled = formData.get("point_use_enabled") === "on";
   let pointUseMultiplier: number | null = null;
   if (pointUseEnabled) {
-    const m = Number(String(formData.get("point_use_multiplier") ?? "").normalize("NFKC").trim());
+    const m = Number(
+      String(formData.get("point_use_multiplier") ?? "")
+        .normalize("NFKC")
+        .trim(),
+    );
     if (!Number.isFinite(m) || m < 1 || m > 10) {
       return { error: "倍率は1〜10の数値で入力してください", message: null };
     }
@@ -64,13 +73,18 @@ export async function updateChainCoupons(
       has_bonus_points: hasBonusPoints,
       point_use_enabled: pointUseEnabled,
       bulk_enabled: formData.get("bulk_enabled") === "on",
-      ...(pointUseMultiplier !== null ? { point_use_multiplier: pointUseMultiplier } : {}),
+      ...(pointUseMultiplier !== null
+        ? { point_use_multiplier: pointUseMultiplier }
+        : {}),
     })
     .eq("id", parsed.data.chainId);
 
   if (error) {
     console.error("Chain options update error:", error.message, error.code);
-    return { error: "保存できませんでした。もう一度お試しください。", message: null };
+    return {
+      error: "保存できませんでした。もう一度お試しください。",
+      message: null,
+    };
   }
 
   revalidatePath("/stores");

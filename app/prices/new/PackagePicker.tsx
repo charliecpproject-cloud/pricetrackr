@@ -2,7 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { X } from "lucide-react";
-import { matchesSearchWithAliases, type SearchAlias } from "@/lib/search/aliases";
+import {
+  matchesSearchWithAliases,
+  type SearchAlias,
+} from "@/lib/search/aliases";
 import { controlCls } from "@/components/FormParts";
 
 type Pkg = { id: string; label: string; search: string };
@@ -31,7 +34,10 @@ export default function PackagePicker({
   onSearchChange: (value: string) => void;
   inputRef: RefObject<HTMLInputElement | null>;
 }) {
-  const rank = useMemo(() => new Map(recentIds.map((id, i) => [id, i])), [recentIds]);
+  const rank = useMemo(
+    () => new Map(recentIds.map((id, i) => [id, i])),
+    [recentIds],
+  );
   const keyword = search.trim();
 
   // The list floats over the form while the field is in use. It closes after a choice, a tap
@@ -41,7 +47,8 @@ export default function PackagePicker({
   useEffect(() => {
     if (!open) return;
     const onDown = (e: PointerEvent) => {
-      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+      if (boxRef.current && !boxRef.current.contains(e.target as Node))
+        setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -58,13 +65,15 @@ export default function PackagePicker({
     let list: Pkg[];
     if (keyword) {
       list = packages.filter((p) =>
-        matchesSearchWithAliases(`${p.label} ${p.search}`, keyword, aliases)
+        matchesSearchWithAliases(`${p.label} ${p.search}`, keyword, aliases),
       );
     } else {
       const recent = packages.filter((p) => rank.has(p.id));
       list = recent.length > 0 ? recent : packages;
     }
-    return [...list].sort((a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9));
+    return [...list].sort(
+      (a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9),
+    );
   }, [packages, aliases, keyword, rank]);
 
   const selected = packages.find((p) => p.id === selectedId);
@@ -72,7 +81,9 @@ export default function PackagePicker({
     return (
       <div className="flex min-h-12 items-center justify-between gap-2 rounded-xl border border-teal-600 bg-teal-50 px-3 py-2">
         <input type="hidden" name="product_package_id" value={selected.id} />
-        <span className="min-w-0 text-sm font-medium text-stone-900">{selected.label}</span>
+        <span className="min-w-0 text-sm font-medium text-stone-900">
+          {selected.label}
+        </span>
         <button
           type="button"
           onClick={() => {
@@ -116,7 +127,9 @@ export default function PackagePicker({
         <div className="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-line bg-background shadow-lg">
           {/* The opaque layer above keeps the form text behind the list from showing through the theme's see-through panel colour. */}
           <div className="bg-panel">
-            <p className="bg-panel-soft px-3 py-1.5 text-xs font-medium text-stone-500">{heading}</p>
+            <p className="bg-panel-soft px-3 py-1.5 text-xs font-medium text-stone-500">
+              {heading}
+            </p>
             {shown.length === 0 ? (
               <p className="px-3 py-3 text-sm text-stone-500">
                 該当する商品がありません。右の「新規」から登録できます。
@@ -146,11 +159,14 @@ export default function PackagePicker({
             )}
             {matches.length > MAX_SHOWN && (
               <p className="px-3 py-2 text-xs text-stone-500">
-                ほかに{matches.length - MAX_SHOWN}件あります。言葉を足して絞り込んでください。
+                ほかに{matches.length - MAX_SHOWN}
+                件あります。言葉を足して絞り込んでください。
               </p>
             )}
             {!keyword && shown.length > 0 && (
-              <p className="px-3 py-2 text-xs text-stone-500">ほかの商品は名前を入力して検索できます。</p>
+              <p className="px-3 py-2 text-xs text-stone-500">
+                ほかの商品は名前を入力して検索できます。
+              </p>
             )}
           </div>
         </div>

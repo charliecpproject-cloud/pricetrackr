@@ -6,7 +6,8 @@ import { searchMergeProducts } from "./actions";
 import type { MergeProduct } from "./types";
 
 const sub = (p: MergeProduct) =>
-  [p.brand, p.category].filter(Boolean).join(" ・ ") || "ブランド・カテゴリなし";
+  [p.brand, p.category].filter(Boolean).join(" ・ ") ||
+  "ブランド・カテゴリなし";
 
 export default function ProductPick({
   id,
@@ -110,7 +111,9 @@ export default function ProductPick({
                     <span className="block break-words text-sm font-medium text-stone-900">
                       {p.name}
                     </span>
-                    <span className="block break-words text-xs text-stone-500">{sub(p)}</span>
+                    <span className="block break-words text-xs text-stone-500">
+                      {sub(p)}
+                    </span>
                   </button>
                 </li>
               ))}

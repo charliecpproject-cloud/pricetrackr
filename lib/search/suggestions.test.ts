@@ -21,7 +21,9 @@ describe("parseDisplayCount", () => {
 
 describe("parseSuggestionTerms", () => {
   it("splits on commas, full-width commas, 、 and line breaks, keeping the order", () => {
-    const result = parseSuggestionTerms("ベビーフード, おむつ，牛乳、洗剤\nティッシュ");
+    const result = parseSuggestionTerms(
+      "ベビーフード, おむつ，牛乳、洗剤\nティッシュ",
+    );
     expect(result).toEqual({
       ok: true,
       terms: ["ベビーフード", "おむつ", "牛乳", "洗剤", "ティッシュ"],

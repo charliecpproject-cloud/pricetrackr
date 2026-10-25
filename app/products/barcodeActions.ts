@@ -8,13 +8,19 @@ import {
   normalizeBarcode,
   parseBarcodes,
 } from "@/lib/products/barcode";
-import { BARCODE_TAKEN_HIDDEN, takenBarcodeMessage } from "@/lib/products/barcodeDb";
+import {
+  BARCODE_TAKEN_HIDDEN,
+  takenBarcodeMessage,
+} from "@/lib/products/barcodeDb";
 
 type State = { error: string | null; message?: string | null };
 
 const FAILED = "保存できませんでした。もう一度お試しください。";
 
-export async function addBarcode(_prev: State, formData: FormData): Promise<State> {
+export async function addBarcode(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   const productId = z
     .string()
     .uuid("商品が正しくありません")
@@ -23,11 +29,13 @@ export async function addBarcode(_prev: State, formData: FormData): Promise<Stat
 
   const parsed = parseBarcodes([formData.get("code")]);
   if (!parsed.ok) return { error: parsed.error };
-  if (parsed.codes.length === 0) return { error: "バーコードを入力してください" };
+  if (parsed.codes.length === 0)
+    return { error: "バーコードを入力してください" };
 
   // Optional: the exact 容量 this barcode belongs to.
   const rawPackage = formData.get("package_id");
-  const packageId = typeof rawPackage === "string" && rawPackage !== "" ? rawPackage : null;
+  const packageId =
+    typeof rawPackage === "string" && rawPackage !== "" ? rawPackage : null;
   if (packageId !== null && !z.string().uuid().safeParse(packageId).success) {
     return { error: "容量が正しくありません" };
   }
@@ -72,7 +80,10 @@ export async function addBarcode(_prev: State, formData: FormData): Promise<Stat
   return { error: null, message: "追加しました" };
 }
 
-export async function deleteBarcode(_prev: State, formData: FormData): Promise<State> {
+export async function deleteBarcode(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   const code = normalizeBarcode(String(formData.get("barcode_code") ?? ""));
   if (!code) return { error: "バーコードが正しくありません" };
 
@@ -86,7 +97,8 @@ export async function deleteBarcode(_prev: State, formData: FormData): Promise<S
     console.error("Barcode delete error:", error.message, error.code);
     return { error: "削除できませんでした。もう一度お試しください。" };
   }
-  if (!data || data.length === 0) return { error: "バーコードが見つかりませんでした" };
+  if (!data || data.length === 0)
+    return { error: "バーコードが見つかりませんでした" };
 
   revalidatePath("/products");
   return { error: null, message: "削除しました" };

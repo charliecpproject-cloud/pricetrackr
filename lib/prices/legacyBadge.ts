@@ -11,7 +11,10 @@ export type LegacySummaryRow = {
 };
 
 // Products whose open legacy prices include one newer than 6 months.
-export function legacyBadgeIds(rows: LegacySummaryRow[], now: Date = new Date()): Set<string> {
+export function legacyBadgeIds(
+  rows: LegacySummaryRow[],
+  now: Date = new Date(),
+): Set<string> {
   const since = new Date(now);
   since.setMonth(since.getMonth() - LEGACY_BADGE_MONTHS);
   const ids = new Set<string>();
@@ -26,10 +29,12 @@ export function legacyBadgeIds(rows: LegacySummaryRow[], now: Date = new Date())
 // One small database call for all products on the page (logged-in users only).
 export async function loadLegacyBadgeIds(
   supabase: Supabase,
-  productIds: string[]
+  productIds: string[],
 ): Promise<Set<string>> {
   if (productIds.length === 0) return new Set();
-  const { data, error } = await supabase.rpc("legacy_summary", { p_product_ids: productIds });
+  const { data, error } = await supabase.rpc("legacy_summary", {
+    p_product_ids: productIds,
+  });
   if (error) {
     console.error("Legacy summary error:", error.message, error.code);
     return new Set();

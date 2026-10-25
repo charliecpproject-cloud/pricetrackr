@@ -12,8 +12,17 @@ const initialState: { error: string | null; message?: string | null } = {
   message: null,
 };
 
-export default function SuggestionForm({ count, terms }: { count: number; terms: string[] }) {
-  const [state, formAction, pending] = useToastedActionState(saveSuggestions, initialState);
+export default function SuggestionForm({
+  count,
+  terms,
+}: {
+  count: number;
+  terms: string[];
+}) {
+  const [state, formAction, pending] = useToastedActionState(
+    saveSuggestions,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-4">
@@ -27,11 +36,13 @@ export default function SuggestionForm({ count, terms }: { count: number; terms:
           defaultValue={String(count)}
           className={controlCls}
         >
-          {Array.from({ length: MAX_DISPLAY_COUNT }, (_, i) => i + 1).map((n) => (
-            <option key={n} value={n}>
-              {n}個
-            </option>
-          ))}
+          {Array.from({ length: MAX_DISPLAY_COUNT }, (_, i) => i + 1).map(
+            (n) => (
+              <option key={n} value={n}>
+                {n}個
+              </option>
+            ),
+          )}
         </select>
       </div>
 
@@ -48,7 +59,8 @@ export default function SuggestionForm({ count, terms }: { count: number; terms:
           className="text-base"
         />
         <p className="mt-1 text-xs text-stone-500">
-          カンマ（,）か改行で区切ります。先頭から順に、表示する数だけ表示されます。空にするとおすすめは表示されません（最大{MAX_TERMS}個、1つ30文字まで）。
+          カンマ（,）か改行で区切ります。先頭から順に、表示する数だけ表示されます。空にするとおすすめは表示されません（最大
+          {MAX_TERMS}個、1つ30文字まで）。
         </p>
       </div>
 

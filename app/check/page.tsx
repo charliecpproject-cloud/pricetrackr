@@ -180,7 +180,9 @@ function SizeBlock({
                     {formatDateTime(r.observedAt)}
                     <PriceAge iso={r.observedAt} className="ml-1.5" />
                     {r.bonusPoints ? (
-                      <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span>
+                      <span className="ml-2 text-amber-700">
+                        +{r.bonusPoints}ポイント
+                      </span>
                     ) : null}
                   </p>
                 </div>
@@ -190,7 +192,9 @@ function SizeBlock({
                     couponPercents={r.couponPercents}
                     memberPercent={r.memberPercent}
                     isMemberPrice={r.isMemberPrice}
-                    regularLabel={r.isSale ? `${saleLabel(r.category)}価格` : undefined}
+                    regularLabel={
+                      r.isSale ? `${saleLabel(r.category)}価格` : undefined
+                    }
                     pointUseMultiplier={r.pointUseMultiplier}
                     bulkTiers={r.bulkTiers}
                     taxRate={card.taxRate}
@@ -207,7 +211,9 @@ function SizeBlock({
                       size: card.sizeValue,
                       unit: card.unit,
                       hideSinglePiece: true,
-                      regularLabel: r.isSale ? `${saleLabel(r.category)}価格` : undefined,
+                      regularLabel: r.isSale
+                        ? `${saleLabel(r.category)}価格`
+                        : undefined,
                     })}
                   />
                 </div>
@@ -236,9 +242,13 @@ export default async function CheckPage({
   const viewerPromise = getViewer();
   const parsedFilters = parseFilters(rawParams);
   // What to search: every field (default), or only the name, brand, category or barcode.
-  const scope = parseSearchScope((rawParams as unknown as Record<string, unknown>).scope);
+  const scope = parseSearchScope(
+    (rawParams as unknown as Record<string, unknown>).scope,
+  );
   // 「もっと見る」: how many products to show (20 more with each tap, up to 100).
-  const limitRaw = Number(Array.isArray(rawParams.limit) ? rawParams.limit[0] : rawParams.limit);
+  const limitRaw = Number(
+    Array.isArray(rawParams.limit) ? rawParams.limit[0] : rawParams.limit,
+  );
   const limit = Number.isFinite(limitRaw)
     ? Math.min(MAX_LIMIT, Math.max(PAGE_SIZE, Math.floor(limitRaw)))
     : PAGE_SIZE;
@@ -252,20 +262,29 @@ export default async function CheckPage({
   const favoritesPromise = viewerPromise.then((v) =>
     v.loggedIn
       ? loadFavorites(supabase)
-      : { ids: new Set<string>(), groups: new Set<string>() }
+      : { ids: new Set<string>(), groups: new Set<string>() },
   );
   const matchedIdsPromise = parsedFilters.q
-    ? searchProductIds(supabase, parsedFilters.q, Math.max(50, limit + 1), scope)
+    ? searchProductIds(
+        supabase,
+        parsedFilters.q,
+        Math.max(50, limit + 1),
+        scope,
+      )
     : Promise.resolve([] as Awaited<ReturnType<typeof searchProductIds>>);
 
-  const [viewer, favorites, suggestions, chainsResult, matchedIds] = await Promise.all([
-    viewerPromise,
-    favoritesPromise,
-    loadVisibleSuggestions(supabase),
-    // Chains for the store and category filters (a small list).
-    supabase.from("store_chains").select("id, name, category").order("name", { ascending: true }),
-    matchedIdsPromise,
-  ]);
+  const [viewer, favorites, suggestions, chainsResult, matchedIds] =
+    await Promise.all([
+      viewerPromise,
+      favoritesPromise,
+      loadVisibleSuggestions(supabase),
+      // Chains for the store and category filters (a small list).
+      supabase
+        .from("store_chains")
+        .select("id, name, category")
+        .order("name", { ascending: true }),
+      matchedIdsPromise,
+    ]);
 
   const loggedIn = viewer.loggedIn;
   // The favorites filter needs an account: visitors have no favorites.
@@ -286,9 +305,14 @@ export default async function CheckPage({
   const onlyFavorites = f.favorites;
   const since = rangeStart(f);
   const until = rangeEnd(f);
-  const categoryChainIds = f.categories.length > 0
-    ? chains.filter((c) => c.category !== null && f.categories.includes(c.category)).map((c) => c.id)
-    : null;
+  const categoryChainIds =
+    f.categories.length > 0
+      ? chains
+          .filter(
+            (c) => c.category !== null && f.categories.includes(c.category),
+          )
+          .map((c) => c.id)
+      : null;
 
   // Any filter on the prices themselves changes which products can match.
   const hasPriceFilter =
@@ -300,14 +324,16 @@ export default async function CheckPage({
     f.max !== null;
 
   // Prices, newest first, with the chain / sale / date filters applied.
-  async function fetchObservations(packageIds: string[] | null): Promise<any[]> {
+  async function fetchObservations(
+    packageIds: string[] | null,
+  ): Promise<any[]> {
     if (categoryChainIds && categoryChainIds.length === 0) return [];
 
     let query = supabase
       .from("price_observations")
       .select(
         `product_package_id, price, observed_at, created_at, is_sale, store_chain_id, is_member_price, bonus_points, tax_basis, bulk_tiers,
-         store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier)`
+         store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier)`,
       )
       .order("observed_at", { ascending: false })
       .order("created_at", { ascending: false })
@@ -336,12 +362,13 @@ export default async function CheckPage({
       const chain = [obs.store_chains].flat()[0];
       const price = Number(obs.price);
       const percents: number[] = chain?.coupon_percents ?? [];
-      const memberPercent: number | null = chain?.member_discount_percent ?? null;
+      const memberPercent: number | null =
+        chain?.member_discount_percent ?? null;
       const isMemberPrice = !!obs.is_member_price;
       const bulkTiers = parseStoredTiers(obs.bulk_tiers);
       const pointUseMultiplier = pointUseMultiplierOf(
         chain?.point_use_enabled,
-        chain?.point_use_multiplier
+        chain?.point_use_multiplier,
       );
       const effective = effectivePrice(price, {
         couponPercents: percents,
@@ -393,11 +420,16 @@ export default async function CheckPage({
       .order("created_at", { ascending: false })
       .limit(60);
     if (recentError) {
-      console.error("Recent prices fetch error:", recentError.message, recentError.code);
+      console.error(
+        "Recent prices fetch error:",
+        recentError.message,
+        recentError.code,
+      );
     }
     const recentIds: string[] = [];
     for (const o of (recentObs ?? []) as any[]) {
-      const pid = [o.product_packages].flat()[0]?.product_id as string | undefined;
+      const pid = [o.product_packages].flat()[0]?.product_id as
+        string | undefined;
       if (pid && !recentIds.includes(pid)) recentIds.push(pid);
       if (recentIds.length >= RECENT_COUNT) break;
     }
@@ -411,7 +443,7 @@ export default async function CheckPage({
            package_unit,
            variation_id,
            product_variations (id, attributes)
-         )`
+         )`,
       )
       .order("created_at", { ascending: false })
       .in("id", recentIds);
@@ -422,7 +454,9 @@ export default async function CheckPage({
 
     products.sort((a, b) => recentIds.indexOf(a.id) - recentIds.indexOf(b.id));
     const recentPackageIds = products.flatMap((p: any) =>
-      ([p.product_packages].flat().filter(Boolean) as any[]).map((pkg) => pkg.id as string)
+      ([p.product_packages].flat().filter(Boolean) as any[]).map(
+        (pkg) => pkg.id as string,
+      ),
     );
     if (recentPackageIds.length > 0) {
       latest = buildLatest(await fetchObservations(recentPackageIds));
@@ -433,9 +467,13 @@ export default async function CheckPage({
     // a matching price is still listed.
     const favoriteIdList = Array.from(favorites.ids).slice(0, 200);
     if (!onlyFavorites || favoriteIdList.length > 0) {
-      latest = buildLatest(await fetchObservations(onlyFavorites ? favoriteIdList : null));
+      latest = buildLatest(
+        await fetchObservations(onlyFavorites ? favoriteIdList : null),
+      );
     }
-    const ids = onlyFavorites ? favoriteIdList : Array.from(latest.keys()).slice(0, 200);
+    const ids = onlyFavorites
+      ? favoriteIdList
+      : Array.from(latest.keys()).slice(0, 200);
     if (ids.length > 0) {
       let query = supabase
         .from("products")
@@ -447,7 +485,7 @@ export default async function CheckPage({
              package_unit,
              variation_id,
              product_variations (id, attributes)
-           )`
+           )`,
         )
         .in("product_packages.id", ids)
         .order("name_en", { ascending: true })
@@ -470,7 +508,7 @@ export default async function CheckPage({
            package_unit,
            variation_id,
            product_variations (id, attributes)
-         )`
+         )`,
       )
       .order("name_en", { ascending: true })
       .limit(limit + 1);
@@ -482,7 +520,9 @@ export default async function CheckPage({
     products = (data ?? []) as any[];
 
     const packageIds = products.flatMap((p: any) =>
-      ([p.product_packages].flat().filter(Boolean) as any[]).map((pkg) => pkg.id as string)
+      ([p.product_packages].flat().filter(Boolean) as any[]).map(
+        (pkg) => pkg.id as string,
+      ),
     );
     if (packageIds.length > 0) {
       latest = buildLatest(await fetchObservations(packageIds));
@@ -504,7 +544,7 @@ export default async function CheckPage({
       return pkgs.map((pkg): SizeCard => {
         const variationObj = Array.isArray(pkg.product_variations)
           ? pkg.product_variations[0]
-          : pkg.product_variations ?? null;
+          : (pkg.product_variations ?? null);
         const variationText = variationObj?.attributes
           ? variationLabel(parseAttributes(variationObj.attributes))
           : null;
@@ -525,11 +565,12 @@ export default async function CheckPage({
             product.id as string,
             pkg.variation_id as string | null,
             favorites.ids,
-            favorites.groups
+            favorites.groups,
           ),
           rows: Array.from(latest.get(pkg.id)?.values() ?? []).sort(
             (a, b) =>
-              new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime()
+              new Date(b.observedAt).getTime() -
+              new Date(a.observedAt).getTime(),
           ),
         };
       });
@@ -537,7 +578,10 @@ export default async function CheckPage({
     .filter((card) => !hasPriceFilter || card.rows.length > 0);
 
   // ... and the 容量 of one product are shown together in one card (variation chips inside).
-  const productMap = new Map<string, { id: string; name: string; sub: string; items: SizeCard[] }>();
+  const productMap = new Map<
+    string,
+    { id: string; name: string; sub: string; items: SizeCard[] }
+  >();
   for (const card of cards) {
     const entry = productMap.get(card.productId) ?? {
       id: card.productId,
@@ -551,19 +595,26 @@ export default async function CheckPage({
   const productCards = Array.from(productMap.values());
   // 旧価格あり: products with open legacy prices newer than 6 months (logged-in users only).
   const legacyBadgeSet = loggedIn
-    ? await loadLegacyBadgeIds(supabase, productCards.map((pc) => pc.id))
+    ? await loadLegacyBadgeIds(
+        supabase,
+        productCards.map((pc) => pc.id),
+      )
     : new Set<string>();
-  const emptyPriceText = f.period === "all" ? "まだ価格がありません" : "この期間の価格がありません";
+  const emptyPriceText =
+    f.period === "all" ? "まだ価格がありません" : "この期間の価格がありません";
 
   // A search that matched no product name at all: offer similar names and 「この名前で商品を追加」.
   const noMatch = term !== "" && matchedIds.length === 0;
-  const similar = noMatch ? await findSimilarProducts(supabase, term, scope) : [];
+  const similar = noMatch
+    ? await findSimilarProducts(supabase, term, scope)
+    : [];
 
   // The 「もっと見る」 link: the same search and filters, 20 more products.
   const moreParams = new URLSearchParams();
   for (const [key, value] of Object.entries(rawParams)) {
     if (key === "limit" || value === undefined) continue;
-    for (const item of Array.isArray(value) ? value : [value]) moreParams.append(key, item);
+    for (const item of Array.isArray(value) ? value : [value])
+      moreParams.append(key, item);
   }
   moreParams.set("limit", String(Math.min(MAX_LIMIT, limit + PAGE_SIZE)));
   const moreHref = `/check?${moreParams.toString()}`;
@@ -649,12 +700,20 @@ export default async function CheckPage({
               </select>
             </div>
 
-            <CategoryFilter key={f.categories.join(",")} selected={f.categories} />
+            <CategoryFilter
+              key={f.categories.join(",")}
+              selected={f.categories}
+            />
 
             <fieldset className="min-w-0">
               <legend className={labelCls}>価格の種類</legend>
               <div className="grid grid-cols-3 gap-2">
-                <Chip name="sale" value="all" label="すべて" checked={f.sale === "all"} />
+                <Chip
+                  name="sale"
+                  value="all"
+                  label="すべて"
+                  checked={f.sale === "all"}
+                />
                 <Chip
                   name="sale"
                   value="regular"
@@ -696,7 +755,12 @@ export default async function CheckPage({
               </p>
             </div>
 
-            <PeriodFilter key={`${f.period}-${f.from}-${f.to}`} period={f.period} from={f.from} to={f.to} />
+            <PeriodFilter
+              key={`${f.period}-${f.from}-${f.to}`}
+              period={f.period}
+              from={f.from}
+              to={f.to}
+            />
 
             <div className="flex items-center gap-3">
               <button
@@ -706,7 +770,10 @@ export default async function CheckPage({
                 この条件で検索
               </button>
               {activeCount > 0 && (
-                <Link href={clearHref} className="shrink-0 text-sm font-medium text-teal-700">
+                <Link
+                  href={clearHref}
+                  className="shrink-0 text-sm font-medium text-teal-700"
+                >
                   条件をクリア
                 </Link>
               )}
@@ -717,15 +784,23 @@ export default async function CheckPage({
 
       {isDefaultView && (
         <div>
-          <h2 className="text-lg font-bold text-stone-900">最近価格が更新された商品</h2>
+          <h2 className="text-lg font-bold text-stone-900">
+            最近価格が更新された商品
+          </h2>
           <p className="mt-1 text-sm text-stone-500">
-            価格の入力が新しい順に{RECENT_COUNT}件を表示しています。ほかの商品は、検索か絞り込みで探せます。
+            価格の入力が新しい順に{RECENT_COUNT}
+            件を表示しています。ほかの商品は、検索か絞り込みで探せます。
           </p>
         </div>
       )}
 
       {productCards.length === 0 && noMatch ? (
-        <SearchEmptyHelp term={term} similar={similar} canAdd={loggedIn} searchPath="/check" />
+        <SearchEmptyHelp
+          term={term}
+          similar={similar}
+          canAdd={loggedIn}
+          searchPath="/check"
+        />
       ) : productCards.length === 0 ? (
         <p className="text-stone-500">
           {onlyFavorites && favorites.ids.size === 0
@@ -756,7 +831,8 @@ export default async function CheckPage({
             }));
             // One variation only: its name is shown as text, not as a chip.
             const single = groups.length === 1 ? groups[0] : null;
-            const onlyVariation = single && single.key !== "none" ? single.label : null;
+            const onlyVariation =
+              single && single.key !== "none" ? single.label : null;
             return (
               <div
                 key={pc.id}
@@ -771,16 +847,22 @@ export default async function CheckPage({
                   )}
                 </p>
                 {pc.sub && <p className="text-sm text-stone-500">{pc.sub}</p>}
-                {onlyVariation && <p className="text-sm text-stone-500">{onlyVariation}</p>}
+                {onlyVariation && (
+                  <p className="text-sm text-stone-500">{onlyVariation}</p>
+                )}
                 <div className="mt-3">
-                  <VariationTabs groups={tabs} initialIndex={defaultGroupIndex(groups)} memoryKey={pc.id} />
+                  <VariationTabs
+                    groups={tabs}
+                    initialIndex={defaultGroupIndex(groups)}
+                    memoryKey={pc.id}
+                  />
                 </div>
               </div>
             );
           })}
         </div>
       )}
-    {hasMore && limit < MAX_LIMIT && (
+      {hasMore && limit < MAX_LIMIT && (
         <Link
           href={moreHref}
           scroll={false}

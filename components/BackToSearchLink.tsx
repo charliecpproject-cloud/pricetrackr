@@ -7,14 +7,23 @@ import { CHECK_RETURN_KEY } from "@/components/CheckScrollMemory";
 
 // 「← 検索に戻る」 on the detail page: goes back to the search the person came from, with the
 // scroll position restored by CheckScrollMemory. Without a saved search it opens /check.
-export default function BackToSearchLink({ children }: { children: ReactNode }) {
+export default function BackToSearchLink({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const router = useRouter();
 
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     try {
       const raw = sessionStorage.getItem(CHECK_RETURN_KEY);
       const saved = raw ? JSON.parse(raw) : null;
-      if (!saved || typeof saved.url !== "string" || !saved.url.startsWith("/check")) return;
+      if (
+        !saved ||
+        typeof saved.url !== "string" ||
+        !saved.url.startsWith("/check")
+      )
+        return;
       event.preventDefault();
       // Exactly one page was opened since the search: going back lands on it.
       if (window.history.length === Number(saved.len) + 1) {

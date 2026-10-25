@@ -16,11 +16,7 @@ export default function DeleteObservationButton({
   disabled = false,
 }: DeleteObservationButtonProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (
-      !window.confirm(
-        "この価格を削除しますか？この操作は元に戻せません。"
-      )
-    ) {
+    if (!window.confirm("この価格を削除しますか？この操作は元に戻せません。")) {
       e.preventDefault();
     }
   };

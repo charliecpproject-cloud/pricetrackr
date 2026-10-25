@@ -1,14 +1,21 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useToast, type ToastLink } from "@/components/ToastProvider";
 
-type ToastableState = { error: string | null; message?: string | null; toastLink?: ToastLink | null };
+type ToastableState = {
+  error: string | null;
+  message?: string | null;
+  toastLink?: ToastLink | null;
+};
 
 // The same as React's useActionState, and it also shows a toast when the action
 // returns a result: red for an error, green for a message (or 保存しました).
 // Use this instead of useActionState in every form that saves something.
-export function useToastedActionState<State extends ToastableState, Payload = FormData>(
+export function useToastedActionState<
+  State extends ToastableState,
+  Payload = FormData,
+>(
   action: (state: Awaited<State>, payload: Payload) => State | Promise<State>,
-  initialState: Awaited<State>
+  initialState: Awaited<State>,
 ) {
   const result = useActionState<State, Payload>(action, initialState);
   const state = result[0];
@@ -19,7 +26,12 @@ export function useToastedActionState<State extends ToastableState, Payload = Fo
     if ((state as unknown) === initialRef.current) return; // no result yet
     const s = state as ToastableState;
     if (s.error) showToast(s.error, "error");
-    else showToast(s.message || "保存しました", "success", s.toastLink ?? undefined);
+    else
+      showToast(
+        s.message || "保存しました",
+        "success",
+        s.toastLink ?? undefined,
+      );
   }, [state, showToast]);
 
   return result;

@@ -25,7 +25,9 @@ export default function PriceWarnings({
 }) {
   if (warnings.length === 0) return null;
   const reference = `${formatYen(previous.price)}${
-    previous.chainName ? `（${previous.chainName} ${formatDate(previous.observedAt)}）` : ""
+    previous.chainName
+      ? `（${previous.chainName} ${formatDate(previous.observedAt)}）`
+      : ""
   }`;
   return (
     <div

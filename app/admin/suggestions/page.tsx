@@ -24,7 +24,10 @@ export default async function SuggestionsPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="inline-block text-sm font-medium text-teal-700">
+      <Link
+        href="/admin"
+        className="inline-block text-sm font-medium text-teal-700"
+      >
         ← 管理者ツールに戻る
       </Link>
 
@@ -41,7 +44,9 @@ export default async function SuggestionsPage() {
       </section>
 
       <section className={cardCls}>
-        <h2 className="text-lg font-bold text-stone-900">いま表示されるおすすめ</h2>
+        <h2 className="text-lg font-bold text-stone-900">
+          いま表示されるおすすめ
+        </h2>
         {shown.length === 0 ? (
           <p className="mt-2 text-sm text-stone-500">
             まだ言葉がありません。上で言葉を登録すると、価格確認に表示されます。

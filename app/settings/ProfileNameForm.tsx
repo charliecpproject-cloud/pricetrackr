@@ -11,7 +11,10 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function ProfileNameForm({ current }: { current: string }) {
-  const [state, formAction, pending] = useToastedActionState(setDisplayName, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    setDisplayName,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-2 pt-2">
@@ -30,7 +33,9 @@ export default function ProfileNameForm({ current }: { current: string }) {
         ホームのあいさつなどに「○○さん」と表示します。ほかの人と同じ名前でもかまいません。
       </p>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+      {state.message && (
+        <p className="text-sm text-teal-700">{state.message}</p>
+      )}
       <Button type="submit" disabled={pending} className="h-12 w-full">
         {pending ? "保存中…" : "保存"}
       </Button>

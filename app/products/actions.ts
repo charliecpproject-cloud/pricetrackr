@@ -27,7 +27,10 @@ export async function addPackage(
     // variation_id は空文字列を null とみなす
     variation_id: z.preprocess(
       (val) => (val === "" ? undefined : val),
-      z.string().uuid({ message: "バリエーションが正しくありません" }).optional(),
+      z
+        .string()
+        .uuid({ message: "バリエーションが正しくありません" })
+        .optional(),
     ),
   });
 
@@ -35,7 +38,7 @@ export async function addPackage(
     product_id: formData.get("product_id"),
     package_size: formData.get("package_size"),
     package_unit: formData.get("package_unit"),
-    variation_id: (formData.get("variation_id") ?? ""),
+    variation_id: formData.get("variation_id") ?? "",
   });
 
   if (!parseResult.success) {
@@ -45,7 +48,9 @@ export async function addPackage(
   const supabase = await createSupabaseServerClient();
 
   // ---- 単位が使える言葉か確認 ----
-  if (!(await loadAllowedUnits(supabase)).includes(parseResult.data.package_unit)) {
+  if (
+    !(await loadAllowedUnits(supabase)).includes(parseResult.data.package_unit)
+  ) {
     return { error: "単位を選んでください" };
   }
 

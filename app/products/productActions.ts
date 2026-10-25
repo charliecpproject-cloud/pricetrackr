@@ -5,7 +5,10 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseBarcodes } from "@/lib/products/barcode";
 import { resolveBrandText } from "@/lib/products/loadBrands";
-import { BARCODE_TAKEN_HIDDEN, takenBarcodeMessage } from "@/lib/products/barcodeDb";
+import {
+  BARCODE_TAKEN_HIDDEN,
+  takenBarcodeMessage,
+} from "@/lib/products/barcodeDb";
 
 import {
   duplicateAttributeName,
@@ -13,7 +16,11 @@ import {
   variationKey,
 } from "@/lib/products/variation";
 
-type State = { error: string | null; message?: string | null; productId?: string | null };
+type State = {
+  error: string | null;
+  message?: string | null;
+  productId?: string | null;
+};
 type Supabase = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
 const SAVE_FAILED = "保存できませんでした。もう一度お試しください。";
@@ -25,8 +32,14 @@ const fields = {
     .min(1, "商品名を入力してください")
     .max(100, "商品名は100文字以内で入力してください"),
   brand: z.string().trim().max(100, "ブランドは100文字以内で入力してください"),
-  other_name: z.string().trim().max(100, "英語名・別名は100文字以内で入力してください"),
-  category: z.string().trim().max(100, "カテゴリは100文字以内で入力してください"),
+  other_name: z
+    .string()
+    .trim()
+    .max(100, "英語名・別名は100文字以内で入力してください"),
+  category: z
+    .string()
+    .trim()
+    .max(100, "カテゴリは100文字以内で入力してください"),
 };
 
 const createSchema = z.object({
@@ -41,7 +54,9 @@ const updateSchema = z.object({
 });
 
 // "" means not set. Otherwise 0 to 30 (8 and 10 are the usual rates).
-function parseTaxRate(raw: string): { ok: true; value: number | null } | { ok: false } {
+function parseTaxRate(
+  raw: string,
+): { ok: true; value: number | null } | { ok: false } {
   const text = raw.normalize("NFKC").trim();
   if (text === "") return { ok: true, value: null };
   if (!/^\d{1,2}$/.test(text)) return { ok: false };
@@ -62,7 +77,7 @@ async function checkDuplicate(
   supabase: Supabase,
   names: { name_ja: string | null; name_en: string | null },
   brand: string | null,
-  excludeId?: string
+  excludeId?: string,
 ): Promise<"ok" | "duplicate" | "failed"> {
   const { data, error } = await supabase
     .from("products")
@@ -76,8 +91,9 @@ async function checkDuplicate(
     (p) =>
       p.id !== excludeId &&
       norm(p.brand) === norm(brand) &&
-      ((names.name_ja && norm(p.name_ja || p.name_en) === norm(names.name_ja)) ||
-        false)
+      ((names.name_ja &&
+        norm(p.name_ja || p.name_en) === norm(names.name_ja)) ||
+        false),
   );
   return duplicate ? "duplicate" : "ok";
 }
@@ -88,7 +104,10 @@ function refresh() {
   revalidatePath("/check", "layout");
 }
 
-export async function createProduct(_prevState: State, formData: FormData): Promise<State> {
+export async function createProduct(
+  _prevState: State,
+  formData: FormData,
+): Promise<State> {
   const parsed = createSchema.safeParse({
     name: get(formData, "name"),
     brand: get(formData, "brand"),
@@ -113,7 +132,8 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
   brand = await resolveBrandText(supabase, brand);
   const check = await checkDuplicate(supabase, names, brand || null);
   if (check === "failed") return { error: SAVE_FAILED };
-  if (check === "duplicate") return { error: "同じ商品がすでに登録されています" };
+  if (check === "duplicate")
+    return { error: "同じ商品がすでに登録されています" };
 
   // A barcode belongs to one product only.
   const taken = await takenBarcodeMessage(supabase, codes);
@@ -143,15 +163,24 @@ export async function createProduct(_prevState: State, formData: FormData): Prom
       console.error("Barcode insert error:", codeError.message, codeError.code);
       // Do not keep a half-saved product.
       await supabase.from("products").delete().eq("id", created.id);
-      return { error: codeError.code === "23505" ? BARCODE_TAKEN_HIDDEN : SAVE_FAILED };
+      return {
+        error: codeError.code === "23505" ? BARCODE_TAKEN_HIDDEN : SAVE_FAILED,
+      };
     }
   }
 
   refresh();
-  return { error: null, message: "追加しました", productId: created.id as string };
+  return {
+    error: null,
+    message: "追加しました",
+    productId: created.id as string,
+  };
 }
 
-export async function updateProduct(_prevState: State, formData: FormData): Promise<State> {
+export async function updateProduct(
+  _prevState: State,
+  formData: FormData,
+): Promise<State> {
   const parsed = updateSchema.safeParse({
     id: get(formData, "id"),
     name: get(formData, "name"),
@@ -171,7 +200,8 @@ export async function updateProduct(_prevState: State, formData: FormData): Prom
   brand = await resolveBrandText(supabase, brand);
   const check = await checkDuplicate(supabase, names, brand || null, id);
   if (check === "failed") return { error: SAVE_FAILED };
-  if (check === "duplicate") return { error: "同じ商品がすでに登録されています" };
+  if (check === "duplicate")
+    return { error: "同じ商品がすでに登録されています" };
 
   const { data, error } = await supabase
     .from("products")
@@ -187,13 +217,17 @@ export async function updateProduct(_prevState: State, formData: FormData): Prom
     console.error("Product update error:", error.message, error.code);
     return { error: SAVE_FAILED };
   }
-  if (!data || data.length === 0) return { error: "商品が見つかりませんでした" };
+  if (!data || data.length === 0)
+    return { error: "商品が見つかりませんでした" };
 
   refresh();
   return { error: null, message: "保存しました" };
 }
 
-export async function updateVariation(_prevState: State, formData: FormData): Promise<State> {
+export async function updateVariation(
+  _prevState: State,
+  formData: FormData,
+): Promise<State> {
   const id = z
     .string()
     .uuid("バリエーションが正しくありません")
@@ -206,10 +240,11 @@ export async function updateVariation(_prevState: State, formData: FormData): Pr
     names.map((n, i) => ({
       name: typeof n === "string" ? n : "",
       value: typeof values[i] === "string" ? (values[i] as string) : "",
-    }))
+    })),
   );
 
-  if (attributes.length === 0) return { error: "名前と値を1組以上入力してください" };
+  if (attributes.length === 0)
+    return { error: "名前と値を1組以上入力してください" };
   if (attributes.length > 8) return { error: "属性は8個までです" };
   if (attributes.some((a) => a.name.length > 30 || a.value.length > 30)) {
     return { error: "名前と値は30文字以内で入力してください" };
@@ -225,11 +260,13 @@ export async function updateVariation(_prevState: State, formData: FormData): Pr
     .select("id");
 
   if (error) {
-    if (error.code === "23505") return { error: "同じバリエーションがすでに登録されています" };
+    if (error.code === "23505")
+      return { error: "同じバリエーションがすでに登録されています" };
     console.error("Variation update error:", error.message, error.code);
     return { error: SAVE_FAILED };
   }
-  if (!data || data.length === 0) return { error: "バリエーションが見つかりませんでした" };
+  if (!data || data.length === 0)
+    return { error: "バリエーションが見つかりませんでした" };
 
   refresh();
   return { error: null, message: "保存しました" };

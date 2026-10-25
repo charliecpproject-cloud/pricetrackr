@@ -7,7 +7,9 @@ import {
   type CategoryCount,
 } from "@/lib/products/category";
 
-export async function suggestCategoryNames(term: string): Promise<CategoryCount[]> {
+export async function suggestCategoryNames(
+  term: string,
+): Promise<CategoryCount[]> {
   const text = typeof term === "string" ? term.slice(0, 100) : "";
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
@@ -19,6 +21,8 @@ export async function suggestCategoryNames(term: string): Promise<CategoryCount[
     console.error("Category fetch error:", error.message, error.code);
     return [];
   }
-  const values = ((data ?? []) as { category: string | null }[]).map((r) => r.category);
+  const values = ((data ?? []) as { category: string | null }[]).map(
+    (r) => r.category,
+  );
   return suggestCategories(text, countCategories(values), 10);
 }

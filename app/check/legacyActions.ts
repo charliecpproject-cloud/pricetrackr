@@ -17,13 +17,18 @@ function refresh() {
 }
 
 // Moves the price entries of one legacy 容量 to the matching 容量 of the new product.
-export async function moveLegacyPackage(_prev: State, formData: FormData): Promise<State> {
+export async function moveLegacyPackage(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
   const id = idSchema.safeParse(formData.get("package_id"));
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("move_legacy_package", { p_package: id.data });
+  const { data, error } = await supabase.rpc("move_legacy_package", {
+    p_package: id.data,
+  });
   if (error) {
     console.error("Legacy move error:", error.message, error.code);
     return { error: FAILED };
@@ -33,7 +38,10 @@ export async function moveLegacyPackage(_prev: State, formData: FormData): Promi
   switch (result.status) {
     case "ok":
       refresh();
-      return { error: null, message: `新しい商品に移しました（価格の記録${result.moved ?? 0}件）` };
+      return {
+        error: null,
+        message: `新しい商品に移しました（価格の記録${result.moved ?? 0}件）`,
+      };
     case "not_admin":
       return { error: NOT_ADMIN };
     case "not_legacy":
@@ -54,13 +62,18 @@ export async function moveLegacyPackage(_prev: State, formData: FormData): Promi
 }
 
 // Hides one legacy 容量. The price entries stay in the database.
-export async function archiveLegacyPackage(_prev: State, formData: FormData): Promise<State> {
+export async function archiveLegacyPackage(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
   const id = idSchema.safeParse(formData.get("package_id"));
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.rpc("archive_legacy_package", { p_package: id.data });
+  const { data, error } = await supabase.rpc("archive_legacy_package", {
+    p_package: id.data,
+  });
   if (error) {
     console.error("Legacy archive error:", error.message, error.code);
     return { error: FAILED };
@@ -70,7 +83,10 @@ export async function archiveLegacyPackage(_prev: State, formData: FormData): Pr
   switch (result.status) {
     case "ok":
       refresh();
-      return { error: null, message: `アーカイブしました（価格の記録${result.archived ?? 0}件）` };
+      return {
+        error: null,
+        message: `アーカイブしました（価格の記録${result.archived ?? 0}件）`,
+      };
     case "not_admin":
       return { error: NOT_ADMIN };
     case "not_legacy":

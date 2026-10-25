@@ -9,7 +9,9 @@ export const MAX_TERM_LENGTH = 30;
 const FORBIDDEN = /[()%_*\\]/;
 
 /** How many suggestions to show: a whole number from 1 to 10 (full-width digits are fine). */
-export function parseDisplayCount(raw: string | null | undefined): number | null {
+export function parseDisplayCount(
+  raw: string | null | undefined,
+): number | null {
   if (raw === null || raw === undefined) return null;
   const text = raw.normalize("NFKC").trim();
   if (!/^\d{1,2}$/.test(text)) return null;
@@ -23,7 +25,7 @@ export function parseDisplayCount(raw: string | null | undefined): number | null
  * and the order is kept. An empty list is fine: it hides the suggestions.
  */
 export function parseSuggestionTerms(
-  raw: string
+  raw: string,
 ): { ok: true; terms: string[] } | { ok: false; error: string } {
   const seen = new Set<string>();
   const terms: string[] = [];
@@ -37,7 +39,10 @@ export function parseSuggestionTerms(
       };
     }
     if (FORBIDDEN.test(term)) {
-      return { ok: false, error: `次の文字は使えません：( ) % _ * \\（${term}）` };
+      return {
+        ok: false,
+        error: `次の文字は使えません：( ) % _ * \\（${term}）`,
+      };
     }
     const key = term.normalize("NFKC").toLowerCase();
     if (seen.has(key)) continue;
@@ -51,7 +56,10 @@ export function parseSuggestionTerms(
 }
 
 /** The terms that are shown: the first `count` of the list. */
-export function visibleSuggestions(terms: readonly string[], count: number): string[] {
+export function visibleSuggestions(
+  terms: readonly string[],
+  count: number,
+): string[] {
   if (!Number.isInteger(count) || count < 1) return [];
   return terms.slice(0, count);
 }

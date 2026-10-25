@@ -14,7 +14,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { labelCls } from "@/components/FormParts";
-import { CATEGORY_LABEL, STORE_CATEGORIES, type StoreCategory } from "@/lib/stores/category";
+import {
+  CATEGORY_LABEL,
+  STORE_CATEGORIES,
+  type StoreCategory,
+} from "@/lib/stores/category";
 
 const ICON: Record<StoreCategory, LucideIcon> = {
   supermarket: ShoppingCart,
@@ -30,20 +34,31 @@ const ICON: Record<StoreCategory, LucideIcon> = {
 const ALWAYS_SHOWN: StoreCategory[] = ["supermarket", "drugstore"];
 
 // Short names for the buttons.
-const BUTTON_LABEL: Record<StoreCategory, string> = { ...CATEGORY_LABEL, drugstore: "薬局" };
+const BUTTON_LABEL: Record<StoreCategory, string> = {
+  ...CATEGORY_LABEL,
+  drugstore: "薬局",
+};
 
 // Store categories as buttons that work like checkboxes. Nothing checked = all categories.
 // The checked ones are sent as cat=... (once each) when the filter form is submitted.
-export default function CategoryFilter({ selected: initial }: { selected: StoreCategory[] }) {
+export default function CategoryFilter({
+  selected: initial,
+}: {
+  selected: StoreCategory[];
+}) {
   const [selected, setSelected] = useState<StoreCategory[]>(initial);
   const [open, setOpen] = useState(false);
 
   const toggle = (category: StoreCategory) =>
     setSelected((current) =>
-      current.includes(category) ? current.filter((c) => c !== category) : [...current, category]
+      current.includes(category)
+        ? current.filter((c) => c !== category)
+        : [...current, category],
     );
 
-  const shown = STORE_CATEGORIES.filter((c) => ALWAYS_SHOWN.includes(c) || selected.includes(c));
+  const shown = STORE_CATEGORIES.filter(
+    (c) => ALWAYS_SHOWN.includes(c) || selected.includes(c),
+  );
 
   return (
     <div>
@@ -85,7 +100,9 @@ export default function CategoryFilter({ selected: initial }: { selected: StoreC
           }`}
         >
           その他
-          <ChevronDown className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`h-4 w-4 transition ${open ? "rotate-180" : ""}`}
+          />
         </button>
       </div>
 

@@ -59,7 +59,12 @@ export const metadata = { title: "商品" };
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; all?: string; barcode?: string; name?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    all?: string;
+    barcode?: string;
+    name?: string;
+  }>;
 }) {
   const { q, all, barcode, name } = await searchParams;
   // A barcode that was scanned but not found: the add form opens with it filled in.
@@ -67,7 +72,10 @@ export default async function ProductsPage({
   // A name typed in a search that found nothing (「この名前で商品を追加」): fills 商品名.
   const newName = (name ?? "").trim().slice(0, 100);
   // Keep the search term short and free of characters that break the filter.
-  const term = (q ?? "").trim().slice(0, 50).replace(/[,()%_*\\]/g, "");
+  const term = (q ?? "")
+    .trim()
+    .slice(0, 50)
+    .replace(/[,()%_*\\]/g, "");
   const showAll = all === "1" && !term;
   // The default view shows only the add section; a list appears for a search or すべての商品.
   const showList = term !== "" || showAll;
@@ -78,7 +86,9 @@ export default async function ProductsPage({
   const isAdmin = viewer.isAdmin;
 
   // Search: name, alias, brand, category, memo, variations, barcodes and sizes (search_products).
-  const matchedIds = term ? await searchProductIds(supabase, term, PAGE_SIZE) : null;
+  const matchedIds = term
+    ? await searchProductIds(supabase, term, PAGE_SIZE)
+    : null;
   const searchFilter = `id.in.(${(matchedIds ?? []).join(",") || "00000000-0000-0000-0000-000000000000"})`;
 
   const base = supabase.from("products").select(PRODUCT_SELECT);
@@ -92,21 +102,28 @@ export default async function ProductsPage({
   // The list and the (light) attribute-name data are fetched at the same time.
   // Nothing is loaded for the default view (only the add section is shown).
   const [listResult, variationsResult, counterUnits] = await Promise.all([
-    showList ? listQuery : Promise.resolve({ data: [] as Product[], error: null }),
+    showList
+      ? listQuery
+      : Promise.resolve({ data: [] as Product[], error: null }),
     showList
       ? supabase.from("product_variations").select("attributes")
       : Promise.resolve({ data: [] as { attributes: unknown }[], error: null }),
-    showList ? loadCounterUnits(supabase) : Promise.resolve([] as CounterUnitOption[]),
+    showList
+      ? loadCounterUnits(supabase)
+      : Promise.resolve([] as CounterUnitOption[]),
   ]);
 
-  if (listResult.error) console.error("Products fetch error:", listResult.error);
+  if (listResult.error)
+    console.error("Products fetch error:", listResult.error);
   if (variationsResult.error)
     console.error("Variations fetch error:", variationsResult.error);
 
   const rawList: Product[] = (listResult.data as any) ?? [];
   // A search shows the best match first.
   const productList = matchedIds
-    ? [...rawList].sort((a, b) => matchedIds.indexOf(a.id) - matchedIds.indexOf(b.id))
+    ? [...rawList].sort(
+        (a, b) => matchedIds.indexOf(a.id) - matchedIds.indexOf(b.id),
+      )
     : rawList;
   const variationRows = variationsResult.data ?? [];
 
@@ -117,7 +134,7 @@ export default async function ProductsPage({
     priceCounts = null;
   } else {
     const packageIds = productList.flatMap((p) =>
-      (p.product_packages ?? []).map((k) => k.id)
+      (p.product_packages ?? []).map((k) => k.id),
     );
     if (packageIds.length > 0) {
       const { data, error } = await supabase.rpc("package_price_counts", {
@@ -128,7 +145,10 @@ export default async function ProductsPage({
         priceCounts = null;
       } else {
         const counts: Record<string, number> = {};
-        for (const row of (data ?? []) as { package_id: string; entry_count: number | string }[]) {
+        for (const row of (data ?? []) as {
+          package_id: string;
+          entry_count: number | string;
+        }[]) {
           counts[row.package_id] = Number(row.entry_count);
         }
         priceCounts = counts;
@@ -144,12 +164,18 @@ export default async function ProductsPage({
   const attributeNames = Array.from(attributeNameSet).sort();
 
   // A search with no result: similar names and a button to add the typed name.
-  const similar = term && productList.length === 0 ? await findSimilarProducts(supabase, term) : [];
+  const similar =
+    term && productList.length === 0
+      ? await findSimilarProducts(supabase, term)
+      : [];
 
   const heading = term ? `「${term}」の検索結果` : "すべての商品";
 
   return (
-    <ProductDialogsProvider attributeNames={attributeNames} counterUnits={counterUnits}>
+    <ProductDialogsProvider
+      attributeNames={attributeNames}
+      counterUnits={counterUnits}
+    >
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-stone-900">商品</h1>
 
@@ -181,11 +207,18 @@ export default async function ProductsPage({
             </Link>
           )}
 
-          <details open={newBarcode !== "" || newName !== "" || !showList} className={sectionCls}>
+          <details
+            open={newBarcode !== "" || newName !== "" || !showList}
+            className={sectionCls}
+          >
             <summary className={summaryCls}>商品を追加</summary>
             <div className="mt-4">
               <ReadOnlyFieldset readOnly={readOnly}>
-                <ProductForm key={`${newBarcode}|${newName}`} defaultBarcode={newBarcode} defaultName={newName} />
+                <ProductForm
+                  key={`${newBarcode}|${newName}`}
+                  defaultBarcode={newBarcode}
+                  defaultName={newName}
+                />
               </ReadOnlyFieldset>
             </div>
           </details>
@@ -196,7 +229,12 @@ export default async function ProductsPage({
         )}
 
         {!showList ? null : productList.length === 0 && term ? (
-          <SearchEmptyHelp term={term} similar={similar} canAdd={!readOnly} searchPath="/products" />
+          <SearchEmptyHelp
+            term={term}
+            similar={similar}
+            canAdd={!readOnly}
+            searchPath="/products"
+          />
         ) : productList.length === 0 ? (
           <p className="text-stone-500">
             {term ? "見つかりませんでした" : "まだ商品がありません。"}
@@ -220,7 +258,8 @@ export default async function ProductsPage({
                     <p className="text-sm text-stone-500">{product.name_en}</p>
                   )}
                   <p className="text-sm text-stone-500">
-                    {product.brand ?? "ブランドなし"} ・ {product.category ?? "カテゴリなし"}
+                    {product.brand ?? "ブランドなし"} ・{" "}
+                    {product.category ?? "カテゴリなし"}
                   </p>
 
                   {product.memo && (
@@ -232,18 +271,25 @@ export default async function ProductsPage({
                   {variations.length > 0 && (
                     <div className="mt-3 space-y-2">
                       {variations.map((variation) => {
-                        const label = variationLabel(parseAttributes(variation.attributes));
+                        const label = variationLabel(
+                          parseAttributes(variation.attributes),
+                        );
                         const pkgs = packages.filter(
-                          (pkg) => pkg.variation_id === variation.id
+                          (pkg) => pkg.variation_id === variation.id,
                         );
                         return (
                           <div key={variation.id} className="space-y-1">
-                            <p className="text-sm font-medium text-stone-800">{label}</p>
+                            <p className="text-sm font-medium text-stone-800">
+                              {label}
+                            </p>
                             {pkgs.length > 0 && (
                               <div className="flex flex-wrap gap-2">
                                 {pkgs.map((pkg) => (
                                   <span key={pkg.id} className={chipCls}>
-                                    {packageLabel(pkg.package_size, pkg.package_unit)}
+                                    {packageLabel(
+                                      pkg.package_size,
+                                      pkg.package_unit,
+                                    )}
                                   </span>
                                 ))}
                               </div>
@@ -257,7 +303,9 @@ export default async function ProductsPage({
                   {loosePackages.length > 0 && (
                     <div className="mt-3 space-y-1">
                       {variations.length > 0 && (
-                        <p className="text-sm font-medium text-stone-800">バリエーションなし</p>
+                        <p className="text-sm font-medium text-stone-800">
+                          バリエーションなし
+                        </p>
                       )}
                       <div className="flex flex-wrap gap-2">
                         {loosePackages.map((pkg) => (
@@ -270,7 +318,10 @@ export default async function ProductsPage({
                   )}
 
                   <ReadOnlyFieldset readOnly={readOnly}>
-                    <ProductMemoEditor productId={product.id} memo={product.memo ?? null} />
+                    <ProductMemoEditor
+                      productId={product.id}
+                      memo={product.memo ?? null}
+                    />
                   </ReadOnlyFieldset>
                   <ReadOnlyFieldset readOnly={readOnly}>
                     <ProductCardTools

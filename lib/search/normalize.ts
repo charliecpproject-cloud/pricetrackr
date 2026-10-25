@@ -5,13 +5,16 @@ function foldKana(text: string): string {
   let out = "";
   for (const ch of text) {
     const code = ch.codePointAt(0) ?? 0;
-    out += code >= 0x3041 && code <= 0x3096 ? String.fromCodePoint(code + 0x60) : ch;
+    out +=
+      code >= 0x3041 && code <= 0x3096 ? String.fromCodePoint(code + 0x60) : ch;
   }
   return out;
 }
 
 export function normalizeForSearch(text: string): string {
-  return foldKana(text.normalize("NFKC").toLowerCase()).replace(/\s+/g, " ").trim();
+  return foldKana(text.normalize("NFKC").toLowerCase())
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function searchTokens(query: string): string[] {

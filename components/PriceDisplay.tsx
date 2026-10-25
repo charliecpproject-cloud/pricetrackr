@@ -40,9 +40,14 @@ export default function PriceDisplay({
 }: Props) {
   const end = align === "end";
   const price = Number(rest.price);
-  const points = pointUseMultiplier ? pointsNeeded(price, pointUseMultiplier) : null;
+  const points = pointUseMultiplier
+    ? pointsNeeded(price, pointUseMultiplier)
+    : null;
   const showTaxHint =
-    !!taxBasis && taxBasis !== "incl" && taxRate !== null && taxRate !== undefined;
+    !!taxBasis &&
+    taxBasis !== "incl" &&
+    taxRate !== null &&
+    taxRate !== undefined;
   const tiers = Number.isFinite(price) ? (bulkTiers ?? []) : [];
 
   const main = (
@@ -54,7 +59,11 @@ export default function PriceDisplay({
       <PriceStrip {...rest} end={end} />
       {taxBasis && <TaxBadge basis={taxBasis} />}
       {showTaxHint && (
-        <TaxHint price={price} rate={taxRate as number} basis={taxBasis as TaxBasis} />
+        <TaxHint
+          price={price}
+          rate={taxRate as number}
+          basis={taxBasis as TaxBasis}
+        />
       )}
     </span>
   );
@@ -93,9 +102,7 @@ export default function PriceDisplay({
 
 function TaxBadge({ basis }: { basis: TaxBasis }) {
   const cls =
-    basis === "unknown"
-      ? "bg-chip text-stone-600"
-      : "bg-sky-100 text-sky-700";
+    basis === "unknown" ? "bg-chip text-stone-600" : "bg-sky-100 text-sky-700";
   return (
     <span
       className={`mb-1 inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-bold ${cls}`}
@@ -131,8 +138,12 @@ function PriceStrip({
   if (isMemberPrice) {
     return (
       <span className={cell}>
-        <span className="text-[11px] font-bold leading-tight text-indigo-600">会員価格</span>
-        <span className={`${big} font-bold tabular-nums text-indigo-600`}>{formatYen(price)}</span>
+        <span className="text-[11px] font-bold leading-tight text-indigo-600">
+          会員価格
+        </span>
+        <span className={`${big} font-bold tabular-nums text-indigo-600`}>
+          {formatYen(price)}
+        </span>
       </span>
     );
   }
@@ -140,7 +151,9 @@ function PriceStrip({
   const discounts = allDiscounts(couponPercents, memberPercent);
   if (discounts.length === 0 || Number.isNaN(normal)) {
     return (
-      <span className={`${big} font-bold tabular-nums text-stone-900`}>{formatYen(price)}</span>
+      <span className={`${big} font-bold tabular-nums text-stone-900`}>
+        {formatYen(price)}
+      </span>
     );
   }
 
@@ -153,22 +166,31 @@ function PriceStrip({
       }`}
     >
       <span className={cell}>
-        <span className="text-[11px] leading-tight text-stone-500">{regularLabel}</span>
-        <span className={`${small} tabular-nums text-stone-500`}>{formatYen(normal)}</span>
+        <span className="text-[11px] leading-tight text-stone-500">
+          {regularLabel}
+        </span>
+        <span className={`${small} tabular-nums text-stone-500`}>
+          {formatYen(normal)}
+        </span>
       </span>
       {discounts.map((d) => {
-        const isBest = best !== null && d.kind === best.kind && d.percent === best.percent;
+        const isBest =
+          best !== null && d.kind === best.kind && d.percent === best.percent;
         const tone = d.kind === "coupon" ? "text-rose-600" : "text-indigo-600";
         return (
           <span key={`${d.kind}-${d.percent}`} className={cell}>
             <span
               className={`text-[11px] leading-tight ${isBest ? `font-bold ${tone}` : "text-stone-500"}`}
             >
-              {d.kind === "coupon" ? `${d.percent}%クーポン` : `会員${d.percent}%引`}
+              {d.kind === "coupon"
+                ? `${d.percent}%クーポン`
+                : `会員${d.percent}%引`}
             </span>
             <span
               className={`tabular-nums ${
-                isBest ? `${big} font-bold ${tone}` : `${small} font-semibold text-stone-700`
+                isBest
+                  ? `${big} font-bold ${tone}`
+                  : `${small} font-semibold text-stone-700`
               }`}
             >
               {formatYen(couponPrice(normal, d.percent))}

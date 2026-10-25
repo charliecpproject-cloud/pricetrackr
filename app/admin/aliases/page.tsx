@@ -6,7 +6,12 @@ import { countCategories } from "@/lib/products/category";
 import AliasAddForm from "./AliasAddForm";
 import AliasRow from "./AliasRow";
 
-type AliasRecord = { id: string; canonical: string; alias: string; enabled: boolean };
+type AliasRecord = {
+  id: string;
+  canonical: string;
+  alias: string;
+  enabled: boolean;
+};
 
 export const metadata = { title: "検索の別名" };
 
@@ -24,20 +29,29 @@ export default async function AliasesPage() {
     supabase.from("products").select("category, brand").limit(5000),
   ]);
   if (aliasesResult.error) {
-    console.error("Aliases fetch error:", aliasesResult.error.message, aliasesResult.error.code);
+    console.error(
+      "Aliases fetch error:",
+      aliasesResult.error.message,
+      aliasesResult.error.code,
+    );
   }
 
   const aliases = (aliasesResult.data ?? []) as AliasRecord[];
-  const products = (productsResult.data ?? []) as { category: string | null; brand: string | null }[];
+  const products = (productsResult.data ?? []) as {
+    category: string | null;
+    brand: string | null;
+  }[];
 
   // Words that already exist as categories (with the number of products) or brands.
   const categoryCounts = countCategories(products.map((p) => p.category));
-  const countByCategory = new Map(categoryCounts.map((c) => [c.name.toLowerCase(), c.count]));
+  const countByCategory = new Map(
+    categoryCounts.map((c) => [c.name.toLowerCase(), c.count]),
+  );
   const suggestions = Array.from(
     new Set([
       ...categoryCounts.map((c) => c.name),
       ...products.map((p) => (p.brand ?? "").trim()).filter(Boolean),
-    ])
+    ]),
   ).sort((a, b) => a.localeCompare(b, "ja"));
 
   const groups = new Map<string, AliasRecord[]>();
@@ -51,14 +65,18 @@ export default async function AliasesPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="inline-block text-sm font-medium text-teal-700">
+      <Link
+        href="/admin"
+        className="inline-block text-sm font-medium text-teal-700"
+      >
         ← 管理者ツールに戻る
       </Link>
 
       <div>
         <h1 className="text-2xl font-bold text-stone-900">検索の別名</h1>
         <p className="mt-1 text-sm text-stone-500">
-          言葉（例：ベビーフード）に別名（例：離乳食、baby food）を登録すると、別名で検索しても、その言葉の商品が見つかります。別名そのものを含む商品も、これまでどおり見つかります。
+          言葉（例：ベビーフード）に別名（例：離乳食、baby
+          food）を登録すると、別名で検索しても、その言葉の商品が見つかります。別名そのものを含む商品も、これまでどおり見つかります。
         </p>
       </div>
 
@@ -75,13 +93,22 @@ export default async function AliasesPage() {
             const count = countByCategory.get(canonical.toLowerCase());
             return (
               <section key={canonical} className={cardCls}>
-                <h2 className="text-lg font-bold text-stone-900">{canonical}</h2>
+                <h2 className="text-lg font-bold text-stone-900">
+                  {canonical}
+                </h2>
                 {count !== undefined && (
-                  <p className="text-xs text-stone-500">カテゴリ ・ 商品{count}件</p>
+                  <p className="text-xs text-stone-500">
+                    カテゴリ ・ 商品{count}件
+                  </p>
                 )}
                 <ul className="mt-3 space-y-2">
                   {rows.map((r) => (
-                    <AliasRow key={r.id} id={r.id} alias={r.alias} enabled={r.enabled} />
+                    <AliasRow
+                      key={r.id}
+                      id={r.id}
+                      alias={r.alias}
+                      enabled={r.enabled}
+                    />
                   ))}
                 </ul>
               </section>

@@ -1,7 +1,10 @@
 "use client";
 
 import { useToastedActionState } from "@/lib/toast/useToastedActionState";
-import { archiveLegacyPackage, moveLegacyPackage } from "@/app/check/legacyActions";
+import {
+  archiveLegacyPackage,
+  moveLegacyPackage,
+} from "@/app/check/legacyActions";
 
 const initialState: { error: string | null; message?: string | null } = {
   error: null,
@@ -17,10 +20,13 @@ export default function LegacyAdminButtons({
   label: string;
   entries: number;
 }) {
-  const [moveState, moveAction, moving] = useToastedActionState(moveLegacyPackage, initialState);
+  const [moveState, moveAction, moving] = useToastedActionState(
+    moveLegacyPackage,
+    initialState,
+  );
   const [archiveState, archiveAction, archiving] = useToastedActionState(
     archiveLegacyPackage,
-    initialState
+    initialState,
   );
   const error = moveState.error ?? archiveState.error;
 
@@ -32,7 +38,7 @@ export default function LegacyAdminButtons({
           onSubmit={(e) => {
             if (
               !window.confirm(
-                `この容量（${label}）の価格の記録${entries}件を、新しい商品に移しますか？\n移した価格は、最新価格や最安の比較に含まれるようになります。`
+                `この容量（${label}）の価格の記録${entries}件を、新しい商品に移しますか？\n移した価格は、最新価格や最安の比較に含まれるようになります。`,
               )
             ) {
               e.preventDefault();
@@ -53,7 +59,7 @@ export default function LegacyAdminButtons({
           onSubmit={(e) => {
             if (
               !window.confirm(
-                `この容量（${label}）の旧価格をアーカイブしますか？\n画面には表示されなくなりますが、価格の記録は削除されません。`
+                `この容量（${label}）の旧価格をアーカイブしますか？\n画面には表示されなくなりますが、価格の記録は削除されません。`,
               )
             ) {
               e.preventDefault();

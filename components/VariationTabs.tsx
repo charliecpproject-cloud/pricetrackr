@@ -17,7 +17,7 @@ export default function VariationTabs({
   memoryKey?: string;
 }) {
   const [selected, setSelected] = useState(
-    Math.max(0, Math.min(initialIndex, groups.length - 1))
+    Math.max(0, Math.min(initialIndex, groups.length - 1)),
   );
   const current = groups[selected] ?? groups[0];
 

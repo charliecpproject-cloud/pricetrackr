@@ -23,8 +23,16 @@ html[data-theme="calm"] {
 }
 html[data-theme="calm"] body {
   background:
-    radial-gradient(ellipse at 85% -5%, rgb(64 160 150 / 0.35) 0, transparent 55%),
-    radial-gradient(ellipse at 5% 100%, rgb(214 170 120 / 0.16) 0, transparent 50%),
+    radial-gradient(
+      ellipse at 85% -5%,
+      rgb(64 160 150 / 0.35) 0,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 5% 100%,
+      rgb(214 170 120 / 0.16) 0,
+      transparent 50%
+    ),
     linear-gradient(180deg, #0f3038, #0b2430 55%, #09202a);
   background-attachment: fixed;
 }

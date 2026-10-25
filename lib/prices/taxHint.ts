@@ -2,9 +2,13 @@ import { formatYen } from "./format";
 import type { TaxBasis } from "./tax";
 
 /** Tax-included price estimate. Rounded down to the yen, like coupon prices. */
-export function taxIncludedEstimate(price: number, ratePercent: number): number | null {
+export function taxIncludedEstimate(
+  price: number,
+  ratePercent: number,
+): number | null {
   if (!Number.isFinite(price) || price < 0) return null;
-  if (!Number.isFinite(ratePercent) || ratePercent < 0 || ratePercent > 30) return null;
+  if (!Number.isFinite(ratePercent) || ratePercent < 0 || ratePercent > 30)
+    return null;
   return Math.floor((price * (100 + ratePercent)) / 100 + 1e-9);
 }
 
@@ -12,7 +16,7 @@ export function taxIncludedEstimate(price: number, ratePercent: number): number 
 export function taxHintMessage(
   price: number,
   ratePercent: number,
-  basis: TaxBasis
+  basis: TaxBasis,
 ): string | null {
   if (basis === "incl") return null;
   if (ratePercent === 0) return null;

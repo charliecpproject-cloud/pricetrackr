@@ -17,7 +17,10 @@ export default function ProductMemoEditor({
   productId: string;
   memo: string | null;
 }) {
-  const [state, formAction, pending] = useToastedActionState(updateProductMemo, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    updateProductMemo,
+    initialState,
+  );
 
   return (
     <details className="mt-3 rounded-xl bg-panel-soft p-3">
@@ -36,7 +39,9 @@ export default function ProductMemoEditor({
           className="text-base"
         />
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-        {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+        {state.message && (
+          <p className="text-sm text-teal-700">{state.message}</p>
+        )}
         <Button type="submit" disabled={pending} className="h-12 w-full">
           {pending ? "保存中…" : "保存"}
         </Button>

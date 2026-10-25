@@ -11,8 +11,15 @@ const initialState: { error: string | null; message?: string | null } = {
   message: null,
 };
 
-export default function AliasAddForm({ suggestions }: { suggestions: string[] }) {
-  const [state, formAction, pending] = useToastedActionState(addAliases, initialState);
+export default function AliasAddForm({
+  suggestions,
+}: {
+  suggestions: string[];
+}) {
+  const [state, formAction, pending] = useToastedActionState(
+    addAliases,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-4">

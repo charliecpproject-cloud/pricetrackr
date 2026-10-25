@@ -17,7 +17,7 @@ type Row = {
 // A "default:<productId>:..." id has no price yet, so it finds nothing.
 export async function lookupPreviousPrices(
   packageId: string,
-  chainId: string
+  chainId: string,
 ): Promise<PreviousPrices> {
   const none: PreviousPrices = { latest: null, atChain: null };
   const pkg = z.string().uuid().safeParse(packageId);
@@ -27,10 +27,14 @@ export async function lookupPreviousPrices(
 
   const supabase = await createSupabaseServerClient();
 
-  async function newest(chainUuid: string | null): Promise<PreviousPrice | null> {
+  async function newest(
+    chainUuid: string | null,
+  ): Promise<PreviousPrice | null> {
     let query = supabase
       .from("price_observations")
-      .select("price, observed_at, store_chain_id, tax_basis, store_chains (name)")
+      .select(
+        "price, observed_at, store_chain_id, tax_basis, store_chains (name)",
+      )
       .eq("product_package_id", packageUuid)
       .order("observed_at", { ascending: false })
       .order("created_at", { ascending: false })

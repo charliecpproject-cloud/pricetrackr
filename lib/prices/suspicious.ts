@@ -14,7 +14,7 @@ export type PriceWarning =
 function taxMixup(
   ratio: number,
   currentBasis: TaxBasis,
-  previousBasis: TaxBasis
+  previousBasis: TaxBasis,
 ): PriceWarning | null {
   for (const rate of TAX_RATES) {
     const up = Math.abs(ratio / rate - 1) <= TAX_TOLERANCE;
@@ -26,7 +26,8 @@ function taxMixup(
     if (bothKnown && currentBasis === previousBasis) return null;
     // 税抜 then 税込 (higher), or 税込 then 税抜 (lower): exactly what a correct entry looks like.
     if (up && previousBasis === "excl" && currentBasis === "incl") return null;
-    if (down && previousBasis === "incl" && currentBasis === "excl") return null;
+    if (down && previousBasis === "incl" && currentBasis === "excl")
+      return null;
 
     return { kind: "tax", rate: rate === 1.08 ? 8 : 10 };
   }
@@ -40,7 +41,7 @@ function taxMixup(
 export function suspiciousPrice(
   current: number,
   currentBasis: TaxBasis,
-  previous: Pick<PreviousPrice, "price" | "taxBasis"> | null
+  previous: Pick<PreviousPrice, "price" | "taxBasis"> | null,
 ): PriceWarning[] {
   if (!previous) return [];
   if (!Number.isFinite(current) || current <= 0) return [];
@@ -48,8 +49,10 @@ export function suspiciousPrice(
 
   const ratio = current / previous.price;
   const out: PriceWarning[] = [];
-  if (current >= previous.price * JUMP_FACTOR) out.push({ kind: "jump", ratio });
-  else if (current * JUMP_FACTOR <= previous.price) out.push({ kind: "drop", ratio });
+  if (current >= previous.price * JUMP_FACTOR)
+    out.push({ kind: "jump", ratio });
+  else if (current * JUMP_FACTOR <= previous.price)
+    out.push({ kind: "drop", ratio });
 
   const tax = taxMixup(ratio, currentBasis, previous.taxBasis);
   if (tax) out.push(tax);

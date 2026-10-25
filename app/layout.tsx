@@ -21,16 +21,16 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <link key={href} rel="stylesheet" href={href} precedence="default" />
         ))}
         <ToastProvider>
-        <ProfileMenu
-          loggedIn={viewer.loggedIn}
-          email={viewer.email}
-          displayName={viewer.displayName}
-        />
-        <main className="mx-auto w-full min-w-0 max-w-xl px-4 pb-28 pt-2 [overflow-wrap:anywhere] [&_input]:min-w-0 [&_select]:min-w-0 [&_textarea]:min-w-0">
-          {children}
-        </main>
-        <AppNav />
-      </ToastProvider>
+          <ProfileMenu
+            loggedIn={viewer.loggedIn}
+            email={viewer.email}
+            displayName={viewer.displayName}
+          />
+          <main className="mx-auto w-full min-w-0 max-w-xl px-4 pb-28 pt-2 [overflow-wrap:anywhere] [&_input]:min-w-0 [&_select]:min-w-0 [&_textarea]:min-w-0">
+            {children}
+          </main>
+          <AppNav />
+        </ToastProvider>
       </body>
     </html>
   );

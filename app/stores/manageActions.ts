@@ -34,16 +34,24 @@ function refreshPages() {
 
 export async function updateStoreChain(
   _prevState: State,
-  formData: FormData
+  formData: FormData,
 ): Promise<State> {
   const parsed = z
-    .object({ id: z.string().uuid("チェーンが正しくありません"), name: nameSchema })
+    .object({
+      id: z.string().uuid("チェーンが正しくありません"),
+      name: nameSchema,
+    })
     .safeParse({ id: formData.get("id"), name: formData.get("name") });
-  if (!parsed.success) return { error: parsed.error.issues[0].message, message: null };
+  if (!parsed.success)
+    return { error: parsed.error.issues[0].message, message: null };
 
   const categoryRaw = formData.get("category");
   const category = parseCategory(categoryRaw);
-  if (typeof categoryRaw === "string" && categoryRaw !== "" && category === null) {
+  if (
+    typeof categoryRaw === "string" &&
+    categoryRaw !== "" &&
+    category === null
+  ) {
     return { error: "カテゴリが正しくありません", message: null };
   }
 
@@ -76,10 +84,14 @@ export async function updateStoreChain(
 
 export async function deleteStoreChain(
   _prevState: State,
-  formData: FormData
+  formData: FormData,
 ): Promise<State> {
-  const parsed = z.string().uuid("チェーンが正しくありません").safeParse(formData.get("id"));
-  if (!parsed.success) return { error: parsed.error.issues[0].message, message: null };
+  const parsed = z
+    .string()
+    .uuid("チェーンが正しくありません")
+    .safeParse(formData.get("id"));
+  if (!parsed.success)
+    return { error: parsed.error.issues[0].message, message: null };
   const id = parsed.data;
 
   const supabase = await createSupabaseServerClient();
@@ -119,7 +131,10 @@ export async function deleteStoreChain(
   redirect("/stores");
 }
 
-export async function updateShop(_prevState: State, formData: FormData): Promise<State> {
+export async function updateShop(
+  _prevState: State,
+  formData: FormData,
+): Promise<State> {
   const parsed = z
     .object({
       id: z.string().uuid("支店が正しくありません"),
@@ -133,7 +148,8 @@ export async function updateShop(_prevState: State, formData: FormData): Promise
       address: String(formData.get("address") ?? ""),
       region: String(formData.get("region") ?? ""),
     });
-  if (!parsed.success) return { error: parsed.error.issues[0].message, message: null };
+  if (!parsed.success)
+    return { error: parsed.error.issues[0].message, message: null };
 
   const supabase = await createSupabaseServerClient();
 
@@ -177,9 +193,16 @@ export async function updateShop(_prevState: State, formData: FormData): Promise
   return { error: null, message: "保存しました" };
 }
 
-export async function deleteShop(_prevState: State, formData: FormData): Promise<State> {
-  const parsed = z.string().uuid("支店が正しくありません").safeParse(formData.get("id"));
-  if (!parsed.success) return { error: parsed.error.issues[0].message, message: null };
+export async function deleteShop(
+  _prevState: State,
+  formData: FormData,
+): Promise<State> {
+  const parsed = z
+    .string()
+    .uuid("支店が正しくありません")
+    .safeParse(formData.get("id"));
+  if (!parsed.success)
+    return { error: parsed.error.issues[0].message, message: null };
 
   const supabase = await createSupabaseServerClient();
 

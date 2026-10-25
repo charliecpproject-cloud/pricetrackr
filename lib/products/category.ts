@@ -1,6 +1,7 @@
 export type CategoryCount = { name: string; count: number };
 
-export const normalize = (s: string) => s.normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
+export const normalize = (s: string) =>
+  s.normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
 
 function isHan(ch: string): boolean {
   const c = ch.codePointAt(0) ?? 0;
@@ -18,7 +19,9 @@ function hanChars(s: string): Set<string> {
 
 // Groups the category texts of all products into name + number of products.
 // Spellings that normalise to the same text (full/half width, case) are merged.
-export function countCategories(values: (string | null | undefined)[]): CategoryCount[] {
+export function countCategories(
+  values: (string | null | undefined)[],
+): CategoryCount[] {
   const groups = new Map<string, Map<string, number>>();
   for (const raw of values) {
     const name = (raw ?? "").trim();
@@ -51,7 +54,7 @@ const byCount = (a: CategoryCount, b: CategoryCount) =>
 export function suggestCategories(
   term: string,
   categories: CategoryCount[],
-  limit = 10
+  limit = 10,
 ): CategoryCount[] {
   const t = normalize(term);
   if (t === "") return [...categories].sort(byCount).slice(0, limit);

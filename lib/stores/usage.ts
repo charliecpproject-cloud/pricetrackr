@@ -16,7 +16,7 @@ function readUsage(supabase: Supabase) {
  */
 export async function getChainUsage(
   supabase: Supabase,
-  canRefresh = true
+  canRefresh = true,
 ): Promise<Map<string, number>> {
   const first = await readUsage(supabase);
   if (first.error) {
@@ -25,7 +25,10 @@ export async function getChainUsage(
   }
 
   let rows: any[] = first.data ?? [];
-  const newest = Math.max(0, ...rows.map((r) => new Date(r.updated_at).getTime()));
+  const newest = Math.max(
+    0,
+    ...rows.map((r) => new Date(r.updated_at).getTime()),
+  );
 
   if (canRefresh && (rows.length === 0 || Date.now() - newest > MAX_AGE_MS)) {
     const { error } = await supabase.rpc("refresh_store_chain_usage");
@@ -37,5 +40,10 @@ export async function getChainUsage(
     }
   }
 
-  return new Map(rows.map((r) => [r.store_chain_id as string, r.entries_last_month as number]));
+  return new Map(
+    rows.map((r) => [
+      r.store_chain_id as string,
+      r.entries_last_month as number,
+    ]),
+  );
 }

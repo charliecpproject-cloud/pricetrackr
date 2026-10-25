@@ -5,7 +5,7 @@ export function greetingFor(date: Date = new Date()): string {
       timeZone: "Asia/Tokyo",
       hour: "2-digit",
       hourCycle: "h23",
-    }).format(date)
+    }).format(date),
   );
   if (hour >= 5 && hour < 11) return "おはようございます";
   if (hour >= 11 && hour < 18) return "こんにちは";
@@ -15,7 +15,7 @@ export function greetingFor(date: Date = new Date()): string {
 // With a display name: 「おはようございます、たろうさん」. Without: the greeting only.
 export function greetingText(
   name: string | null | undefined,
-  date: Date = new Date()
+  date: Date = new Date(),
 ): string {
   const greeting = greetingFor(date);
   const trimmed = (name ?? "").trim();

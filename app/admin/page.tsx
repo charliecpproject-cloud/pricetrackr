@@ -8,7 +8,8 @@ const tools = [
   {
     href: "/admin/brands",
     title: "ブランドの管理",
-    description: "同じブランドの別の書き方（PASCO とパスコ）をまとめ、別名を登録する",
+    description:
+      "同じブランドの別の書き方（PASCO とパスコ）をまとめ、別名を登録する",
     Icon: Tag,
     ready: true,
   },
@@ -29,14 +30,16 @@ const tools = [
   {
     href: "/admin/units",
     title: "単位の言葉",
-    description: "容量の単位に使う言葉（本・玉・パックなど）を表示・非表示・追加・削除する",
+    description:
+      "容量の単位に使う言葉（本・玉・パックなど）を表示・非表示・追加・削除する",
     Icon: Ruler,
     ready: true,
   },
   {
     href: "/admin/suggestions",
     title: "検索のおすすめ",
-    description: "価格確認の検索ボックスの近くに出す、おすすめの言葉と表示する数を決める",
+    description:
+      "価格確認の検索ボックスの近くに出す、おすすめの言葉と表示する数を決める",
     Icon: Flame,
     ready: true,
   },
@@ -52,7 +55,9 @@ export default async function AdminPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-stone-900">管理者ツール</h1>
-        <p className="mt-1 text-sm text-stone-500">管理者アカウントだけが使えます。</p>
+        <p className="mt-1 text-sm text-stone-500">
+          管理者アカウントだけが使えます。
+        </p>
       </div>
 
       <div className="space-y-3">
@@ -74,7 +79,9 @@ export default async function AdminPage() {
                   </span>
                 )}
               </span>
-              <span className="block text-sm text-stone-500">{description}</span>
+              <span className="block text-sm text-stone-500">
+                {description}
+              </span>
             </span>
             <ChevronRight className="h-5 w-5 shrink-0 text-stone-400" />
           </Link>

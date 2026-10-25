@@ -20,7 +20,7 @@ const byUsage = (a: ChainForList, b: ChainForList) =>
  */
 export function arrangeChains<T extends ChainForList>(
   chains: T[],
-  topCount = 10
+  topCount = 10,
 ): { sorted: T[]; topIds: string[] } {
   const total = new Map<StoreCategory | null, number>();
   for (const c of chains) {
@@ -34,12 +34,16 @@ export function arrangeChains<T extends ChainForList>(
       const diff = (total.get(b.category) ?? 0) - (total.get(a.category) ?? 0);
       return diff !== 0
         ? diff
-        : STORE_CATEGORIES.indexOf(a.category) - STORE_CATEGORIES.indexOf(b.category);
+        : STORE_CATEGORIES.indexOf(a.category) -
+            STORE_CATEGORIES.indexOf(b.category);
     }
     return byUsage(a, b);
   });
 
-  const top = chains.filter((c) => c.entries > 0).sort(byUsage).slice(0, topCount);
+  const top = chains
+    .filter((c) => c.entries > 0)
+    .sort(byUsage)
+    .slice(0, topCount);
   if (top.length < topCount) {
     const rest = chains
       .filter((c) => c.entries === 0)

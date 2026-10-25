@@ -8,7 +8,7 @@ export async function searchProductIds(
   supabase: Supabase,
   term: string,
   limit = 50,
-  scope: SearchScope = "all"
+  scope: SearchScope = "all",
 ): Promise<string[]> {
   const { data, error } = await supabase.rpc("search_products", {
     p_query: term,
@@ -19,5 +19,7 @@ export async function searchProductIds(
     console.error("Product search error:", error.message, error.code);
     return [];
   }
-  return ((data ?? []) as { product_id: string }[]).map((row) => row.product_id);
+  return ((data ?? []) as { product_id: string }[]).map(
+    (row) => row.product_id,
+  );
 }

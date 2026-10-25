@@ -16,7 +16,10 @@ export const getViewer = cache(async (): Promise<Viewer> => {
   const { data: claimsData } = await supabase.auth.getClaims();
   const claims = claimsData?.claims;
   const user = claims
-    ? { id: claims.sub as string, email: (claims.email as string | undefined) ?? null }
+    ? {
+        id: claims.sub as string,
+        email: (claims.email as string | undefined) ?? null,
+      }
     : null;
 
   if (!user) {

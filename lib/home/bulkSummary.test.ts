@@ -7,7 +7,9 @@ describe("bulkFeedSummary", () => {
   });
 
   it("shows a single percent tier", () => {
-    expect(bulkFeedSummary(1000, [{ kind: "percent", quantity: 10, percent: 20 }])).toEqual({
+    expect(
+      bulkFeedSummary(1000, [{ kind: "percent", quantity: 10, percent: 20 }]),
+    ).toEqual({
       text: "10個以上 20%引 ¥800",
       more: 0,
     });
@@ -18,12 +20,14 @@ describe("bulkFeedSummary", () => {
       bulkFeedSummary(1000, [
         { kind: "percent", quantity: 10, percent: 5 },
         { kind: "percent", quantity: 20, percent: 20 },
-      ])
+      ]),
     ).toEqual({ text: "20個以上 20%引 ¥800", more: 1 });
   });
 
   it("shows a bundle price", () => {
-    expect(bulkFeedSummary(200, [{ kind: "total", quantity: 5, total: 550 }])).toEqual({
+    expect(
+      bulkFeedSummary(200, [{ kind: "total", quantity: 5, total: 550 }]),
+    ).toEqual({
       text: "5個で¥550",
       more: 0,
     });
@@ -34,7 +38,7 @@ describe("bulkFeedSummary", () => {
       bulkFeedSummary(200, [
         { kind: "percent", quantity: 10, percent: 10 },
         { kind: "total", quantity: 5, total: 750 },
-      ])
+      ]),
     ).toEqual({ text: "5個で¥750", more: 1 });
   });
 });

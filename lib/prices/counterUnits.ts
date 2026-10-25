@@ -8,7 +8,9 @@ import {
 type Supabase = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
 /** The counter words offered for new packages: the enabled words, in the admin's order. */
-export async function loadCounterUnits(supabase: Supabase): Promise<CounterUnitOption[]> {
+export async function loadCounterUnits(
+  supabase: Supabase,
+): Promise<CounterUnitOption[]> {
   const { data, error } = await supabase
     .from("counter_units")
     .select("unit, label")

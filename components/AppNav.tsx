@@ -56,7 +56,11 @@ export default function AppNav() {
               <Icon size={20} />
             </span>
             <span
-              className={isActive ? "font-bold text-teal-700" : "font-medium text-stone-500"}
+              className={
+                isActive
+                  ? "font-bold text-teal-700"
+                  : "font-medium text-stone-500"
+              }
             >
               {label}
             </span>

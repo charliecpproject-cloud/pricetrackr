@@ -12,7 +12,10 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function UnitAddForm() {
-  const [state, formAction, pending] = useToastedActionState(addCounterUnit, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    addCounterUnit,
+    initialState,
+  );
   const formRef = useRef<HTMLFormElement>(null);
 
   // Empty the box after a word was added.

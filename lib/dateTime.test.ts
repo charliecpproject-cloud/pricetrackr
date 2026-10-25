@@ -21,7 +21,9 @@ describe("formatDateTime", () => {
   });
 
   it("another year shows the year", () => {
-    expect(formatDateTime("2025-12-20T10:19:00Z", now)).toBe("2025/12/20 19:19");
+    expect(formatDateTime("2025-12-20T10:19:00Z", now)).toBe(
+      "2025/12/20 19:19",
+    );
   });
 
   it("returns an empty text for a bad date", () => {

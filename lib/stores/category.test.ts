@@ -21,7 +21,11 @@ describe("groupByCategory", () => {
       { id: 3, category: "supermarket" as const },
       { id: 4, category: "supermarket" as const },
     ]);
-    expect(groups.map((g) => g.label)).toEqual(["スーパー", "アパレル", "未分類"]);
+    expect(groups.map((g) => g.label)).toEqual([
+      "スーパー",
+      "アパレル",
+      "未分類",
+    ]);
     expect(groups[0].items.map((i) => i.id)).toEqual([3, 4]);
   });
 });

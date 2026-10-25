@@ -11,7 +11,10 @@ export default async function ProductMergePage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="inline-block text-sm font-medium text-teal-700">
+      <Link
+        href="/admin"
+        className="inline-block text-sm font-medium text-teal-700"
+      >
         ← 管理者ツールに戻る
       </Link>
 

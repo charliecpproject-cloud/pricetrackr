@@ -45,13 +45,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const showToast = useCallback(
     (text: string, kind: Kind = "success", link?: ToastLink) => {
       const id = nextId.current++;
-      setToasts((current) => [...current, { id, text, kind, link }].slice(-MAX_TOASTS));
+      setToasts((current) =>
+        [...current, { id, text, kind, link }].slice(-MAX_TOASTS),
+      );
       timers.current.set(
         id,
-        setTimeout(() => dismiss(id), kind === "error" ? ERROR_MS : link ? LINK_MS : SUCCESS_MS)
+        setTimeout(
+          () => dismiss(id),
+          kind === "error" ? ERROR_MS : link ? LINK_MS : SUCCESS_MS,
+        ),
       );
     },
-    [dismiss]
+    [dismiss],
   );
 
   useEffect(() => {

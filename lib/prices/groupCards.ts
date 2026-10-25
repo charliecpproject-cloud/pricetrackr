@@ -39,7 +39,9 @@ export function sortBySize<T extends GroupableCard>(items: T[]): T[] {
 }
 
 /** One group per variation (by label), packages without a variation last. */
-export function groupByVariation<T extends GroupableCard>(items: T[]): CardGroup<T>[] {
+export function groupByVariation<T extends GroupableCard>(
+  items: T[],
+): CardGroup<T>[] {
   const groups = new Map<string, CardGroup<T>>();
   for (const item of sortBySize(items)) {
     const key = item.variationId ?? "none";
@@ -47,7 +49,9 @@ export function groupByVariation<T extends GroupableCard>(items: T[]): CardGroup
     if (!group) {
       group = {
         key,
-        label: item.variationId ? item.variationLabel || "バリエーション" : NO_VARIATION_LABEL,
+        label: item.variationId
+          ? item.variationLabel || "バリエーション"
+          : NO_VARIATION_LABEL,
         items: [],
       };
       groups.set(key, group);
@@ -62,7 +66,11 @@ export function groupByVariation<T extends GroupableCard>(items: T[]): CardGroup
 }
 
 /** The chip that is selected first: the one with a favorite 容量, otherwise the first. */
-export function defaultGroupIndex<T extends GroupableCard>(groups: CardGroup<T>[]): number {
-  const index = groups.findIndex((g) => g.items.some((item) => item.favorite === "favorite"));
+export function defaultGroupIndex<T extends GroupableCard>(
+  groups: CardGroup<T>[],
+): number {
+  const index = groups.findIndex((g) =>
+    g.items.some((item) => item.favorite === "favorite"),
+  );
   return index >= 0 ? index : 0;
 }

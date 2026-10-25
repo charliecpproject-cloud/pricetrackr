@@ -26,7 +26,10 @@ export async function lookupBarcode(raw: string): Promise<LookupResult> {
     .limit(1);
   if (error) {
     console.error("Barcode lookup error:", error.message, error.code);
-    return { status: "invalid", message: "検索できませんでした。もう一度お試しください。" };
+    return {
+      status: "invalid",
+      message: "検索できませんでした。もう一度お試しください。",
+    };
   }
 
   if (data && data.length > 0) {

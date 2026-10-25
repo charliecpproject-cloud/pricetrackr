@@ -34,8 +34,12 @@ describe("couponPrice", () => {
 
 describe("couponPercentsFromShop", () => {
   it("reads the percents from either nested shape", () => {
-    expect(couponPercentsFromShop({ store_chains: { coupon_percents: [10] } })).toEqual([10]);
-    expect(couponPercentsFromShop({ store_chains: [{ coupon_percents: [5, 15] }] })).toEqual([5, 15]);
+    expect(
+      couponPercentsFromShop({ store_chains: { coupon_percents: [10] } }),
+    ).toEqual([10]);
+    expect(
+      couponPercentsFromShop({ store_chains: [{ coupon_percents: [5, 15] }] }),
+    ).toEqual([5, 15]);
   });
   it("returns an empty list when there is nothing", () => {
     expect(couponPercentsFromShop(null)).toEqual([]);
@@ -80,12 +84,19 @@ describe("allDiscounts", () => {
     expect(allDiscounts([5], 5)).toEqual([{ kind: "coupon", percent: 5 }]);
   });
   it("ignores unknown coupon percents, repeats and empty values", () => {
-    expect(allDiscounts([20, 5, 5], 0)).toEqual([{ kind: "coupon", percent: 5 }]);
+    expect(allDiscounts([20, 5, 5], 0)).toEqual([
+      { kind: "coupon", percent: 5 },
+    ]);
     expect(allDiscounts(null, null)).toEqual([]);
     expect(allDiscounts([], undefined)).toEqual([]);
   });
   it("ends with the same discount as bestDiscount", () => {
-    for (const [coupons, member] of [[[5, 10], 8], [[5], 8], [[15, 10], 3], [[], 3]] as const) {
+    for (const [coupons, member] of [
+      [[5, 10], 8],
+      [[5], 8],
+      [[15, 10], 3],
+      [[], 3],
+    ] as const) {
       const list = allDiscounts(coupons, member);
       expect(list[list.length - 1]).toEqual(bestDiscount(coupons, member));
     }
@@ -100,9 +111,13 @@ describe("effectivePrice", () => {
     expect(effectivePrice(1000, { memberPercent: 3 })).toBe(970);
   });
   it("applies only the larger discount", () => {
-    expect(effectivePrice(1000, { couponPercents: [15], memberPercent: 3 })).toBe(850);
+    expect(
+      effectivePrice(1000, { couponPercents: [15], memberPercent: 3 }),
+    ).toBe(850);
   });
   it("leaves a price that is already the membership price", () => {
-    expect(effectivePrice(1000, { memberPercent: 3, isMemberPrice: true })).toBe(1000);
+    expect(
+      effectivePrice(1000, { memberPercent: 3, isMemberPrice: true }),
+    ).toBe(1000);
   });
 });

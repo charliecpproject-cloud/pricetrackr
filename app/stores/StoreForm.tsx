@@ -8,7 +8,10 @@ import { addStoreChain } from "./actions";
 
 export default function StoreForm() {
   const initialState = { error: null as string | null };
-  const [state, formAction, pending] = useToastedActionState(addStoreChain, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    addStoreChain,
+    initialState,
+  );
 
   return (
     <form action={formAction} className="space-y-4">

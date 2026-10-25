@@ -39,11 +39,14 @@ export type LegacyPackage = {
 
 export async function loadLegacyPrices(
   supabase: Supabase,
-  productId: string
+  productId: string,
 ): Promise<LegacyPackage[]> {
-  const { data: pkgData, error: pkgError } = await supabase.rpc("legacy_packages", {
-    p_product_id: productId,
-  });
+  const { data: pkgData, error: pkgError } = await supabase.rpc(
+    "legacy_packages",
+    {
+      p_product_id: productId,
+    },
+  );
   if (pkgError) {
     console.error("Legacy packages error:", pkgError.message, pkgError.code);
     return [];
@@ -51,27 +54,40 @@ export async function loadLegacyPrices(
   const pkgs = (pkgData ?? []) as any[];
   if (pkgs.length === 0) return [];
 
-  const { data: obsData, error: obsError } = await supabase.rpc("legacy_observations", {
-    p_package_ids: pkgs.map((p) => p.package_id as string),
-  });
+  const { data: obsData, error: obsError } = await supabase.rpc(
+    "legacy_observations",
+    {
+      p_package_ids: pkgs.map((p) => p.package_id as string),
+    },
+  );
   if (obsError) {
-    console.error("Legacy observations error:", obsError.message, obsError.code);
+    console.error(
+      "Legacy observations error:",
+      obsError.message,
+      obsError.code,
+    );
     return [];
   }
   const observations = (obsData ?? []) as any[];
 
   const chainIds = Array.from(
-    new Set(observations.map((o) => o.store_chain_id as string).filter(Boolean))
+    new Set(
+      observations.map((o) => o.store_chain_id as string).filter(Boolean),
+    ),
   );
   const shopIds = Array.from(
-    new Set(observations.map((o) => o.shop_id as string | null).filter((x): x is string => !!x))
+    new Set(
+      observations
+        .map((o) => o.shop_id as string | null)
+        .filter((x): x is string => !!x),
+    ),
   );
   const [chainsResult, shopsResult] = await Promise.all([
     chainIds.length > 0
       ? supabase
           .from("store_chains")
           .select(
-            "id, name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier"
+            "id, name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier",
           )
           .in("id", chainIds)
       : Promise.resolve({ data: [] as any[], error: null }),
@@ -79,8 +95,12 @@ export async function loadLegacyPrices(
       ? supabase.from("shops").select("id, name").in("id", shopIds)
       : Promise.resolve({ data: [] as any[], error: null }),
   ]);
-  const chains = new Map(((chainsResult.data ?? []) as any[]).map((c) => [c.id as string, c]));
-  const shops = new Map(((shopsResult.data ?? []) as any[]).map((s) => [s.id as string, s]));
+  const chains = new Map(
+    ((chainsResult.data ?? []) as any[]).map((c) => [c.id as string, c]),
+  );
+  const shops = new Map(
+    ((shopsResult.data ?? []) as any[]).map((s) => [s.id as string, s]),
+  );
 
   return pkgs.map((p): LegacyPackage => {
     const size = Number(p.package_size);
@@ -101,12 +121,14 @@ export async function loadLegacyPrices(
       const chain = chains.get(chainId);
       const category = parseCategory(chain?.category);
       const couponPercents: number[] = chain?.coupon_percents ?? [];
-      const memberPercent: number | null = chain?.member_discount_percent ?? null;
+      const memberPercent: number | null =
+        chain?.member_discount_percent ?? null;
       const bulkTiers = parseStoredTiers(o.bulk_tiers);
       rows.push({
         chainId,
         chainName: (chain?.name as string | undefined) ?? "",
-        branchName: (o.shop_id ? shops.get(o.shop_id as string)?.name : "") ?? "",
+        branchName:
+          (o.shop_id ? shops.get(o.shop_id as string)?.name : "") ?? "",
         category,
         price: Number(o.price),
         observedAt: o.observed_at as string,
@@ -116,7 +138,7 @@ export async function loadLegacyPrices(
         memberPercent,
         pointUseMultiplier: pointUseMultiplierOf(
           chain?.point_use_enabled,
-          chain?.point_use_multiplier
+          chain?.point_use_multiplier,
         ),
         bulkTiers,
         bonusPoints: (o.bonus_points as number | null) ?? null,
@@ -136,7 +158,9 @@ export async function loadLegacyPrices(
     return {
       packageId: p.package_id as string,
       productName: (p.loser_name as string | null) || "名称未設定",
-      label: [variationText, packageLabel(size, unit)].filter(Boolean).join(" ・ "),
+      label: [variationText, packageLabel(size, unit)]
+        .filter(Boolean)
+        .join(" ・ "),
       entries: Number(p.price_entries),
       rows,
     };

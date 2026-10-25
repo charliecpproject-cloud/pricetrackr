@@ -13,7 +13,10 @@ const initialState: { error: string | null; message?: string | null } = {
 };
 
 export default function MergeForm() {
-  const [state, formAction, pending] = useToastedActionState(mergeProducts, initialState);
+  const [state, formAction, pending] = useToastedActionState(
+    mergeProducts,
+    initialState,
+  );
   const [loser, setLoser] = useState<MergeProduct | null>(null);
   const [winner, setWinner] = useState<MergeProduct | null>(null);
   const [preview, setPreview] = useState<MergePreview | null>(null);
@@ -57,7 +60,7 @@ export default function MergeForm() {
           !loser ||
           !winner ||
           !window.confirm(
-            `「${loser.name}」を「${winner.name}」に統合しますか？\n「${loser.name}」は画面から非表示になります。\nこの操作は管理者だけが元に戻せます。`
+            `「${loser.name}」を「${winner.name}」に統合しますか？\n「${loser.name}」は画面から非表示になります。\nこの操作は管理者だけが元に戻せます。`,
           )
         ) {
           e.preventDefault();
@@ -86,19 +89,24 @@ export default function MergeForm() {
         onChange={setWinner}
       />
 
-      {loading && <p className="text-sm text-stone-500">内容を確認しています…</p>}
+      {loading && (
+        <p className="text-sm text-stone-500">内容を確認しています…</p>
+      )}
 
       {preview && loser && winner && (
         <div className="space-y-1 rounded-xl border border-line bg-panel-soft p-4 text-sm text-stone-700">
           <p className="font-bold text-stone-900">統合の内容</p>
           <p>
-            「{loser.name}」の容量{preview.loserPackages}件・価格の記録{preview.loserEntries}
-            件は、そのまま残り、「{winner.name}」の詳細ページで「旧価格」として確認できます。
+            「{loser.name}」の容量{preview.loserPackages}件・価格の記録
+            {preview.loserEntries}
+            件は、そのまま残り、「{winner.name}
+            」の詳細ページで「旧価格」として確認できます。
           </p>
           <p>
-            バーコード：{preview.loserBarcodes}件のうち{preview.barcodesMoved}件を移動します
-            （残す商品は現在{preview.winnerBarcodes}件）。
-            {preview.barcodesStay > 0 && `残り${preview.barcodesStay}件は、非表示になった商品に残ります。`}
+            バーコード：{preview.loserBarcodes}件のうち{preview.barcodesMoved}
+            件を移動します （残す商品は現在{preview.winnerBarcodes}件）。
+            {preview.barcodesStay > 0 &&
+              `残り${preview.barcodesStay}件は、非表示になった商品に残ります。`}
           </p>
           <p>お気に入りは引き継がれません。</p>
         </div>

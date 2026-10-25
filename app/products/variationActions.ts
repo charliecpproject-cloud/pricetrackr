@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 
 export async function addVariation(
   prevState: { error: string | null; message?: string | null },
-  formData: FormData
+  formData: FormData,
 ): Promise<{ error: string | null; message?: string | null }> {
   // product_id の取得とバリデーション
   const rawProductId = formData.get("product_id");

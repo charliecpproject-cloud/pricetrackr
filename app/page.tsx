@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, PlusCircle, ScanLine, Search, ShieldCheck } from "lucide-react";
+import {
+  ChevronRight,
+  PlusCircle,
+  ScanLine,
+  Search,
+  ShieldCheck,
+} from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getViewer } from "@/lib/auth/viewer";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -45,24 +51,25 @@ export default async function HomePage() {
   const supabase = await createSupabaseServerClient();
 
   // Everything the page needs is fetched at the same time.
-  const [viewer, suggestions, observationsResult, productsResult] = await Promise.all([
-    getViewer(),
-    loadVisibleSuggestions(supabase),
-    supabase
-      .from("price_observations")
-      .select(
-        `id, price, created_at, is_sale, is_member_price, tax_basis, bulk_tiers, product_package_id,
+  const [viewer, suggestions, observationsResult, productsResult] =
+    await Promise.all([
+      getViewer(),
+      loadVisibleSuggestions(supabase),
+      supabase
+        .from("price_observations")
+        .select(
+          `id, price, created_at, is_sale, is_member_price, tax_basis, bulk_tiers, product_package_id,
          store_chains (name, category),
-         product_packages (package_size, package_unit, products (name_ja, name_en, tax_rate))`
-      )
-      .order("created_at", { ascending: false })
-      .limit(5),
-    supabase
-      .from("products")
-      .select("id, name_ja, name_en, created_at")
-      .order("created_at", { ascending: false })
-      .limit(5),
-  ]);
+         product_packages (package_size, package_unit, products (name_ja, name_en, tax_rate))`,
+        )
+        .order("created_at", { ascending: false })
+        .limit(5),
+      supabase
+        .from("products")
+        .select("id, name_ja, name_en, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5),
+    ]);
 
   if (observationsResult.error) {
     console.error("Home prices fetch error:", observationsResult.error.message);
@@ -71,38 +78,45 @@ export default async function HomePage() {
     console.error("Home products fetch error:", productsResult.error.message);
   }
 
-  const priceItems: Activity[] = ((observationsResult.data ?? []) as any[]).map((o) => {
-    const pkg = [o.product_packages].flat()[0];
-    const product = [pkg?.products].flat()[0];
-    const chain = [o.store_chains].flat()[0];
-    return {
-      kind: "price" as const,
-      key: `price-${o.id}`,
-      at: o.created_at as string,
-      href: `/check/${o.product_package_id}`,
-      name: product?.name_ja || product?.name_en || "名称未設定",
-      sizeLabel: pkg ? packageLabel(pkg.package_size, pkg.package_unit) : "",
-      chainName: chain?.name ?? "",
-      saleText: saleLabel(parseCategory(chain?.category)),
-      price: o.price as number | string,
-      isSale: !!o.is_sale,
-      isMemberPrice: !!o.is_member_price,
-      bulkSummary: bulkFeedSummary(Number(o.price), parseStoredTiers(o.bulk_tiers)),
-      taxRate: (product?.tax_rate as number | null) ?? null,
-      taxBasis: parseTaxBasis(o.tax_basis),
-    };
-  });
+  const priceItems: Activity[] = ((observationsResult.data ?? []) as any[]).map(
+    (o) => {
+      const pkg = [o.product_packages].flat()[0];
+      const product = [pkg?.products].flat()[0];
+      const chain = [o.store_chains].flat()[0];
+      return {
+        kind: "price" as const,
+        key: `price-${o.id}`,
+        at: o.created_at as string,
+        href: `/check/${o.product_package_id}`,
+        name: product?.name_ja || product?.name_en || "名称未設定",
+        sizeLabel: pkg ? packageLabel(pkg.package_size, pkg.package_unit) : "",
+        chainName: chain?.name ?? "",
+        saleText: saleLabel(parseCategory(chain?.category)),
+        price: o.price as number | string,
+        isSale: !!o.is_sale,
+        isMemberPrice: !!o.is_member_price,
+        bulkSummary: bulkFeedSummary(
+          Number(o.price),
+          parseStoredTiers(o.bulk_tiers),
+        ),
+        taxRate: (product?.tax_rate as number | null) ?? null,
+        taxBasis: parseTaxBasis(o.tax_basis),
+      };
+    },
+  );
 
-  const productItems: Activity[] = ((productsResult.data ?? []) as any[]).map((p) => {
-    const name = p.name_ja || p.name_en || "名称未設定";
-    return {
-      kind: "product" as const,
-      key: `product-${p.id}`,
-      at: p.created_at as string,
-      href: `/products?q=${encodeURIComponent(name)}`,
-      name,
-    };
-  });
+  const productItems: Activity[] = ((productsResult.data ?? []) as any[]).map(
+    (p) => {
+      const name = p.name_ja || p.name_en || "名称未設定";
+      return {
+        kind: "product" as const,
+        key: `product-${p.id}`,
+        at: p.created_at as string,
+        href: `/products?q=${encodeURIComponent(name)}`,
+        name,
+      };
+    },
+  );
 
   const activities = [...priceItems, ...productItems]
     .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
@@ -120,9 +134,14 @@ export default async function HomePage() {
         />
         <div className="min-w-0">
           <p className="text-sm text-white/80">PriceTrackr</p>
-          <h1 className="text-xl font-bold">{greetingText(viewer.displayName)}</h1>
+          <h1 className="text-xl font-bold">
+            {greetingText(viewer.displayName)}
+          </h1>
           {viewer.loggedIn && !viewer.displayName && (
-            <Link href="/settings" className="mt-1 block text-xs text-white/90 underline">
+            <Link
+              href="/settings"
+              className="mt-1 block text-xs text-white/90 underline"
+            >
               設定で表示名を登録すると、あいさつに使われます
             </Link>
           )}
@@ -175,7 +194,10 @@ export default async function HomePage() {
             {activities.map((a) => (
               <li key={a.key}>
                 {a.kind === "price" ? (
-                  <Link href={a.href} className="flex items-start justify-between gap-3 py-3">
+                  <Link
+                    href={a.href}
+                    className="flex items-start justify-between gap-3 py-3"
+                  >
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-2 font-medium text-stone-900">
                         <span className="truncate">{a.name}</span>
@@ -206,7 +228,9 @@ export default async function HomePage() {
                       />
                       {a.bulkSummary && (
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600">
-                          <span className="tabular-nums">{a.bulkSummary.text}</span>
+                          <span className="tabular-nums">
+                            {a.bulkSummary.text}
+                          </span>
                           {a.bulkSummary.more > 0 && (
                             <span className="rounded-md bg-rose-100 px-1 py-0.5 text-rose-700">
                               +{a.bulkSummary.more}
@@ -215,8 +239,12 @@ export default async function HomePage() {
                         </span>
                       )}
                     </div>
-                  </Link>                ) : (
-                  <Link href={a.href} className="flex items-center justify-between gap-3 py-3">
+                  </Link>
+                ) : (
+                  <Link
+                    href={a.href}
+                    className="flex items-center justify-between gap-3 py-3"
+                  >
                     <div className="min-w-0">
                       <p className="font-medium text-stone-900">
                         <span className="mr-2 rounded-md bg-teal-100 px-1.5 py-0.5 text-xs font-bold text-teal-700">

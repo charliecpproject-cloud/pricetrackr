@@ -8,7 +8,12 @@ import BrandAliasAddForm from "./BrandAliasAddForm";
 import BrandAliasRow from "./BrandAliasRow";
 
 type AliasRecord = { id: string; brand: string; alias: string };
-type ProductRow = { id: string; name_ja: string | null; name_en: string | null; brand: string | null };
+type ProductRow = {
+  id: string;
+  name_ja: string | null;
+  name_en: string | null;
+  brand: string | null;
+};
 type BrandCard = { name: string; count: number; aliases: AliasRecord[] };
 
 export const metadata = { title: "ブランドの管理" };
@@ -27,10 +32,18 @@ export default async function BrandsPage() {
       .order("created_at", { ascending: true }),
   ]);
   if (productsResult.error) {
-    console.error("Products fetch error:", productsResult.error.message, productsResult.error.code);
+    console.error(
+      "Products fetch error:",
+      productsResult.error.message,
+      productsResult.error.code,
+    );
   }
   if (aliasesResult.error) {
-    console.error("Brand aliases fetch error:", aliasesResult.error.message, aliasesResult.error.code);
+    console.error(
+      "Brand aliases fetch error:",
+      aliasesResult.error.message,
+      aliasesResult.error.code,
+    );
   }
 
   const products = (productsResult.data ?? []) as ProductRow[];
@@ -40,7 +53,8 @@ export default async function BrandsPage() {
   const brands = countCategories(products.map((p) => p.brand));
   const countByKey = new Map(brands.map((b) => [normalize(b.name), b.count]));
   const cards = new Map<string, BrandCard>();
-  for (const b of brands) cards.set(normalize(b.name), { name: b.name, count: b.count, aliases: [] });
+  for (const b of brands)
+    cards.set(normalize(b.name), { name: b.name, count: b.count, aliases: [] });
   for (const a of aliases) {
     const key = normalize(a.brand);
     const card = cards.get(key) ?? { name: a.brand, count: 0, aliases: [] };
@@ -48,17 +62,21 @@ export default async function BrandsPage() {
     cards.set(key, card);
   }
   const list = Array.from(cards.values()).sort(
-    (a, b) => b.count - a.count || a.name.localeCompare(b.name, "ja")
+    (a, b) => b.count - a.count || a.name.localeCompare(b.name, "ja"),
   );
 
   // Products that look the same once aliases are applied (same name and same brand).
-  const brandOfAlias = new Map(aliases.map((a) => [normalize(a.alias), a.brand]));
+  const brandOfAlias = new Map(
+    aliases.map((a) => [normalize(a.alias), a.brand]),
+  );
   const groups = new Map<string, string[]>();
   for (const p of products) {
     const name = (p.name_ja || p.name_en || "").trim();
     if (!name) continue;
     const rawBrand = p.brand ?? "";
-    const brandKey = normalize(brandOfAlias.get(normalize(rawBrand)) ?? rawBrand);
+    const brandKey = normalize(
+      brandOfAlias.get(normalize(rawBrand)) ?? rawBrand,
+    );
     const key = `${normalize(name)}|${brandKey}`;
     const label = p.brand ? `${name}（${p.brand}）` : name;
     groups.set(key, [...(groups.get(key) ?? []), label]);
@@ -69,19 +87,25 @@ export default async function BrandsPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="inline-block text-sm font-medium text-teal-700">
+      <Link
+        href="/admin"
+        className="inline-block text-sm font-medium text-teal-700"
+      >
         ← 管理者ツールに戻る
       </Link>
 
       <div>
         <h1 className="text-2xl font-bold text-stone-900">ブランドの管理</h1>
         <p className="mt-1 text-sm text-stone-500">
-          同じブランドの別の書き方（例：PASCO とパスコ）を1つにまとめます。別名を登録すると、商品を登録するときに自動で正しい名前になり、検索でも見つかります。
+          同じブランドの別の書き方（例：PASCO
+          とパスコ）を1つにまとめます。別名を登録すると、商品を登録するときに自動で正しい名前になり、検索でも見つかります。
         </p>
       </div>
 
       <section className={cardCls}>
-        <h2 className="mb-3 text-lg font-bold text-stone-900">ブランドをまとめる</h2>
+        <h2 className="mb-3 text-lg font-bold text-stone-900">
+          ブランドをまとめる
+        </h2>
         <BrandMergeForm
           brands={list
             .filter((b) => b.count > 0)
@@ -133,7 +157,9 @@ export default async function BrandsPage() {
         </div>
       )}
 
-      <p className="text-xs text-stone-500">ブランドの管理は管理者だけができます。</p>
+      <p className="text-xs text-stone-500">
+        ブランドの管理は管理者だけができます。
+      </p>
     </div>
   );
 }

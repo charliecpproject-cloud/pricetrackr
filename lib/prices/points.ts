@@ -10,7 +10,10 @@ export function pointsNeeded(price: number, multiplier: number): number | null {
 }
 
 /** The multiplier of a chain, or null when the chain does not have ウェル活 enabled. */
-export function pointUseMultiplierOf(enabled: unknown, multiplier: unknown): number | null {
+export function pointUseMultiplierOf(
+  enabled: unknown,
+  multiplier: unknown,
+): number | null {
   if (enabled !== true) return null;
   const m = Number(multiplier);
   return Number.isFinite(m) && m >= 1 ? m : null;

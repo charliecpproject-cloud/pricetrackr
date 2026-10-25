@@ -28,7 +28,10 @@ const brandSchema = z
   .max(100, "ブランド名は100文字以内で入力してください");
 
 // Gives every product of the brand "from" the brand "to". The old spelling becomes an alias.
-export async function mergeBrands(_prev: State, formData: FormData): Promise<State> {
+export async function mergeBrands(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
 
   const from = brandSchema.safeParse(String(formData.get("from") ?? ""));
@@ -44,7 +47,8 @@ export async function mergeBrands(_prev: State, formData: FormData): Promise<Sta
   if (normalize(from.data) !== normalize(to.data)) {
     const { brands, aliases } = await loadBrandContext(supabase);
     target = resolveBrand(to.data, brands, aliases);
-    if (normalize(target) === normalize(from.data)) return { error: "同じブランドです" };
+    if (normalize(target) === normalize(from.data))
+      return { error: "同じブランドです" };
   }
 
   const { data, error } = await supabase.rpc("merge_brand", {
@@ -58,11 +62,17 @@ export async function mergeBrands(_prev: State, formData: FormData): Promise<Sta
 
   refresh();
   const count = typeof data === "number" ? data : 0;
-  return { error: null, message: `${count}件の商品のブランドを「${target}」にしました` };
+  return {
+    error: null,
+    message: `${count}件の商品のブランドを「${target}」にしました`,
+  };
 }
 
 // Several aliases can be added at once, separated by commas or line breaks.
-export async function addBrandAliases(_prev: State, formData: FormData): Promise<State> {
+export async function addBrandAliases(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
 
   const brand = brandSchema.safeParse(String(formData.get("brand") ?? ""));
@@ -75,7 +85,10 @@ export async function addBrandAliases(_prev: State, formData: FormData): Promise
 
   const aliases: string[] = [];
   for (const a of typed) {
-    if (a.length > 100) return { error: `別名は100文字以内で入力してください：${a.slice(0, 20)}…` };
+    if (a.length > 100)
+      return {
+        error: `別名は100文字以内で入力してください：${a.slice(0, 20)}…`,
+      };
     if (normalize(a) === normalize(brand.data)) continue;
     if (!aliases.some((x) => normalize(x) === normalize(a))) aliases.push(a);
   }
@@ -90,7 +103,8 @@ export async function addBrandAliases(_prev: State, formData: FormData): Promise
     .insert(aliases.map((alias) => ({ brand: brand.data, alias })));
   if (error) {
     console.error("Brand alias insert error:", error.message, error.code);
-    if (error.code === "23505") return { error: "その別名はすでに登録されています" };
+    if (error.code === "23505")
+      return { error: "その別名はすでに登録されています" };
     return { error: error.code === "42501" ? NOT_ADMIN : FAILED };
   }
 
@@ -98,9 +112,15 @@ export async function addBrandAliases(_prev: State, formData: FormData): Promise
   return { error: null, message: `別名を${aliases.length}件追加しました` };
 }
 
-export async function deleteBrandAlias(_prev: State, formData: FormData): Promise<State> {
+export async function deleteBrandAlias(
+  _prev: State,
+  formData: FormData,
+): Promise<State> {
   if (!(await getViewer()).isAdmin) return { error: NOT_ADMIN };
-  const id = z.string().uuid("別名が正しくありません").safeParse(formData.get("id"));
+  const id = z
+    .string()
+    .uuid("別名が正しくありません")
+    .safeParse(formData.get("id"));
   if (!id.success) return { error: id.error.issues[0].message };
 
   const supabase = await createSupabaseServerClient();

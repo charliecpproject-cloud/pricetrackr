@@ -40,7 +40,7 @@ export type PriceAgeLevel = "fresh" | "aging" | "old";
 // with a level for the colour: fresh (up to 30 days), aging (31 to 90 days), old (over 90 days).
 export function priceAge(
   iso: string,
-  now: Date = new Date()
+  now: Date = new Date(),
 ): { label: string; level: PriceAgeLevel } | null {
   const at = new Date(iso);
   if (Number.isNaN(at.getTime())) return null;
@@ -55,7 +55,8 @@ export function priceAge(
   else if (days < 30) label = `${days}日前`;
   else if (days < 365) label = `${Math.min(11, Math.floor(days / 30))}か月前`;
   else label = `${Math.floor(days / 365)}年前`;
-  const level: PriceAgeLevel = days <= 30 ? "fresh" : days <= 90 ? "aging" : "old";
+  const level: PriceAgeLevel =
+    days <= 30 ? "fresh" : days <= 90 ? "aging" : "old";
   return { label, level };
 }
 

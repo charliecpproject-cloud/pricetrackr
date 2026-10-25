@@ -32,12 +32,18 @@ export default function ChainOptionsForm({
   pointUseMultiplier: number;
   bulkEnabled: boolean;
 }) {
-  const [state, formAction, pending] = useToastedActionState(updateChainCoupons, initial);
+  const [state, formAction, pending] = useToastedActionState(
+    updateChainCoupons,
+    initial,
+  );
   const [memberOn, setMemberOn] = useState(memberPercent !== null);
   const [pointOn, setPointOn] = useState(pointUseEnabled);
 
   return (
-    <form action={formAction} className="mt-3 space-y-4 rounded-xl bg-panel-soft p-3">
+    <form
+      action={formAction}
+      className="mt-3 space-y-4 rounded-xl bg-panel-soft p-3"
+    >
       <input type="hidden" name="chainId" value={chainId} />
 
       <fieldset>
@@ -88,7 +94,9 @@ export default function ChainOptionsForm({
       </fieldset>
 
       <fieldset>
-        <legend className={legendCls}>感謝デー（ポイントの価値が上がる日）</legend>
+        <legend className={legendCls}>
+          感謝デー（ポイントの価値が上がる日）
+        </legend>
         <div className="flex flex-wrap items-center gap-3">
           <label className={boxCls}>
             <input
@@ -134,7 +142,9 @@ export default function ChainOptionsForm({
       </fieldset>
 
       <fieldset>
-        <legend className={legendCls}>まとめ買い割引（特定の商品を○個以上で割引）</legend>
+        <legend className={legendCls}>
+          まとめ買い割引（特定の商品を○個以上で割引）
+        </legend>
         <label className={boxCls}>
           <input
             type="checkbox"
@@ -150,7 +160,9 @@ export default function ChainOptionsForm({
       </fieldset>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.message && <p className="text-sm text-teal-700">{state.message}</p>}
+      {state.message && (
+        <p className="text-sm text-teal-700">{state.message}</p>
+      )}
 
       <Button type="submit" disabled={pending} className="h-12 w-full">
         {pending ? "保存中…" : "保存"}

@@ -21,8 +21,14 @@ export default function UnitRow({
   usedCount: number | null; // null = could not be counted
   required: boolean; // 個: cannot be hidden or removed
 }) {
-  const [, toggleAction] = useToastedActionState(setCounterUnitEnabled, initialState);
-  const [, deleteFormAction, deleting] = useToastedActionState(deleteCounterUnit, initialState);
+  const [, toggleAction] = useToastedActionState(
+    setCounterUnitEnabled,
+    initialState,
+  );
+  const [, deleteFormAction, deleting] = useToastedActionState(
+    deleteCounterUnit,
+    initialState,
+  );
 
   const canDelete = !required && usedCount === 0;
   const note = required
@@ -56,7 +62,8 @@ export default function UnitRow({
         <form
           action={deleteFormAction}
           onSubmit={(e) => {
-            if (!window.confirm(`「${label}」を削除しますか？`)) e.preventDefault();
+            if (!window.confirm(`「${label}」を削除しますか？`))
+              e.preventDefault();
           }}
         >
           <input type="hidden" name="unit" value={unit} />

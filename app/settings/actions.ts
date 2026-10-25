@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function setDemoMode(
   _prevState: { error: string | null; message?: string | null },
-  formData: FormData
+  formData: FormData,
 ): Promise<{ error: string | null; message?: string | null }> {
   const value = formData.get("demo_mode");
   if (value !== "on" && value !== "off") {
@@ -26,12 +26,17 @@ export async function setDemoMode(
     .select("demo_mode");
 
   if (error || !data || data.length === 0) {
-    return { error: "変更できませんでした。管理者アカウントでログインしてください" };
+    return {
+      error: "変更できませんでした。管理者アカウントでログインしてください",
+    };
   }
 
   revalidatePath("/settings");
   return {
     error: null,
-    message: value === "on" ? "デモモードをオンにしました" : "デモモードをオフにしました",
+    message:
+      value === "on"
+        ? "デモモードをオンにしました"
+        : "デモモードをオフにしました",
   };
 }

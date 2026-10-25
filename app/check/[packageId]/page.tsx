@@ -29,7 +29,8 @@ export async function generateMetadata({
   params: Promise<{ packageId: string }>;
 }) {
   const { packageId } = await params;
-  if (!z.string().uuid().safeParse(packageId).success) return { title: "価格確認" };
+  if (!z.string().uuid().safeParse(packageId).success)
+    return { title: "価格確認" };
 
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
@@ -58,7 +59,7 @@ export default async function PackageDetailPage({
   const { data: pkg, error: pkgError } = await supabase
     .from("product_packages")
     .select(
-      "id, product_id, variation_id, package_size, package_unit, products (name_en, name_ja, brand, memo, tax_rate), product_variations (attributes)"
+      "id, product_id, variation_id, package_size, package_unit, products (name_en, name_ja, brand, memo, tax_rate), product_variations (attributes)",
     )
     .eq("id", packageId)
     .single();
@@ -89,7 +90,7 @@ export default async function PackageDetailPage({
   const { data: observations, error: obsError } = await supabase
     .from("price_observations")
     .select(
-      "id, store_chain_id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, bulk_tiers, notes, store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier), shops (name)"
+      "id, store_chain_id, price, observed_at, created_at, is_sale, is_member_price, bonus_points, tax_basis, bulk_tiers, notes, store_chains (name, category, coupon_percents, member_discount_percent, point_use_enabled, point_use_multiplier), shops (name)",
     )
     .eq("product_package_id", packageId)
     .order("observed_at", { ascending: false })
@@ -120,13 +121,16 @@ export default async function PackageDetailPage({
         isMemberPrice: !!obs.is_member_price,
         bulkTiers: parseStoredTiers(obs.bulk_tiers),
         size: Number(pkg.package_size),
-        regularLabel: obs.is_sale ? `${saleLabel(parseCategory(chain?.category))}価格` : undefined,
+        regularLabel: obs.is_sale
+          ? `${saleLabel(parseCategory(chain?.category))}価格`
+          : undefined,
         unit: pkg.package_unit,
       }),
-      memberPercent: (chain?.member_discount_percent as number | null | undefined) ?? null,
+      memberPercent:
+        (chain?.member_discount_percent as number | null | undefined) ?? null,
       pointUseMultiplier: pointUseMultiplierOf(
         chain?.point_use_enabled,
-        chain?.point_use_multiplier
+        chain?.point_use_multiplier,
       ),
       chainName: (chain?.name as string | undefined) ?? "",
       category: parseCategory(chain?.category),
@@ -136,7 +140,9 @@ export default async function PackageDetailPage({
   });
   const latest = rows[0];
   // Prices of products that were merged into this one (visitors see none).
-  const legacy = readOnly ? [] : await loadLegacyPrices(supabase, pkg.product_id as string);
+  const legacy = readOnly
+    ? []
+    : await loadLegacyPrices(supabase, pkg.product_id as string);
 
   // The heart in the header (visitors have no favorites and see no heart).
   const favorites = readOnly ? null : await loadFavorites(supabase);
@@ -146,21 +152,22 @@ export default async function PackageDetailPage({
         pkg.product_id as string,
         pkg.variation_id as string | null,
         favorites.ids,
-        favorites.groups
+        favorites.groups,
       )
     : null;
 
   return (
     <div className="space-y-6">
-      <BackToSearchLink>
-        ← 検索に戻る
-      </BackToSearchLink>
+      <BackToSearchLink>← 検索に戻る</BackToSearchLink>
 
       <div>
         <div className="flex items-center gap-1">
           {favoriteState && (
             <span className="-ml-2.5 shrink-0">
-              <FavoriteButton packageId={pkg.id as string} level={favoriteState} />
+              <FavoriteButton
+                packageId={pkg.id as string}
+                level={favoriteState}
+              />
             </span>
           )}
           <h1 className="min-w-0 text-2xl font-bold text-stone-900">{name}</h1>
@@ -176,23 +183,50 @@ export default async function PackageDetailPage({
         {product.memo && (
           <div className="mt-4 rounded-md border border-line bg-panel p-3 shadow-sm">
             <h3 className="text-sm font-medium text-stone-900 mb-1">メモ</h3>
-            <p className="whitespace-pre-wrap text-sm text-stone-700">{product.memo}</p>
+            <p className="whitespace-pre-wrap text-sm text-stone-700">
+              {product.memo}
+            </p>
           </div>
         )}
       </div>
 
-      <AddPriceButton packageId={packageId} chainId={latest?.chainId ?? null} disabled={readOnly} />
+      <AddPriceButton
+        packageId={packageId}
+        chainId={latest?.chainId ?? null}
+        disabled={readOnly}
+      />
 
       {latest ? (
         <div className="rounded-2xl border border-line bg-panel p-5 shadow-sm">
           <p className="text-sm text-stone-500">最新価格</p>
           <div className="mt-1">
-            <PriceDisplay price={latest.price} couponPercents={latest.couponPercents} memberPercent={latest.memberPercent} isMemberPrice={latest.isMemberPrice} regularLabel={latest.isSale ? `${saleLabel(latest.category)}価格` : undefined} pointUseMultiplier={latest.pointUseMultiplier} bulkTiers={latest.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={latest.taxBasis} size="lg" align="start" />
+            <PriceDisplay
+              price={latest.price}
+              couponPercents={latest.couponPercents}
+              memberPercent={latest.memberPercent}
+              isMemberPrice={latest.isMemberPrice}
+              regularLabel={
+                latest.isSale ? `${saleLabel(latest.category)}価格` : undefined
+              }
+              pointUseMultiplier={latest.pointUseMultiplier}
+              bulkTiers={latest.bulkTiers}
+              taxRate={product.tax_rate ?? null}
+              taxBasis={latest.taxBasis}
+              size="lg"
+              align="start"
+            />
             <UnitPriceSummary summary={latest.unitSummary} align="start" />
           </div>
           <p className="mt-2 text-sm text-stone-500">
             {latest.chainName}
-            {latest.branchName ? `（${latest.branchName}）` : ""} ・ {formatDateTime(latest.observedAt)}<PriceAge iso={latest.observedAt} className="ml-1.5" />{latest.bonusPoints ? <span className="ml-2 text-amber-700">+{latest.bonusPoints}ポイント</span> : null}
+            {latest.branchName ? `（${latest.branchName}）` : ""} ・{" "}
+            {formatDateTime(latest.observedAt)}
+            <PriceAge iso={latest.observedAt} className="ml-1.5" />
+            {latest.bonusPoints ? (
+              <span className="ml-2 text-amber-700">
+                +{latest.bonusPoints}ポイント
+              </span>
+            ) : null}
           </p>
         </div>
       ) : (
@@ -217,14 +251,40 @@ export default async function PackageDetailPage({
                       </span>
                     )}
                     {r.isSale && (
-                      <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">{saleLabel(r.category)}</span>
+                      <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-700">
+                        {saleLabel(r.category)}
+                      </span>
                     )}
                   </p>
-                  <PriceDisplay price={r.price} couponPercents={r.couponPercents} memberPercent={r.memberPercent} isMemberPrice={r.isMemberPrice} regularLabel={r.isSale ? `${saleLabel(r.category)}価格` : undefined} pointUseMultiplier={r.pointUseMultiplier} bulkTiers={r.bulkTiers} taxRate={product.tax_rate ?? null} taxBasis={r.taxBasis} size="md" className="ml-auto" />
+                  <PriceDisplay
+                    price={r.price}
+                    couponPercents={r.couponPercents}
+                    memberPercent={r.memberPercent}
+                    isMemberPrice={r.isMemberPrice}
+                    regularLabel={
+                      r.isSale ? `${saleLabel(r.category)}価格` : undefined
+                    }
+                    pointUseMultiplier={r.pointUseMultiplier}
+                    bulkTiers={r.bulkTiers}
+                    taxRate={product.tax_rate ?? null}
+                    taxBasis={r.taxBasis}
+                    size="md"
+                    className="ml-auto"
+                  />
                 </div>
-                <p className="mt-1 text-xs text-stone-500">{formatDateTime(r.observedAt)}<PriceAge iso={r.observedAt} className="ml-1.5" />{r.bonusPoints ? <span className="ml-2 text-amber-700">+{r.bonusPoints}ポイント</span> : null}</p>
+                <p className="mt-1 text-xs text-stone-500">
+                  {formatDateTime(r.observedAt)}
+                  <PriceAge iso={r.observedAt} className="ml-1.5" />
+                  {r.bonusPoints ? (
+                    <span className="ml-2 text-amber-700">
+                      +{r.bonusPoints}ポイント
+                    </span>
+                  ) : null}
+                </p>
                 <UnitPriceSummary summary={r.unitSummary} align="start" />
-                {r.notes && <p className="mt-2 text-sm text-stone-700">{r.notes}</p>}
+                {r.notes && (
+                  <p className="mt-2 text-sm text-stone-700">{r.notes}</p>
+                )}
                 <div className="mt-2">
                   <DeleteObservationButton
                     id={r.id}
@@ -239,7 +299,11 @@ export default async function PackageDetailPage({
         </section>
       )}
 
-      <LegacyPrices items={legacy} taxRate={product.tax_rate ?? null} isAdmin={viewer.isAdmin} />
+      <LegacyPrices
+        items={legacy}
+        taxRate={product.tax_rate ?? null}
+        isAdmin={viewer.isAdmin}
+      />
     </div>
   );
 }

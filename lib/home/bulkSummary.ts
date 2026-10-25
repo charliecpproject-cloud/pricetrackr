@@ -10,7 +10,7 @@ const yen = (n: number) => `¥${n.toLocaleString("ja-JP")}`;
  */
 export function bulkFeedSummary(
   price: number,
-  tiers: readonly BulkTier[]
+  tiers: readonly BulkTier[],
 ): BulkFeedSummary | null {
   if (!Number.isFinite(price) || tiers.length === 0) return null;
   const best = bestBulkTier(price, tiers);
