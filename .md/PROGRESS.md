@@ -16,6 +16,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 63 (/scan polish in components/BarcodeScanner.tsx: a torch button only where the camera reports torch support, a short vibration on a successful read where the device has one (Android), no sound anywhere, a clearer unsupported message on iPhone and iPad) done
 
 
+- Step 64 (price history on the product detail page: lib/prices/history.ts buildHistory with tests (lowest, average, highest and the newest price against the average, same tax basis only, entered prices, legacy prices ignored); components/PriceHistoryChart.tsx draws a hand-made SVG chart you can tap or drag, for all chains and, when 2 or more chains have prices, a second chart for the chain of the newest price; the detail page loads up to 500 prices for the charts) done
+
+
 ## In Progress
 
 - (none)
@@ -23,7 +26,6 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 
 ## Next Up
 
-- Step 64: price history chart or sparkline on the product detail page with lowest, average and highest and an X% above/below usual line (same tax basis only, legacy prices ignored)
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
 - Speed, later: check that Fluid compute is on (Vercel, Settings, Functions); consider Vercel Speed Insights.
 - Wishlist: edit the size or unit of a package, show the logo inside the app, option to rank by normal price instead of the discounted price
