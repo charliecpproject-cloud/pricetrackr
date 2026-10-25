@@ -7,11 +7,11 @@ Read this first. It is a briefing for Claude in a new chat, not for Aider (keep 
 - Windows + PowerShell. Replies must give exact commands, exact options, and what to expect.
 - App: private price-intelligence app for Japan (JPY), Japanese-only UI, installed as a web app on Android. Single owner account, sign-ups disabled.
 - Stack: Next.js 16 (App Router), React 19, Tailwind 4, TypeScript strict, npm, shadcn (installed: button, card, input, label, badge, textarea), Supabase (Postgres, Auth, RLS), Vercel Hobby, Vitest, zod v4 (errors are `error.issues`, never `error.errors`).
-- Code is written with Aider using Groq free tier (`groq/openai/gpt-oss-120b`, about 8k tokens per minute). `.aider.conf.yml` loads CONVENTIONS.md and PART1_FOUNDATION.md read-only and PROGRESS.md editable; `map-tokens: 0`, `reasoning-effort: low`. Docs live in the `.md` folder.
+- Code is written with Aider using Groq free tier (`groq/openai/gpt-oss-120b`, about 8k tokens per minute). `.aider.conf.yml` loads CONVENTIONS.md and PART1_FOUNDATION.md and DB_SCHEMA_PHASE1.md read-only (PROGRESS.md is not loaded; it is updated by hand with the Rep helper, and Steps 1-60 are in PROGRESS_ARCHIVE.md); `map-tokens: 0`, `reasoning-effort: low`. Docs live in the `.md` folder.
 
 ## How we work
 - Small jobs for Aider: one file per job (two at most), message sent inside Aider after `/code`, wait about a minute between jobs, answer `N` to "Add file" and "fix lint" prompts, `/exit`, then `npx tsc --noEmit`.
-- Every step ends with the full commit commands (with the commit message), then the exact message asking Aider to update `PROGRESS.md`, then `git push`.
+- Every step ends with the full commit commands (with the commit message), then direct Rep edit commands for `PROGRESS.md` (not an Aider message), then `git push`.
 - ASK to see an existing file (give a `Get-Content` command) before editing it. Never predict or regenerate a file that has not been shown.
 - Known Aider habits: guesses import/export names, writes long `../` imports (use the `@/` alias), uses `error.errors`, imports shadcn components that are not installed, writes wrong nested-select relationships, rewrites whole files and drops earlier fixes, leaves placeholder text. Prefer small hand edits (Notepad Ctrl+H, or the PowerShell `Rep` helper below), or a complete replacement file only for files Claude has seen.
 - Paths with brackets need quotes or `-LiteralPath`: `"app\check\[packageId]\page.tsx"`. New files are created with `notepad path` (click Yes).
