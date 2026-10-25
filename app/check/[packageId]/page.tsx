@@ -22,6 +22,8 @@ import { favoriteLevel } from "@/lib/prices/favorites";
 import { parseAttributes, variationLabel } from "@/lib/products/variation";
 import { loadLegacyPrices } from "@/lib/prices/loadLegacy";
 import LegacyPrices from "@/components/LegacyPrices";
+import PriceHistoryChart from "@/components/PriceHistoryChart";
+import { buildHistory, type HistoryRow } from "@/lib/prices/history";
 
 export async function generateMetadata({
   params,
@@ -139,6 +141,36 @@ export default async function PackageDetailPage({
     };
   });
   const latest = rows[0];
+
+  // The charts use the whole history of this package (the list below shows only the newest 20).
+  const { data: historyData, error: historyError } = await supabase
+    .from("price_observations")
+    .select(
+      "price, observed_at, tax_basis, store_chain_id, store_chains (name)",
+    )
+    .eq("product_package_id", packageId)
+    .order("observed_at", { ascending: false })
+    .limit(500);
+  if (historyError) {
+    console.error(
+      "History fetch error:",
+      historyError.message,
+      historyError.code,
+    );
+  }
+  const historyRows: HistoryRow[] = ((historyData ?? []) as any[]).map((o) => ({
+    observedAt: o.observed_at as string,
+    price: Number(o.price),
+    taxBasis: parseTaxBasis(o.tax_basis),
+    chainId: (o.store_chain_id as string | null) ?? null,
+    chainName: ([o.store_chains].flat()[0]?.name as string | undefined) ?? "",
+  }));
+  const historyAll = buildHistory(historyRows);
+  const historyChain = latest?.chainId
+    ? buildHistory(historyRows, { chainId: latest.chainId })
+    : null;
+  // The chain chart only differs from the first one when 2 or more chains have prices.
+  const chainCount = new Set(historyRows.map((r) => r.chainId)).size;
   // Prices of products that were merged into this one (visitors see none).
   const legacy = readOnly
     ? []
@@ -231,6 +263,15 @@ export default async function PackageDetailPage({
         </div>
       ) : (
         <p className="text-stone-500">まだ価格がありません</p>
+      )}
+
+      {historyAll && <PriceHistoryChart view={historyAll} scope="all" />}
+      {historyChain && chainCount > 1 && (
+        <PriceHistoryChart
+          view={historyChain}
+          scope="chain"
+          chainName={latest?.chainName}
+        />
       )}
 
       {rows.length > 0 && (
