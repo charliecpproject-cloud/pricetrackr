@@ -25,6 +25,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 66 (price check: the new option cmp=normal makes the cheapest badge and the price range use the entered price instead of the price after coupon or membership; the choice is in the filter panel (app/check/CompareFilter.tsx), part of the URL like the other filters, default is the discounted price; Filters has a new compare field) done
 
 
+- Step 67 (detail page: the unit price line is hidden for a single piece, like on the price check cards, in the latest price card and in the history rows; the bundle label in the unit price line is shortened, since the bundle price is already shown in the bulk block) done
+
+
 ## In Progress
 
 - (none)
