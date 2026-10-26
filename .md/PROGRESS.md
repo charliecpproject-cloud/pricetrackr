@@ -34,7 +34,6 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
 - Speed, later: check that Fluid compute is on (Vercel, Settings, Functions); consider Vercel Speed Insights.
-- Wishlist: show the logo inside the app
 
 
 ## Known Issues
