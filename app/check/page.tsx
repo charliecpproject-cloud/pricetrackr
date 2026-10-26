@@ -15,6 +15,7 @@ import { findSimilarProducts } from "@/lib/search/similar";
 import SearchEmptyHelp from "@/components/SearchEmptyHelp";
 import CategoryFilter from "./CategoryFilter";
 import PeriodFilter from "./PeriodFilter";
+import CompareFilter from "./CompareFilter";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -370,12 +371,14 @@ export default async function CheckPage({
         chain?.point_use_enabled,
         chain?.point_use_multiplier,
       );
-      const effective = effectivePrice(price, {
+      const discounted = effectivePrice(price, {
         couponPercents: percents,
         memberPercent,
         isMemberPrice,
       });
-      // The price range applies to the price shown (after coupon or membership).
+      // The cheapest badge and the price range compare this price: after coupon or membership
+      // (default), or the entered price with the normal-price option.
+      const effective = f.compare === "normal" ? price : discounted;
       if (!inPriceRange(effective, f)) continue;
 
       const perPackage =
@@ -751,10 +754,11 @@ export default async function CheckPage({
                 />
               </div>
               <p className="mt-1.5 text-xs text-stone-500">
-                クーポン・会員価格の適用後の価格で絞り込みます。税抜・税込は区別しません。
+                「価格の比べ方」で選んだ価格（割引後または通常価格）で絞り込みます。税抜・税込は区別しません。
               </p>
             </div>
 
+            <CompareFilter current={f.compare} />
             <PeriodFilter
               key={`${f.period}-${f.from}-${f.to}`}
               period={f.period}

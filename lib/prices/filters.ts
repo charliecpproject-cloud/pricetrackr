@@ -7,6 +7,8 @@ import {
 
 export type Period = "all" | "week" | "month" | "quarter";
 export type SaleFilter = "all" | "regular" | "sale";
+// Which price the cheapest badge and the price range use: after coupon or membership (default), or the entered price.
+export type CompareBy = "discounted" | "normal";
 
 // Prices older than this are not shown unless the user picks another period.
 export const DEFAULT_PERIOD: Period = "quarter";
@@ -22,6 +24,7 @@ export type Filters = {
   from: string | null; // YYYY-MM-DD (Japan date), only used with period "all"
   to: string | null;
   favorites: boolean; // only the favorite packages (needs a login)
+  compare: CompareBy;
 };
 
 export type RawParams = Record<string, string | string[] | undefined>;
@@ -103,6 +106,7 @@ export function parseFilters(params: RawParams): Filters {
     from,
     to,
     favorites: one(params.fav) === "1",
+    compare: one(params.cmp) === "normal" ? "normal" : "discounted",
   };
 }
 
@@ -140,5 +144,6 @@ export function countActive(f: Filters): number {
   if (f.min !== null || f.max !== null) n++;
   if (hasActivePeriod(f)) n++;
   if (f.favorites) n++;
+  if (f.compare !== "discounted") n++;
   return n;
 }
