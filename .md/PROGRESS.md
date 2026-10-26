@@ -22,6 +22,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 65 (edit the size or unit of a package, admin only: the update_package database function (checks the admin role, refuses duplicates), app/products/packageEditActions.ts, the edit sheet app/products/EditPackageForm.tsx opened from the admin-only edit button in the package list of ProductCardTools; the package keeps its id so prices, barcodes and favorites stay attached) done
 
 
+- Step 66 (price check: the new option cmp=normal makes the cheapest badge and the price range use the entered price instead of the price after coupon or membership; the choice is in the filter panel (app/check/CompareFilter.tsx), part of the URL like the other filters, default is the discounted price; Filters has a new compare field) done
+
+
 ## In Progress
 
 - (none)
@@ -31,7 +34,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
 - Speed, later: check that Fluid compute is on (Vercel, Settings, Functions); consider Vercel Speed Insights.
-- Wishlist: show the logo inside the app, option to rank by normal price instead of the discounted price
+- Wishlist: show the logo inside the app
 
 
 ## Known Issues
