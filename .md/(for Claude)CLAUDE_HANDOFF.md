@@ -81,7 +81,7 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 - `app/prices/new/*` (PriceForm, NewPackageFields, ChainExtras, page) and `app/prices/actions.ts`
 - `app/check/page.tsx`, `app/check/[packageId]/{page.tsx,actions.ts}`
 - `app/stores/*` (chains, shops, ChainOptionsForm, CouponForm loader, couponActions)
-- `app/products/*` (ProductForm, VariationForm, PackageForm, ProductCardTools, ProductMemoEditor, productActions, variationActions, memoActions; `actions.ts` holds `addPackage`)
+- `app/products/*` (ProductForm, VariationForm, ProductDialogs, EditPackageForm, ProductCardTools, ProductMemoEditor, productActions, variationActions, memoActions, packageEditActions; `actions.ts` holds `addPackage`)
 - `components/{PriceDisplay,DeleteObservationButton,FormParts}.tsx`, `lib/supabase/*`, `lib/prices/*`, `lib/products/variation.ts` (with tests)
 
 ## Steps 58-60 (built after the sections above were written)
@@ -94,6 +94,6 @@ To print Japanese files correctly use `Get-Content path -Encoding UTF8`.
 
 ## Status and wishlist (confirm against PROGRESS.md)
 - Phase 1 features are built: login, stores and branches, chain coupons, membership and bonus points, products with variations, memo, edit products and variations, price entry with inline new product and branch, price check and detail pages, delete own price, Japanese UI, app icon and manifest.
-- Phase 1 close-out is done (Step 61: housekeeping, Prettier, live deploy and phone smoke test).
-- Next: Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet).
-- Wishes: edit a package's size or unit, show the logo inside the app, an option to rank by normal price instead of discounted price.
+- Done since Step 60: Step 61 close-out (housekeeping, Prettier, live deploy and phone smoke test); Step 62 docs cleanup; Step 63 /scan polish (torch button where supported, vibration on a successful read where the device has it, no sound, clearer message on iPhone and iPad); Step 64 price history charts on the detail page (lib/prices/history.ts, components/PriceHistoryChart.tsx); Step 65 admin-only edit of a package size or unit (update_package database function, app/products/packageEditActions.ts, app/products/EditPackageForm.tsx); Step 66 cmp=normal option on the price check page (app/check/CompareFilter.tsx).
+- Next: nothing is planned. Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet) is not soon.
+- The wishlist is finished: editing a package size or unit (Step 65) and comparing by the normal price (Step 66) were built; the logo inside the app was dropped.
