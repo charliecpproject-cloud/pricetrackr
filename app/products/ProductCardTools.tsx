@@ -14,6 +14,7 @@ import {
   deleteVariation,
 } from "@/app/products/deleteActions";
 import { useProductDialogs } from "@/app/products/ProductDialogs";
+import { EDIT_BUTTON_LABEL } from "@/app/products/EditPackageForm";
 import { packageLabel } from "@/lib/prices/format";
 import ProductBarcodes from "@/app/products/ProductBarcodes";
 import {
@@ -312,11 +313,13 @@ function PackageRowItem({
   label,
   priceCount,
   isAdmin,
+  onEdit,
 }: {
   id: string;
   label: string;
   priceCount: Count;
   isAdmin: boolean;
+  onEdit?: () => void;
 }) {
   const [state, formAction, pending] = useToastedActionState(
     deletePackage,
@@ -326,13 +329,22 @@ function PackageRowItem({
 
   return (
     <li className="rounded-xl border border-line bg-panel p-2 pl-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="min-w-0">
+      <div className="flex items-center gap-1">
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-stone-800">{label}</p>
           <p className="text-xs text-stone-500">
             価格の記録 {countText(priceCount)}
           </p>
         </div>
+        {onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="h-10 shrink-0 px-3 text-sm font-medium text-teal-700"
+          >
+            {EDIT_BUTTON_LABEL}
+          </button>
+        )}
         <form
           action={formAction}
           onSubmit={(e) => {
@@ -428,7 +440,8 @@ export default function ProductCardTools({
   // price records per package id; null = could not be loaded
   priceCounts?: Record<string, number> | null;
 }) {
-  const { openAddVariation, openAddPackage } = useProductDialogs();
+  const { openAddVariation, openAddPackage, openEditPackage } =
+    useProductDialogs();
 
   const variations = (
     [product.product_variations].flat().filter(Boolean) as {
@@ -509,6 +522,19 @@ export default function ProductCardTools({
                     id={p.id}
                     isAdmin={isAdmin}
                     priceCount={packageCount(p.id)}
+                    onEdit={
+                      isAdmin
+                        ? () =>
+                            openEditPackage(dialogProduct, {
+                              id: p.id,
+                              size: p.package_size,
+                              unit: p.package_unit,
+                              variationLabel: p.variation_id
+                                ? (variationLabels.get(p.variation_id) ?? null)
+                                : null,
+                            })
+                        : undefined
+                    }
                     label={[
                       p.variation_id
                         ? variationLabels.get(p.variation_id)

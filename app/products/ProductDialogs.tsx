@@ -15,6 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Field, controlCls } from "@/components/FormParts";
 import { addVariation } from "@/app/products/variationActions";
 import { addPackage } from "@/app/products/actions";
+import EditPackageForm, {
+  titleFor,
+  type EditablePackage,
+} from "@/app/products/EditPackageForm";
 import {
   unitDropdownOptions,
   type CounterUnitOption,
@@ -26,11 +30,15 @@ export type DialogProduct = {
   variations: { id: string; label: string }[];
 };
 
-type Dialog = { kind: "variation" | "package"; product: DialogProduct } | null;
+type Dialog =
+  | { kind: "variation" | "package"; product: DialogProduct }
+  | { kind: "editPackage"; product: DialogProduct; pkg: EditablePackage }
+  | null;
 
 type Api = {
   openAddVariation: (product: DialogProduct) => void;
   openAddPackage: (product: DialogProduct) => void;
+  openEditPackage: (product: DialogProduct, pkg: EditablePackage) => void;
 };
 
 const Ctx = createContext<Api | null>(null);
@@ -240,6 +248,8 @@ export function ProductDialogsProvider({
     () => ({
       openAddVariation: (product) => setDialog({ kind: "variation", product }),
       openAddPackage: (product) => setDialog({ kind: "package", product }),
+      openEditPackage: (product, pkg) =>
+        setDialog({ kind: "editPackage", product, pkg }),
     }),
     [],
   );
@@ -264,7 +274,7 @@ export function ProductDialogsProvider({
           className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
           role="dialog"
           aria-modal="true"
-          aria-label={title}
+          aria-label={titleFor(dialog, title)}
         >
           <button
             type="button"
@@ -275,7 +285,9 @@ export function ProductDialogsProvider({
           <div className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-t-3xl border border-line bg-background p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-xl sm:rounded-3xl">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-lg font-bold text-stone-900">{title}</h3>
+                <h3 className="text-lg font-bold text-stone-900">
+                  {titleFor(dialog, title)}
+                </h3>
                 <p className="text-sm text-stone-500">{dialog.product.name}</p>
               </div>
               <button
@@ -288,7 +300,14 @@ export function ProductDialogsProvider({
               </button>
             </div>
 
-            {dialog.kind === "package" ? (
+            {dialog.kind === "editPackage" ? (
+              <EditPackageForm
+                key={dialog.pkg.id}
+                pkg={dialog.pkg}
+                counterUnits={counterUnits}
+                onDone={close}
+              />
+            ) : dialog.kind === "package" ? (
               <AddPackageForm
                 key={dialog.product.id}
                 product={dialog.product}
