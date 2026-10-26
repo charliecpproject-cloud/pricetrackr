@@ -100,7 +100,7 @@ describe("unitPriceSummary", () => {
     });
     expect(summary?.items).toEqual([
       { label: "通常", amount: per(120) },
-      { label: "まとめ買い5個で¥550", amount: per(110) },
+      { label: "まとめ買い5個", amount: per(110) },
     ]);
   });
 
@@ -113,7 +113,7 @@ describe("unitPriceSummary", () => {
       ],
     });
     expect(summary?.items[1]).toEqual({
-      label: "まとめ買い10個で¥7,000",
+      label: "まとめ買い10個",
       amount: per(700),
     });
   });

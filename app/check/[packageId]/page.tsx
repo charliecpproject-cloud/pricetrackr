@@ -127,6 +127,7 @@ export default async function PackageDetailPage({
           ? `${saleLabel(parseCategory(chain?.category))}価格`
           : undefined,
         unit: pkg.package_unit,
+        hideSinglePiece: true,
       }),
       memberPercent:
         (chain?.member_discount_percent as number | null | undefined) ?? null,

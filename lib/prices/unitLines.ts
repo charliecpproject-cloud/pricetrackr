@@ -15,7 +15,7 @@ export function isSinglePiece(size: number, unit: string): boolean {
 
 function bulkLabel(tier: BulkTier): string {
   return tier.kind === "total"
-    ? `まとめ買い${tier.quantity}個で${formatYen(tier.total)}`
+    ? `まとめ買い${tier.quantity}個`
     : `まとめ買い${tier.percent}%引`;
 }
 
