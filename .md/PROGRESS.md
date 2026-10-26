@@ -19,6 +19,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 64 (price history on the product detail page: lib/prices/history.ts buildHistory with tests (lowest, average, highest and the newest price against the average, same tax basis only, entered prices, legacy prices ignored); components/PriceHistoryChart.tsx draws a hand-made SVG chart you can tap or drag, for all chains and, when 2 or more chains have prices, a second chart for the chain of the newest price; the detail page loads up to 500 prices for the charts) done
 
 
+- Step 65 (edit the size or unit of a package, admin only: the update_package database function (checks the admin role, refuses duplicates), app/products/packageEditActions.ts, the edit sheet app/products/EditPackageForm.tsx opened from the admin-only edit button in the package list of ProductCardTools; the package keeps its id so prices, barcodes and favorites stay attached) done
+
+
 ## In Progress
 
 - (none)
@@ -28,7 +31,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
 - Speed, later: check that Fluid compute is on (Vercel, Settings, Functions); consider Vercel Speed Insights.
-- Wishlist: edit the size or unit of a package, show the logo inside the app, option to rank by normal price instead of the discounted price
+- Wishlist: show the logo inside the app, option to rank by normal price instead of the discounted price
 
 
 ## Known Issues
