@@ -5,6 +5,13 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseBarcodes } from "@/lib/products/barcode";
 import { resolveBrandText } from "@/lib/products/loadBrands";
+import { loadAllowedUnits } from "@/lib/prices/counterUnits";
+import { parseStructure } from "@/lib/products/structure";
+import { saveStructure } from "@/lib/products/saveStructure";
+import {
+  readStructureForm,
+  structureSaveMessage,
+} from "@/lib/products/structureForm";
 import {
   BARCODE_TAKEN_HIDDEN,
   takenBarcodeMessage,
@@ -135,6 +142,13 @@ export async function createProduct(
   if (check === "duplicate")
     return { error: "同じ商品がすでに登録されています" };
 
+  // The variations and packages typed into the form: checked before anything is saved.
+  const structure = parseStructure(
+    readStructureForm(formData),
+    await loadAllowedUnits(supabase),
+  );
+  if (!structure.ok) return { error: structure.error };
+
   // A barcode belongs to one product only.
   const taken = await takenBarcodeMessage(supabase, codes);
   if (taken) return { error: taken };
@@ -169,6 +183,11 @@ export async function createProduct(
     }
   }
 
+  const saved = await saveStructure(supabase, created.id as string, structure);
+  if (!saved.ok) {
+    refresh();
+    return { error: structureSaveMessage(saved) };
+  }
   refresh();
   return {
     error: null,

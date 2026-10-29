@@ -14,7 +14,6 @@ import { searchProductIds } from "@/lib/search/products";
 import { findSimilarProducts } from "@/lib/search/similar";
 import SearchEmptyHelp from "@/components/SearchEmptyHelp";
 import { loadCounterUnits } from "@/lib/prices/counterUnits";
-import type { CounterUnitOption } from "@/lib/prices/unitWords";
 
 const PAGE_SIZE = 20; // search results
 const ALL_LIMIT = 300; // すべての商品
@@ -108,9 +107,7 @@ export default async function ProductsPage({
     showList
       ? supabase.from("product_variations").select("attributes")
       : Promise.resolve({ data: [] as { attributes: unknown }[], error: null }),
-    showList
-      ? loadCounterUnits(supabase)
-      : Promise.resolve([] as CounterUnitOption[]),
+    loadCounterUnits(supabase),
   ]);
 
   if (listResult.error)
@@ -218,6 +215,7 @@ export default async function ProductsPage({
                   key={`${newBarcode}|${newName}`}
                   defaultBarcode={newBarcode}
                   defaultName={newName}
+                  counterUnits={counterUnits}
                 />
               </ReadOnlyFieldset>
             </div>
