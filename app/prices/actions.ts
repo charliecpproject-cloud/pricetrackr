@@ -9,6 +9,10 @@ import { parsePriceYen, toObservedAt } from "@/lib/prices/schema";
 import { TAX_BASES } from "@/lib/prices/tax";
 import { parseBarcodes } from "@/lib/products/barcode";
 import { loadAllowedUnits } from "@/lib/prices/counterUnits";
+import {
+  parseNewVariation,
+  variationInsertMessage,
+} from "@/lib/products/newVariation";
 import { MAX_UNIT_LENGTH } from "@/lib/prices/unitWords";
 import {
   BULK_MAX_TIERS,
@@ -126,13 +130,24 @@ async function resolveNewPackage(
   const { name, unit, other_name, category, memo, tax_rate } = parsed.data;
   const brand = (await resolveBrandText(supabase, parsed.data.brand)) || null;
   // Only a measure or an enabled counter word may be used for a new 容量.
-  if (!(await loadAllowedUnits(supabase)).includes(unit))
-    return { error: UNIT_ERROR };
+  const allowedUnits = await loadAllowedUnits(supabase);
+  if (!allowedUnits.includes(unit)) return { error: UNIT_ERROR };
 
   const name_ja = name;
   const name_en: string | null = other_name;
   let productId = parsed.data.product_id;
   let variationId = parsed.data.variation_id;
+  // A variation typed into the panel (optional): checked before anything is saved.
+  const checkedVariation = parseNewVariation({
+    names: formData.getAll("np_attr_name"),
+    values: formData.getAll("np_attr_value"),
+    size: text(formData, "np_size") ?? "",
+    unit,
+    allowedUnits,
+    selectedVariationId: variationId,
+  });
+  if (!checkedVariation.ok) return { error: checkedVariation.error };
+  const newVariation = checkedVariation.variation;
 
   if (productId) {
     // Existing product: a variation is needed when the product has variations.
@@ -146,7 +161,7 @@ async function resolveNewPackage(
     }
     if ((variations ?? []).length === 0) {
       variationId = null;
-    } else if (!variationId) {
+    } else if (!variationId && !newVariation) {
       return { error: "バリエーションを選んでください" };
     }
   } else {
@@ -217,6 +232,43 @@ async function resolveNewPackage(
       }
     }
     variationId = null;
+  }
+
+  // A variation typed into the panel: reuse the same one when it exists, else create it.
+  if (newVariation) {
+    const { data: sameVariation } = await supabase
+      .from("product_variations")
+      .select("id")
+      .eq("product_id", productId)
+      .eq("attributes_key", newVariation.key)
+      .limit(1);
+    if (sameVariation && sameVariation.length > 0) {
+      variationId = sameVariation[0].id as string;
+    } else {
+      const { data: createdVariation, error: variationError } = await supabase
+        .from("product_variations")
+        .insert({
+          product_id: productId,
+          attributes: newVariation.attributes,
+          attributes_key: newVariation.key,
+        })
+        .select("id")
+        .single();
+      if (variationError || !createdVariation) {
+        console.error(
+          "Variation insert error:",
+          variationError?.message,
+          variationError?.code,
+        );
+        return {
+          error: variationInsertMessage(
+            variationError?.code,
+            !parsed.data.product_id,
+          ),
+        };
+      }
+      variationId = createdVariation.id as string;
+    }
   }
 
   // Reuse the exact same package when it already exists.

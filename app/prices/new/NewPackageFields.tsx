@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Field, controlCls } from "@/components/FormParts";
+import { Badge, Field, controlCls } from "@/components/FormParts";
+import Collapsible from "@/components/Collapsible";
 import ProductFields from "@/components/ProductFields";
+import VariationRows from "@/components/VariationRows";
 import {
   unitDropdownOptions,
   type CounterUnitOption,
@@ -16,6 +18,11 @@ export type ProductOption = {
 
 // controlCls is full width; the unit dropdown must stay small.
 const unitCls = controlCls.replace("w-full", "w-24 shrink-0");
+
+// Value of the variation dropdown that means "type a new variation".
+const NEW_VARIATION = "__new__";
+
+const hintCls = "text-xs text-stone-500";
 
 export default function NewPackageFields({
   products,
@@ -31,6 +38,7 @@ export default function NewPackageFields({
 
   const product = products.find((p) => p.id === productId);
   const needsVariation = !!product && product.variations.length > 0;
+  const creatingVariation = variationId === NEW_VARIATION;
 
   return (
     <div className="space-y-4 rounded-xl border border-teal-200 bg-teal-50/50 p-3">
@@ -62,26 +70,56 @@ export default function NewPackageFields({
       </Field>
 
       {productId === "" ? (
-        <ProductFields prefix="np_" />
+        <>
+          <ProductFields prefix="np_" />
+          <Collapsible title="バリエーション" badge={<Badge kind="optional" />}>
+            <p className={hintCls}>
+              サイズ・味・色など、同じ商品の違いを入力します。下の容量は、このバリエーションのものになります。
+            </p>
+            <VariationRows nameKey="np_attr_name" valueKey="np_attr_value" />
+          </Collapsible>
+        </>
       ) : needsVariation ? (
-        <Field label="バリエーション" kind="required" htmlFor="np_variation_id">
-          <select
-            id="np_variation_id"
-            name="np_variation_id"
-            required
-            value={variationId}
-            onChange={(e) => setVariationId(e.target.value)}
-            className={controlCls}
+        <>
+          <Field
+            label="バリエーション"
+            kind="required"
+            htmlFor="np_variation_id"
           >
-            <option value="">バリエーションを選択</option>
-            {product.variations.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-      ) : null}
+            <select
+              id="np_variation_id"
+              name={creatingVariation ? undefined : "np_variation_id"}
+              required
+              value={variationId}
+              onChange={(e) => setVariationId(e.target.value)}
+              className={controlCls}
+            >
+              <option value="">バリエーションを選択</option>
+              {product.variations.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.label}
+                </option>
+              ))}
+              <option value={NEW_VARIATION}>＋ 新しいバリエーション</option>
+            </select>
+          </Field>
+          {creatingVariation && (
+            <div className="space-y-2">
+              <p className={hintCls}>
+                新しいバリエーションを追加します。下の容量は、このバリエーションのものになります。
+              </p>
+              <VariationRows nameKey="np_attr_name" valueKey="np_attr_value" />
+            </div>
+          )}
+        </>
+      ) : (
+        <Collapsible title="バリエーション" badge={<Badge kind="optional" />}>
+          <p className={hintCls}>
+            入力すると、この商品に新しいバリエーションを追加し、下の容量はそのバリエーションのものになります。
+          </p>
+          <VariationRows nameKey="np_attr_name" valueKey="np_attr_value" />
+        </Collapsible>
+      )}
 
       <Field label="容量" kind="required" htmlFor="np_size">
         <div className="flex gap-2">
