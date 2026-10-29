@@ -28,6 +28,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 67 (detail page: the unit price line is hidden for a single piece, like on the price check cards, in the latest price card and in the history rows; the bundle label in the unit price line is shortened, since the bundle price is already shown in the bulk block) done
 
 
+- Step 68 (price entry: the continuous entry mode (renzoku nyuryoku) now keeps the date and time after a save, so a batch from an older date keeps its date; the now button still sets the current time) done
+
+
 ## In Progress
 
 - (none)
