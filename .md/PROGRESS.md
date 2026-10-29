@@ -31,6 +31,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 68 (price entry: the continuous entry mode (renzoku nyuryoku) now keeps the date and time after a save, so a batch from an older date keeps its date; the now button still sets the current time) done
 
 
+- Step 69 (new product with variations and capacities in one go: lib/products/structure.ts parser with limits (5 variations, 6 packages per group, 8 attributes) and tests; lib/products/saveStructure.ts saves the variations and then all packages; price entry: the new-product panel has an optional variation (attribute rows), an existing product can get a new variation too (pick the new-variation option), an identical variation is reused; the add product page has an optional variations and packages editor (components/StructureFields.tsx, readStructureForm in lib/products/structureForm.ts)) done
+
+
 ## In Progress
 
 - (none)
