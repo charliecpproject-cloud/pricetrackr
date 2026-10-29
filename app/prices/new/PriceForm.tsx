@@ -179,7 +179,6 @@ export default function PriceForm({
       if (focusRef.current) {
         // 連続入力: keep chain, branch, tax, sale and member price; start the next item
         setBonusPoints("");
-        setObservedAt(noonInJapan());
         setPackageId("");
         setIsNewPackage(false);
         setSearch("");
@@ -336,7 +335,7 @@ export default function PriceForm({
     <form onSubmit={handleSubmit} className="space-y-5">
       {focusMode && (
         <p className="rounded-xl bg-teal-50 px-3 py-2 text-sm text-teal-700">
-          連続入力モード：保存後も、チェーン・税・特売などの選択を残します。
+          連続入力モード：保存後も、チェーン・税・特売・日時などの選択を残します。
         </p>
       )}
       {isNewPackage ? (
