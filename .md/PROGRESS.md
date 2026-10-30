@@ -34,6 +34,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 69 (new product with variations and capacities in one go: lib/products/structure.ts parser with limits (5 variations, 6 packages per group, 8 attributes) and tests; lib/products/saveStructure.ts saves the variations and then all packages; price entry: the new-product panel has an optional variation (attribute rows), an existing product can get a new variation too (pick the new-variation option), an identical variation is reused; the add product page has an optional variations and packages editor (components/StructureFields.tsx, readStructureForm in lib/products/structureForm.ts)) done
 
 
+- Step 70 (product page and price check: every product card on the product page has an add-price link to /prices/new?product=<id>; the product page has a filter and sort panel (category and brand dropdowns with the 30 most used values and counts, price records yes/no for logged-in users, variations yes/no, sort by name, newest added or newest price; lib/products/listFilters.ts with tests, list loaded up to 300 and shown 20 at a time); the price check page has a sort option (cheapest, newest price, favorites first; lib/prices/sort.ts with tests; a chosen sort loads and sorts up to 100 products and the default 3-product view is replaced by the full list) done
+
+
 ## In Progress
 
 - (none)
