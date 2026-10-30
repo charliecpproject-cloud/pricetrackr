@@ -16,6 +16,8 @@ import SearchEmptyHelp from "@/components/SearchEmptyHelp";
 import CategoryFilter from "./CategoryFilter";
 import PeriodFilter from "./PeriodFilter";
 import CompareFilter from "./CompareFilter";
+import SortFilter from "./SortFilter";
+import { SORT_FETCH, parseSort, sortProductCards } from "@/lib/prices/sort";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -242,6 +244,10 @@ export default async function CheckPage({
   const rawParams = await searchParams;
   const viewerPromise = getViewer();
   const parsedFilters = parseFilters(rawParams);
+  // 並び順: cheapest, newest price or favorites first (null = the standard order).
+  const sort = parseSort(
+    (rawParams as unknown as Record<string, unknown>).sort,
+  );
   // What to search: every field (default), or only the name, brand, category or barcode.
   const scope = parseSearchScope(
     (rawParams as unknown as Record<string, unknown>).scope,
@@ -269,7 +275,7 @@ export default async function CheckPage({
     ? searchProductIds(
         supabase,
         parsedFilters.q,
-        Math.max(50, limit + 1),
+        Math.max(sort !== null ? SORT_FETCH : 50, limit + 1),
         scope,
       )
     : Promise.resolve([] as Awaited<ReturnType<typeof searchProductIds>>);
@@ -291,7 +297,8 @@ export default async function CheckPage({
   // The favorites filter needs an account: visitors have no favorites.
   const f = loggedIn ? parsedFilters : { ...parsedFilters, favorites: false };
   const term = f.q;
-  const activeCount = countActive(f) + (scope !== "all" ? 1 : 0);
+  const activeCount =
+    countActive(f) + (scope !== "all" ? 1 : 0) + (sort !== null ? 1 : 0);
 
   const { data: chainRows, error: chainsError } = chainsResult;
   if (chainsError) {
@@ -413,7 +420,10 @@ export default async function CheckPage({
   let products: any[] = [];
   let latest: LatestMap = new Map();
 
-  const isDefaultView = !term && !hasPriceFilter && !onlyFavorites;
+  const isDefaultView =
+    !term && !hasPriceFilter && !onlyFavorites && sort === null;
+  // With a sort chosen, up to 100 products are loaded and sorted; otherwise one page.
+  const fetchCount = sort !== null ? SORT_FETCH : limit + 1;
 
   if (isDefaultView) {
     // No search and no filter: the products with the newest price entries (by entry time).
@@ -514,7 +524,7 @@ export default async function CheckPage({
          )`,
       )
       .order("name_en", { ascending: true })
-      .limit(limit + 1);
+      .limit(fetchCount);
     if (term) query = query.or(nameFilter);
     const { data, error } = await query;
     if (error) {
@@ -533,8 +543,8 @@ export default async function CheckPage({
   }
 
   // One product more than shown was loaded: it tells whether 「もっと見る」 is needed.
-  const hasMore = !isDefaultView && !onlyFavorites && products.length > limit;
-  if (hasMore) products = products.slice(0, limit);
+  let hasMore = !isDefaultView && !onlyFavorites && products.length > limit;
+  if (hasMore && sort === null) products = products.slice(0, limit);
 
   // One entry per 容量 ...
   const cards: SizeCard[] = products
@@ -595,7 +605,13 @@ export default async function CheckPage({
     entry.items.push(card);
     productMap.set(card.productId, entry);
   }
-  const productCards = Array.from(productMap.values());
+  let productCards = Array.from(productMap.values());
+  if (sort !== null) {
+    // A chosen sort orders everything that was loaded (up to 100 products); 20 are shown.
+    productCards = sortProductCards(productCards, sort);
+    hasMore = !onlyFavorites && productCards.length > limit;
+    if (!onlyFavorites) productCards = productCards.slice(0, limit);
+  }
   // 旧価格あり: products with open legacy prices newer than 6 months (logged-in users only).
   const legacyBadgeSet = loggedIn
     ? await loadLegacyBadgeIds(
@@ -759,6 +775,7 @@ export default async function CheckPage({
             </div>
 
             <CompareFilter current={f.compare} />
+            <SortFilter current={sort} loggedIn={loggedIn} />
             <PeriodFilter
               key={`${f.period}-${f.from}-${f.to}`}
               period={f.period}
