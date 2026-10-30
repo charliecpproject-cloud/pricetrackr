@@ -14,6 +14,7 @@ import {
   deleteVariation,
 } from "@/app/products/deleteActions";
 import { useProductDialogs } from "@/app/products/ProductDialogs";
+import AddPriceToProductLink from "@/components/AddPriceToProductLink";
 import { EDIT_BUTTON_LABEL } from "@/app/products/EditPackageForm";
 import { packageLabel } from "@/lib/prices/format";
 import ProductBarcodes from "@/app/products/ProductBarcodes";
@@ -578,6 +579,7 @@ export default function ProductCardTools({
         </div>
       </details>
 
+      <AddPriceToProductLink productId={product.id} />
       <div className="mt-3 flex gap-2">
         <button
           type="button"

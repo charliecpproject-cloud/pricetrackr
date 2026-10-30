@@ -286,8 +286,7 @@ export default async function NewPricePage({
       {focusProduct && (
         <div className="flex items-center justify-between gap-3 rounded-xl bg-teal-50 px-3 py-2 text-sm text-teal-700">
           <span className="min-w-0">
-            バーコードで選んだ商品：
-            <span className="font-bold">{focusProduct.label}</span>
+            選んだ商品：<span className="font-bold">{focusProduct.label}</span>
           </span>
           <Link href="/prices/new" className="shrink-0 font-medium underline">
             解除
