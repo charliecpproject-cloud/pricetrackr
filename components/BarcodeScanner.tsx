@@ -55,7 +55,7 @@ export default function BarcodeScanner({
 
     async function start() {
       let Detector = (window as any).BarcodeDetector;
-      if (!Detector && navigator.mediaDevices?.getUserMedia) {
+      if (!Detector && navigator.mediaDevices) {
         try {
           // iPhone and iPad (Safari) have no BarcodeDetector: use the WebAssembly one.
           Detector = (await import("barcode-detector/pure")).BarcodeDetector;
