@@ -19,9 +19,9 @@ const MESSAGES: Record<Status, string> = {
 };
 
 const IOS_UNSUPPORTED_MESSAGE =
-  "iPhoneとiPadでは、カメラでのバーコード読み取りに対応していません。番号を入力してください。";
+  "バーコード読み取りの準備ができませんでした。通信を確認するか、番号を入力してください。";
 
-// All iPhone and iPad browsers use Safari's engine, which has no BarcodeDetector.
+// iPhone and iPad have no BarcodeDetector; the WebAssembly fallback is used, so this message only shows if it fails to load.
 function isIosDevice(): boolean {
   if (typeof navigator === "undefined") return false;
   return (
@@ -54,7 +54,15 @@ export default function BarcodeScanner({
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     async function start() {
-      const Detector = (window as any).BarcodeDetector;
+      let Detector = (window as any).BarcodeDetector;
+      if (!Detector && navigator.mediaDevices?.getUserMedia) {
+        try {
+          // iPhone and iPad (Safari) have no BarcodeDetector: use the WebAssembly one.
+          Detector = (await import("barcode-detector/pure")).BarcodeDetector;
+        } catch {
+          // stays unsupported
+        }
+      }
       if (!Detector || !navigator.mediaDevices?.getUserMedia) {
         setStatus("unsupported");
         return;
