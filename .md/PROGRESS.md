@@ -40,6 +40,15 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 71 (barcode scan on iPhone and iPad: components/BarcodeScanner.tsx uses the browser BarcodeDetector where it exists (Android) and otherwise loads the barcode-detector npm package (WebAssembly, the .wasm file comes from the jsDelivr CDN) with a dynamic import, so Android never downloads it; the unsupported message now only shows if that fails to load; PART1_FOUNDATION.md and the handoff updated; tested on an iPhone) done
 
 
+- Step 72 (speed measuring: Vercel Fluid compute checked (on); Vercel Speed Insights added (@vercel/speed-insights, the SpeedInsights component in app/layout.tsx, enabled in the Vercel project); the first scores are 100 for /, /check and /prices/new) done
+
+
+- Step 73 (speed code review, no code change: getClaims() is already used in lib/auth/viewer.ts and proxy.ts (only the settings page and its three actions still call getUser(), left as they are); the home, 価格確認 and 価格入力 pages already fetch in parallel with Promise.all; skipped on purpose: theme in a cookie (it saves very little) and lazy-loading the 価格入力 data (the catalogue is small, and searching on the phone works without a signal)) done
+
+
+- Step 74 (価格確認 filter panel: components/FilterGroup.tsx, a group heading with a small ⓘ button that opens the helper sentence; used by 価格帯, 価格の比べ方, 並び順 and 店舗のカテゴリ; 並び順 is on one line with the labels 標準, 安い順, 新しい順 and お気に入り (visitors get 3 columns)) done
+
+
 ## In Progress
 
 - (none)
@@ -48,7 +57,8 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 ## Next Up
 
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
-- Speed, later: check that Fluid compute is on (Vercel, Settings, Functions); consider Vercel Speed Insights.
+- After a scan, show the product's best price right away, with the 価格入力 button below it
+- Bulk tidy for category and brand
 
 
 ## Known Issues
