@@ -49,6 +49,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 74 (価格確認 filter panel: components/FilterGroup.tsx, a group heading with a small ⓘ button that opens the helper sentence; used by 価格帯, 価格の比べ方, 並び順 and 店舗のカテゴリ; 並び順 is on one line with the labels 標準, 安い順, 新しい順 and お気に入り (visitors get 3 columns)) done
 
 
+- Step 75 (scan: a found barcode now opens the 価格確認 search for the code (/check?q=<code>), so the card shows the latest price at every chain with its age and a 価格を追加 button on each 容量, instead of jumping to 価格入力; lookupBarcode returns the code; the scan page text, PART1_FOUNDATION.md and the handoff updated) done
+
+
 ## In Progress
 
 - (none)
@@ -57,7 +60,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 ## Next Up
 
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
-- After a scan, show the product's best price right away, with the 価格入力 button below it
+- (none)
 - Bulk tidy for category and brand
 
 
