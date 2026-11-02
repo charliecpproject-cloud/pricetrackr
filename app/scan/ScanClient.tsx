@@ -24,10 +24,8 @@ export default function ScanClient() {
 
       const result = await lookupBarcode(raw);
       if (result.status === "found") {
-        const packagePart = result.packageId
-          ? `&package=${result.packageId}`
-          : "";
-        router.push(`/prices/new?product=${result.productId}${packagePart}`);
+        // The 価格確認 search for the code: the latest price at every chain, then 価格を追加.
+        router.push(`/check?q=${encodeURIComponent(result.code)}`);
         return;
       }
       if (result.status === "not_found") {
