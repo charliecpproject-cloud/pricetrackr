@@ -5,6 +5,7 @@ import { ToastProvider } from "@/components/ToastProvider";
 import ProfileMenu from "@/components/ProfileMenu";
 import { getViewer } from "@/lib/auth/viewer";
 import { themeStylesheets } from "@/lib/themes/themes";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "PriceTrackr",
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           </main>
           <AppNav />
         </ToastProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
