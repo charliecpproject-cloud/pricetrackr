@@ -37,6 +37,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 70 (product page and price check: every product card on the product page has an add-price link to /prices/new?product=<id>; the product page has a filter and sort panel (category and brand dropdowns with the 30 most used values and counts, price records yes/no for logged-in users, variations yes/no, sort by name, newest added or newest price; lib/products/listFilters.ts with tests, list loaded up to 300 and shown 20 at a time); the price check page has a sort option (cheapest, newest price, favorites first; lib/prices/sort.ts with tests; a chosen sort loads and sorts up to 100 products and the default 3-product view is replaced by the full list) done
 
 
+- Step 71 (barcode scan on iPhone and iPad: components/BarcodeScanner.tsx uses the browser BarcodeDetector where it exists (Android) and otherwise loads the barcode-detector npm package (WebAssembly, the .wasm file comes from the jsDelivr CDN) with a dynamic import, so Android never downloads it; the unsupported message now only shows if that fails to load; PART1_FOUNDATION.md and the handoff updated; tested on an iPhone) done
+
+
 ## In Progress
 
 - (none)
