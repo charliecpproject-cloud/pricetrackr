@@ -7,9 +7,9 @@ import { getViewer } from "@/lib/auth/viewer";
 const tools = [
   {
     href: "/admin/brands",
-    title: "ブランドの管理",
+    title: "ブランド・カテゴリの整理",
     description:
-      "同じブランドの別の書き方（PASCO とパスコ）をまとめ、別名を登録する",
+      "ブランドやカテゴリを、選んだ商品にまとめて付け直す。ブランドの別名（PASCO とパスコ）も管理する",
     Icon: Tag,
     ready: true,
   },

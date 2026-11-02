@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getViewer } from "@/lib/auth/viewer";
 import { countCategories, normalize } from "@/lib/products/category";
-import BrandMergeForm from "./BrandMergeForm";
+import BulkTidyForm from "./BulkTidyForm";
 import BrandAliasAddForm from "./BrandAliasAddForm";
 import BrandAliasRow from "./BrandAliasRow";
 
@@ -13,10 +13,11 @@ type ProductRow = {
   name_ja: string | null;
   name_en: string | null;
   brand: string | null;
+  category: string | null;
 };
 type BrandCard = { name: string; count: number; aliases: AliasRecord[] };
 
-export const metadata = { title: "ブランドの管理" };
+export const metadata = { title: "ブランド・カテゴリの整理" };
 
 export default async function BrandsPage() {
   const viewer = await getViewer();
@@ -24,7 +25,10 @@ export default async function BrandsPage() {
 
   const supabase = await createSupabaseServerClient();
   const [productsResult, aliasesResult] = await Promise.all([
-    supabase.from("products").select("id, name_ja, name_en, brand").limit(5000),
+    supabase
+      .from("products")
+      .select("id, name_ja, name_en, brand, category")
+      .limit(5000),
     supabase
       .from("brand_aliases")
       .select("id, brand, alias")
@@ -95,7 +99,9 @@ export default async function BrandsPage() {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-stone-900">ブランドの管理</h1>
+        <h1 className="text-2xl font-bold text-stone-900">
+          ブランド・カテゴリの整理
+        </h1>
         <p className="mt-1 text-sm text-stone-500">
           同じブランドの別の書き方（例：PASCO
           とパスコ）を1つにまとめます。別名を登録すると、商品を登録するときに自動で正しい名前になり、検索でも見つかります。
@@ -104,12 +110,16 @@ export default async function BrandsPage() {
 
       <section className={cardCls}>
         <h2 className="mb-3 text-lg font-bold text-stone-900">
-          ブランドをまとめる
+          まとめて整理する
         </h2>
-        <BrandMergeForm
-          brands={list
-            .filter((b) => b.count > 0)
-            .map((b) => ({ name: b.name, count: b.count }))
+        <BulkTidyForm
+          products={products
+            .map((p) => ({
+              id: p.id,
+              name: p.name_ja || p.name_en || "名称未設定",
+              brand: p.brand,
+              category: p.category,
+            }))
             .sort((a, b) => a.name.localeCompare(b.name, "ja"))}
         />
       </section>
