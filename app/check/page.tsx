@@ -17,6 +17,7 @@ import CategoryFilter from "./CategoryFilter";
 import PeriodFilter from "./PeriodFilter";
 import CompareFilter from "./CompareFilter";
 import SortFilter from "./SortFilter";
+import FilterGroup from "@/components/FilterGroup";
 import { SORT_FETCH, parseSort, sortProductCards } from "@/lib/prices/sort";
 import { pointUseMultiplierOf } from "@/lib/prices/points";
 import { controlCls, labelCls } from "@/components/FormParts";
@@ -748,8 +749,11 @@ export default async function CheckPage({
               </div>
             </fieldset>
 
-            <div>
-              <p className={labelCls}>価格帯（円）</p>
+            <FilterGroup
+              as="div"
+              title="価格帯（円）"
+              tip="「価格の比べ方」で選んだ価格（割引後または通常価格）で絞り込みます。税抜・税込は区別しません。"
+            >
               <div className="flex items-center gap-2">
                 <input
                   name="min"
@@ -769,10 +773,7 @@ export default async function CheckPage({
                   className={controlCls}
                 />
               </div>
-              <p className="mt-1.5 text-xs text-stone-500">
-                「価格の比べ方」で選んだ価格（割引後または通常価格）で絞り込みます。税抜・税込は区別しません。
-              </p>
-            </div>
+            </FilterGroup>
 
             <CompareFilter current={f.compare} />
             <SortFilter current={sort} loggedIn={loggedIn} />

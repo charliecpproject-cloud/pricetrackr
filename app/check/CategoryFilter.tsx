@@ -13,7 +13,7 @@ import {
   Tag,
   type LucideIcon,
 } from "lucide-react";
-import { labelCls } from "@/components/FormParts";
+import FilterGroup from "@/components/FilterGroup";
 import {
   CATEGORY_LABEL,
   STORE_CATEGORIES,
@@ -61,9 +61,11 @@ export default function CategoryFilter({
   );
 
   return (
-    <div>
-      <p className={labelCls}>店舗のカテゴリ</p>
-
+    <FilterGroup
+      as="div"
+      title="店舗のカテゴリ"
+      tip="選ばない場合は、すべてのカテゴリが対象です。選ぶと、そのカテゴリの店舗だけを対象にします。"
+    >
       {selected.map((c) => (
         <input key={c} type="hidden" name="cat" value={c} />
       ))}
@@ -128,12 +130,6 @@ export default function CategoryFilter({
           })}
         </div>
       )}
-
-      <p className="mt-1.5 text-xs text-stone-500">
-        {selected.length === 0
-          ? "選ばない場合は、すべてのカテゴリが対象です。"
-          : "選んだカテゴリの店舗だけを対象にします。"}
-      </p>
-    </div>
+    </FilterGroup>
   );
 }

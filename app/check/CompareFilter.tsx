@@ -1,4 +1,4 @@
-import { labelCls } from "@/components/FormParts";
+import FilterGroup from "@/components/FilterGroup";
 
 const chipCls =
   "flex h-10 cursor-pointer items-center justify-center rounded-xl border border-line bg-panel px-3 text-sm text-stone-600 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:font-bold has-[:checked]:text-teal-700 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-teal-600";
@@ -16,8 +16,10 @@ export default function CompareFilter({
   current: "discounted" | "normal";
 }) {
   return (
-    <fieldset className="min-w-0">
-      <legend className={labelCls}>価格の比べ方</legend>
+    <FilterGroup
+      title="価格の比べ方"
+      tip="最安の表示と価格帯の絞り込みに使う価格です。通常価格は、入力した価格のままで比べます。"
+    >
       <div className="grid grid-cols-2 gap-2">
         {OPTIONS.map((o) => (
           <label key={o.value} className={chipCls}>
@@ -32,9 +34,6 @@ export default function CompareFilter({
           </label>
         ))}
       </div>
-      <p className="mt-1.5 text-xs text-stone-500">
-        最安の表示と価格帯の絞り込みに使う価格です。通常価格は、入力した価格のままで比べます。
-      </p>
-    </fieldset>
+    </FilterGroup>
   );
 }
