@@ -52,6 +52,9 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 - Step 75 (scan: a found barcode now opens the 価格確認 search for the code (/check?q=<code>), so the card shows the latest price at every chain with its age and a 価格を追加 button on each 容量, instead of jumping to 価格入力; lookupBarcode returns the code; the scan page text, PART1_FOUNDATION.md and the handoff updated) done
 
 
+- Step 76 (bulk tidy for category and brand: /admin/brands is now ブランド・カテゴリの整理; one form with a ブランド / カテゴリ choice, value chips with product counts (tap to select all products with that value), a filterable product list with checkboxes (plus 未設定の商品だけ), and one new value for all chosen products; app/admin/brands/BulkTidyForm.tsx and tidyActions.ts; admin-only SQL function set_product_field(p_field, p_value, p_ids, p_keep_alias) (max 500 products; for a brand, an old spelling that no product uses any more becomes an alias); prices, packages and barcodes are not touched; BrandMergeForm.tsx removed, the alias rows keep merge_brand) done
+
+
 ## In Progress
 
 - (none)
@@ -60,8 +63,7 @@ Phase 1 complete (manual entry and price lookup, live on Vercel). Now: small imp
 ## Next Up
 
 - Plan Phase 2 (freshness score, trust score, unit price per 100 ml / per sheet)
-- (none)
-- Bulk tidy for category and brand
+- (no other items; new wishes go here)
 
 
 ## Known Issues
